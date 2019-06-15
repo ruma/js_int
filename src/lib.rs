@@ -1,5 +1,5 @@
 //! JavaScript-interoperable integer types
-#![deny(missing_docs)]
+#![deny(missing_debug_implementations, missing_docs, warnings)]
 #![no_std]
 
 use core::{
