@@ -5,8 +5,8 @@
 use core::{
     convert::{From, TryFrom},
     fmt::{self, Debug, Display, Formatter},
-    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign},
     num::TryFromIntError as StdTryFromIntError,
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign},
 };
 
 /// The largest integer value that can be represented exactly by an f64.
@@ -33,6 +33,16 @@ impl Int {
         } else {
             None
         }
+    }
+
+    /// Returns the smallest value that can be represented by this integer type.
+    pub const fn min_value() -> i64 {
+        MIN_SAFE_INT
+}
+
+    /// Returns the largest value that can be represented by this integer type.
+    pub const fn max_value() -> i64 {
+        MAX_SAFE_INT
     }
 }
 
@@ -89,6 +99,16 @@ impl UInt {
     /// Create a `UInt` from the provided `u64`, wrapping at `MAX_SAFE_UINT`.
     pub fn new_wrapping(val: u64) -> Self {
         Self(val & MAX_SAFE_UINT)
+    }
+
+    /// Returns the smallest value that can be represented by this integer type.
+    pub const fn min_value() -> u64 {
+        0
+}
+
+    /// Returns the largest value that can be represented by this integer type.
+    pub const fn max_value() -> u64 {
+        MAX_SAFE_UINT
     }
 }
 
