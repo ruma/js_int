@@ -9,6 +9,12 @@ use core::{
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign},
 };
 
+#[cfg(feature = "serde")]
+use core::fmt::Result as FmtResult;
+
+#[cfg(feature = "serde")]
+use serde::{de::Visitor, Deserialize, Deserializer, Serialize};
+
 /// The largest integer value that can be represented exactly by an f64.
 pub const MAX_SAFE_INT: i64 = 0x1FFFFFFFFFFFFF;
 /// The smallest integer value that can be represented exactly by an f64.
@@ -19,6 +25,7 @@ pub const MAX_SAFE_UINT: u64 = 0x1FFFFFFFFFFFFF;
 
 /// An integer limited to the range of integers that can be represented exactly by an f64.
 #[derive(Clone, Copy, Default, Hash, PartialEq, Eq)]
+#[cfg_attr(feature = "serde", derive(Serialize))]
 pub struct Int(i64);
 
 impl Int {
@@ -77,9 +84,86 @@ int_op_impl!(Sub, sub, SubAssign, sub_assign);
 int_op_impl!(Mul, mul, MulAssign, mul_assign);
 int_op_impl!(Div, div, DivAssign, div_assign);
 
+#[cfg(feature = "serde")]
+impl<'de> Deserialize<'de> for Int {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>
+    {
+        struct IntVisitor;
+
+        impl<'de> Visitor<'de> for IntVisitor {
+            type Value = Int;
+
+            fn expecting(&self, formatter: &mut Formatter) -> FmtResult {
+                formatter.write_str("a signed integer between -(2**53) + 1 and (2**53) - 1")
+            }
+
+            fn visit_i8<E>(self, value: i8) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error
+            {
+                Ok(Int(i64::from(value)))
+            }
+
+            fn visit_i16<E>(self, value: i16) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error
+            {
+                Ok(Int(i64::from(value)))
+            }
+
+            fn visit_i32<E>(self, value: i32) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error
+            {
+                Ok(Int(i64::from(value)))
+            }
+
+            fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error
+            {
+                Ok(Int::try_from(value).map_err(|_| E::custom("out of bounds"))?)
+            }
+
+            fn visit_u8<E>(self, value: u8) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error
+            {
+                Ok(Int::try_from(value).map_err(|_| E::custom("out of bounds"))?)
+            }
+
+            fn visit_u16<E>(self, value: u16) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error
+            {
+                Ok(Int::try_from(value).map_err(|_| E::custom("out of bounds"))?)
+            }
+
+            fn visit_u32<E>(self, value: u32) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error
+            {
+                Ok(Int::try_from(value).map_err(|_| E::custom("out of bounds"))?)
+            }
+
+            fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error
+            {
+                Ok(Int::try_from(value).map_err(|_| E::custom("out of bounds"))?)
+            }
+        }
+
+        deserializer.deserialize_any(IntVisitor)
+    }
+}
+
 /// An integer limited to the range of positive integers (including zero) that can be represented
 /// exactly by an f64.
 #[derive(Clone, Copy, Default, Hash, PartialEq, Eq)]
+#[cfg_attr(feature = "serde", derive(Serialize))]
 pub struct UInt(u64);
 
 impl UInt {
@@ -149,6 +233,82 @@ uint_op_impl!(Sub, sub, SubAssign, sub_assign);
 uint_op_impl!(Mul, mul, MulAssign, mul_assign);
 uint_op_impl!(Div, div, DivAssign, div_assign);
 
+#[cfg(feature = "serde")]
+impl<'de> Deserialize<'de> for UInt {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>
+    {
+        struct UIntVisitor;
+
+        impl<'de> Visitor<'de> for UIntVisitor {
+            type Value = UInt;
+
+            fn expecting(&self, formatter: &mut Formatter) -> FmtResult {
+                formatter.write_str("an unsigned integer between 0 and (2**53) - 1")
+            }
+
+            fn visit_i8<E>(self, value: i8) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error
+            {
+                Ok(UInt::try_from(value).map_err(|_| E::custom("out of bounds"))?)
+            }
+
+            fn visit_i16<E>(self, value: i16) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error
+            {
+                Ok(UInt::try_from(value).map_err(|_| E::custom("out of bounds"))?)
+            }
+
+            fn visit_i32<E>(self, value: i32) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error
+            {
+                Ok(UInt::try_from(value).map_err(|_| E::custom("out of bounds"))?)
+            }
+
+            fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error
+            {
+                Ok(UInt::try_from(value).map_err(|_| E::custom("out of bounds"))?)
+            }
+
+            fn visit_u8<E>(self, value: u8) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error
+            {
+                Ok(UInt(u64::from(value)))
+            }
+
+            fn visit_u16<E>(self, value: u16) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error
+            {
+                Ok(UInt(u64::from(value)))
+            }
+
+            fn visit_u32<E>(self, value: u32) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error
+            {
+                Ok(UInt(u64::from(value)))
+            }
+
+            fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error
+            {
+                Ok(UInt::try_from(value).map_err(|_| E::custom("out of bounds"))?)
+            }
+        }
+
+        deserializer.deserialize_any(UIntVisitor)
+    }
+}
+
 macro_rules! fmt_impls {
     ($type:ident) => {
         impl Display for $type {
@@ -169,6 +329,7 @@ fmt_impls!(Int);
 fmt_impls!(UInt);
 
 /// The error type returned when a checked integral type conversion fails.
+#[derive(Clone, Debug, PartialEq)]
 pub struct TryFromIntError {
     _private: (),
 }
@@ -329,5 +490,51 @@ mod tests {
         assert_eq!(MAX_SAFE_INT, 9007199254740991);
         assert_eq!(MIN_SAFE_INT, -9007199254740991);
         assert_eq!(MAX_SAFE_UINT, 9007199254740991);
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+mod serde_tests {
+    use core::convert::TryFrom;
+
+    use serde_json::{from_str, to_string};
+
+    use super::{Int, UInt};
+
+    #[test]
+    fn serialize_int() {
+        assert_eq!(to_string(&Int::try_from(100i64).unwrap()).unwrap(), "100");
+        assert_eq!(to_string(&Int::try_from(100u64).unwrap()).unwrap(), "100");
+        assert_eq!(to_string(&Int::try_from(0i64).unwrap()).unwrap(), "0");
+        assert_eq!(to_string(&Int::try_from(0u64).unwrap()).unwrap(), "0");
+        assert_eq!(to_string(&Int::try_from(-100i64).unwrap()).unwrap(), "-100");
+    }
+
+    #[test]
+    fn deserialize_int() {
+        assert_eq!(from_str::<Int>("100").unwrap(), Int::try_from(100i64).unwrap());
+        assert_eq!(from_str::<Int>("100").unwrap(), Int::try_from(100u64).unwrap());
+        assert_eq!(from_str::<Int>("0").unwrap(), Int::try_from(0i64).unwrap());
+        assert_eq!(from_str::<Int>("0").unwrap(), Int::try_from(0u64).unwrap());
+        assert_eq!(from_str::<Int>("-100").unwrap(), Int::try_from(-100i64).unwrap());
+        assert!(from_str::<Int>("9007199254740992").is_err());
+        assert!(from_str::<Int>("-9007199254740992").is_err());
+    }
+
+    #[test]
+    fn serialize_uint() {
+        assert_eq!(to_string(&UInt::try_from(100i64).unwrap()).unwrap(), "100");
+        assert_eq!(to_string(&UInt::try_from(100u64).unwrap()).unwrap(), "100");
+        assert_eq!(to_string(&UInt::try_from(0i64).unwrap()).unwrap(), "0");
+        assert_eq!(to_string(&UInt::try_from(0u64).unwrap()).unwrap(), "0");
+    }
+
+    #[test]
+    fn deserialize_uint() {
+        assert_eq!(from_str::<UInt>("100").unwrap(), UInt::try_from(100i64).unwrap());
+        assert_eq!(from_str::<UInt>("100").unwrap(), UInt::try_from(100u64).unwrap());
+        assert_eq!(from_str::<UInt>("0").unwrap(), UInt::try_from(0i64).unwrap());
+        assert_eq!(from_str::<UInt>("0").unwrap(), UInt::try_from(0u64).unwrap());
+        assert!(from_str::<UInt>("9007199254740992").is_err());
     }
 }
