@@ -38,7 +38,7 @@ impl Int {
     /// Returns the smallest value that can be represented by this integer type.
     pub const fn min_value() -> i64 {
         MIN_SAFE_INT
-}
+    }
 
     /// Returns the largest value that can be represented by this integer type.
     pub const fn max_value() -> i64 {
@@ -104,7 +104,7 @@ impl UInt {
     /// Returns the smallest value that can be represented by this integer type.
     pub const fn min_value() -> u64 {
         0
-}
+    }
 
     /// Returns the largest value that can be represented by this integer type.
     pub const fn max_value() -> u64 {
@@ -241,6 +241,84 @@ macro_rules! convert_impls {
 
 convert_impls!(Int, i8, i16, i32, i64);
 convert_impls!(UInt, u8, u16, u32, u64);
+
+impl From<u8> for Int {
+    fn from(val: u8) -> Self {
+        Self(val as i64)
+    }
+}
+
+impl From<u16> for Int {
+    fn from(val: u16) -> Self {
+        Self(val as i64)
+    }
+}
+
+impl From<u32> for Int {
+    fn from(val: u32) -> Self {
+        Self(val as i64)
+    }
+}
+
+impl TryFrom<u64> for Int {
+    type Error = TryFromIntError;
+
+    fn try_from(val: u64) -> Result<Self, TryFromIntError> {
+        if val <= MAX_SAFE_UINT {
+            Ok(Self(val as i64))
+        } else {
+            Err(TryFromIntError::new())
+        }
+    }
+}
+
+impl TryFrom<i8> for UInt {
+    type Error = TryFromIntError;
+
+    fn try_from(val: i8) -> Result<Self, TryFromIntError> {
+        if val >= 0 {
+            Ok(Self(val as u64))
+        } else {
+            Err(TryFromIntError::new())
+        }
+    }
+}
+
+impl TryFrom<i16> for UInt {
+    type Error = TryFromIntError;
+
+    fn try_from(val: i16) -> Result<Self, TryFromIntError> {
+        if val >= 0 {
+            Ok(Self(val as u64))
+        } else {
+            Err(TryFromIntError::new())
+        }
+    }
+}
+
+impl TryFrom<i32> for UInt {
+    type Error = TryFromIntError;
+
+    fn try_from(val: i32) -> Result<Self, TryFromIntError> {
+        if val >= 0 {
+            Ok(Self(val as u64))
+        } else {
+            Err(TryFromIntError::new())
+        }
+    }
+}
+
+impl TryFrom<i64> for UInt {
+    type Error = TryFromIntError;
+
+    fn try_from(val: i64) -> Result<Self, TryFromIntError> {
+        if val >= 0 && val <= MAX_SAFE_INT {
+            Ok(Self(val as u64))
+        } else {
+            Err(TryFromIntError::new())
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
