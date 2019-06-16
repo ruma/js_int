@@ -28,7 +28,7 @@ use core::{
     convert::{From, TryFrom},
     fmt::{self, Debug, Display, Formatter},
     num::TryFromIntError as StdTryFromIntError,
-    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign},
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Rem, RemAssign, Sub, SubAssign},
 };
 
 #[cfg(feature = "serde")]
@@ -102,6 +102,7 @@ int_op_impl!(Add, add, AddAssign, add_assign);
 int_op_impl!(Sub, sub, SubAssign, sub_assign);
 int_op_impl!(Mul, mul, MulAssign, mul_assign);
 int_op_impl!(Div, div, DivAssign, div_assign);
+int_op_impl!(Rem, rem, RemAssign, rem_assign);
 
 #[cfg(feature = "serde")]
 impl<'de> Deserialize<'de> for Int {
@@ -251,6 +252,7 @@ uint_op_impl!(Add, add, AddAssign, add_assign);
 uint_op_impl!(Sub, sub, SubAssign, sub_assign);
 uint_op_impl!(Mul, mul, MulAssign, mul_assign);
 uint_op_impl!(Div, div, DivAssign, div_assign);
+uint_op_impl!(Rem, rem, RemAssign, rem_assign);
 
 #[cfg(feature = "serde")]
 impl<'de> Deserialize<'de> for UInt {
