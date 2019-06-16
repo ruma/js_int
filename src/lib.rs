@@ -418,6 +418,12 @@ macro_rules! convert_impls {
                 val.0
             }
         }
+
+        impl From<$type> for f64 {
+            fn from(val: $type) -> Self {
+                val.0 as f64
+            }
+        }
     };
 }
 
