@@ -5,6 +5,6 @@ before_script:
   - "rustup component add clippy"
 script:
   - "cargo fmt --all -- --check"
-  - "cargo clippy --all-targets --all-features -- -D warnings"
-  - "cargo build --all-features --verbose"
-  - "cargo test --all-features --verbose"
+  - "cargo clippy --all --all-targets --all-features -- -D warnings"
+  - "cargo test --all --no-default-features --verbose"
+  - "cargo test --all --all-features --verbose"
