@@ -37,12 +37,12 @@ use core::fmt::Result as FmtResult;
 use serde::{de::Visitor, Deserialize, Deserializer, Serialize};
 
 /// The largest integer value that can be represented exactly by an f64.
-pub const MAX_SAFE_INT: i64 = 0x1FFFFFFFFFFFFF;
+pub const MAX_SAFE_INT: i64 = 0x001F_FFFF_FFFF_FFFF;
 /// The smallest integer value that can be represented exactly by an f64.
 pub const MIN_SAFE_INT: i64 = -MAX_SAFE_INT;
 
 /// The same as `MAX_SAFE_INT`, but with `u64` as the type.
-pub const MAX_SAFE_UINT: u64 = 0x1FFFFFFFFFFFFF;
+pub const MAX_SAFE_UINT: u64 = 0x001F_FFFF_FFFF_FFFF;
 
 /// An integer limited to the range of integers that can be represented exactly by an f64.
 #[derive(Clone, Copy, Default, Hash, PartialEq, Eq)]
@@ -109,7 +109,7 @@ int_op_impl!(Div, div, DivAssign, div_assign);
 impl<'de> Deserialize<'de> for Int {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
-        D: Deserializer<'de>
+        D: Deserializer<'de>,
     {
         struct IntVisitor;
 
@@ -122,56 +122,56 @@ impl<'de> Deserialize<'de> for Int {
 
             fn visit_i8<E>(self, value: i8) -> Result<Self::Value, E>
             where
-                E: serde::de::Error
+                E: serde::de::Error,
             {
                 Ok(Int(i64::from(value)))
             }
 
             fn visit_i16<E>(self, value: i16) -> Result<Self::Value, E>
             where
-                E: serde::de::Error
+                E: serde::de::Error,
             {
                 Ok(Int(i64::from(value)))
             }
 
             fn visit_i32<E>(self, value: i32) -> Result<Self::Value, E>
             where
-                E: serde::de::Error
+                E: serde::de::Error,
             {
                 Ok(Int(i64::from(value)))
             }
 
             fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E>
             where
-                E: serde::de::Error
+                E: serde::de::Error,
             {
                 Ok(Int::try_from(value).map_err(|_| E::custom("out of bounds"))?)
             }
 
             fn visit_u8<E>(self, value: u8) -> Result<Self::Value, E>
             where
-                E: serde::de::Error
+                E: serde::de::Error,
             {
                 Ok(Int::try_from(value).map_err(|_| E::custom("out of bounds"))?)
             }
 
             fn visit_u16<E>(self, value: u16) -> Result<Self::Value, E>
             where
-                E: serde::de::Error
+                E: serde::de::Error,
             {
                 Ok(Int::try_from(value).map_err(|_| E::custom("out of bounds"))?)
             }
 
             fn visit_u32<E>(self, value: u32) -> Result<Self::Value, E>
             where
-                E: serde::de::Error
+                E: serde::de::Error,
             {
                 Ok(Int::try_from(value).map_err(|_| E::custom("out of bounds"))?)
             }
 
             fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
             where
-                E: serde::de::Error
+                E: serde::de::Error,
             {
                 Ok(Int::try_from(value).map_err(|_| E::custom("out of bounds"))?)
             }
@@ -258,7 +258,7 @@ uint_op_impl!(Div, div, DivAssign, div_assign);
 impl<'de> Deserialize<'de> for UInt {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
-        D: Deserializer<'de>
+        D: Deserializer<'de>,
     {
         struct UIntVisitor;
 
@@ -271,56 +271,56 @@ impl<'de> Deserialize<'de> for UInt {
 
             fn visit_i8<E>(self, value: i8) -> Result<Self::Value, E>
             where
-                E: serde::de::Error
+                E: serde::de::Error,
             {
                 Ok(UInt::try_from(value).map_err(|_| E::custom("out of bounds"))?)
             }
 
             fn visit_i16<E>(self, value: i16) -> Result<Self::Value, E>
             where
-                E: serde::de::Error
+                E: serde::de::Error,
             {
                 Ok(UInt::try_from(value).map_err(|_| E::custom("out of bounds"))?)
             }
 
             fn visit_i32<E>(self, value: i32) -> Result<Self::Value, E>
             where
-                E: serde::de::Error
+                E: serde::de::Error,
             {
                 Ok(UInt::try_from(value).map_err(|_| E::custom("out of bounds"))?)
             }
 
             fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E>
             where
-                E: serde::de::Error
+                E: serde::de::Error,
             {
                 Ok(UInt::try_from(value).map_err(|_| E::custom("out of bounds"))?)
             }
 
             fn visit_u8<E>(self, value: u8) -> Result<Self::Value, E>
             where
-                E: serde::de::Error
+                E: serde::de::Error,
             {
                 Ok(UInt(u64::from(value)))
             }
 
             fn visit_u16<E>(self, value: u16) -> Result<Self::Value, E>
             where
-                E: serde::de::Error
+                E: serde::de::Error,
             {
                 Ok(UInt(u64::from(value)))
             }
 
             fn visit_u32<E>(self, value: u32) -> Result<Self::Value, E>
             where
-                E: serde::de::Error
+                E: serde::de::Error,
             {
                 Ok(UInt(u64::from(value)))
             }
 
             fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
             where
-                E: serde::de::Error
+                E: serde::de::Error,
             {
                 Ok(UInt::try_from(value).map_err(|_| E::custom("out of bounds"))?)
             }
@@ -365,19 +365,19 @@ macro_rules! convert_impls {
     ($type:ident, $t8:ident, $t16:ident, $t32:ident, $t64:ident) => {
         impl From<$t8> for $type {
             fn from(val: $t8) -> Self {
-                Self(val as $t64)
+                Self($t64::from(val))
             }
         }
 
         impl From<$t16> for $type {
             fn from(val: $t16) -> Self {
-                Self(val as $t64)
+                Self($t64::from(val))
             }
         }
 
         impl From<$t32> for $type {
             fn from(val: $t32) -> Self {
-                Self(val as $t64)
+                Self($t64::from(val))
             }
         }
 
@@ -385,7 +385,7 @@ macro_rules! convert_impls {
             type Error = TryFromIntError;
 
             fn try_from(val: $t64) -> Result<Self, TryFromIntError> {
-                Self::new(val).ok_or_else(|| TryFromIntError::new())
+                Self::new(val).ok_or_else(TryFromIntError::new)
             }
         }
 
@@ -426,19 +426,19 @@ convert_impls!(UInt, u8, u16, u32, u64);
 
 impl From<u8> for Int {
     fn from(val: u8) -> Self {
-        Self(val as i64)
+        Self(i64::from(val))
     }
 }
 
 impl From<u16> for Int {
     fn from(val: u16) -> Self {
-        Self(val as i64)
+        Self(i64::from(val))
     }
 }
 
 impl From<u32> for Int {
     fn from(val: u32) -> Self {
-        Self(val as i64)
+        Self(i64::from(val))
     }
 }
 
@@ -508,9 +508,9 @@ mod tests {
 
     #[test]
     fn limits() {
-        assert_eq!(MAX_SAFE_INT, 9007199254740991);
-        assert_eq!(MIN_SAFE_INT, -9007199254740991);
-        assert_eq!(MAX_SAFE_UINT, 9007199254740991);
+        assert_eq!(MAX_SAFE_INT, 9_007_199_254_740_991);
+        assert_eq!(MIN_SAFE_INT, -9_007_199_254_740_991);
+        assert_eq!(MAX_SAFE_UINT, 9_007_199_254_740_991);
     }
 }
 
@@ -533,11 +533,20 @@ mod serde_tests {
 
     #[test]
     fn deserialize_int() {
-        assert_eq!(from_str::<Int>("100").unwrap(), Int::try_from(100i64).unwrap());
-        assert_eq!(from_str::<Int>("100").unwrap(), Int::try_from(100u64).unwrap());
+        assert_eq!(
+            from_str::<Int>("100").unwrap(),
+            Int::try_from(100i64).unwrap()
+        );
+        assert_eq!(
+            from_str::<Int>("100").unwrap(),
+            Int::try_from(100u64).unwrap()
+        );
         assert_eq!(from_str::<Int>("0").unwrap(), Int::try_from(0i64).unwrap());
         assert_eq!(from_str::<Int>("0").unwrap(), Int::try_from(0u64).unwrap());
-        assert_eq!(from_str::<Int>("-100").unwrap(), Int::try_from(-100i64).unwrap());
+        assert_eq!(
+            from_str::<Int>("-100").unwrap(),
+            Int::try_from(-100i64).unwrap()
+        );
         assert!(from_str::<Int>("9007199254740992").is_err());
         assert!(from_str::<Int>("-9007199254740992").is_err());
     }
@@ -552,10 +561,22 @@ mod serde_tests {
 
     #[test]
     fn deserialize_uint() {
-        assert_eq!(from_str::<UInt>("100").unwrap(), UInt::try_from(100i64).unwrap());
-        assert_eq!(from_str::<UInt>("100").unwrap(), UInt::try_from(100u64).unwrap());
-        assert_eq!(from_str::<UInt>("0").unwrap(), UInt::try_from(0i64).unwrap());
-        assert_eq!(from_str::<UInt>("0").unwrap(), UInt::try_from(0u64).unwrap());
+        assert_eq!(
+            from_str::<UInt>("100").unwrap(),
+            UInt::try_from(100i64).unwrap()
+        );
+        assert_eq!(
+            from_str::<UInt>("100").unwrap(),
+            UInt::try_from(100u64).unwrap()
+        );
+        assert_eq!(
+            from_str::<UInt>("0").unwrap(),
+            UInt::try_from(0i64).unwrap()
+        );
+        assert_eq!(
+            from_str::<UInt>("0").unwrap(),
+            UInt::try_from(0u64).unwrap()
+        );
         assert!(from_str::<UInt>("9007199254740992").is_err());
     }
 }
