@@ -17,5 +17,9 @@ respectively. These types add bounds checking to ensure the contained value is
 within the range representable by a JavaScript `Number`. They provide useful
 trait implementations to easily convert from Rust's primitive integer types.
 
-This crate is unconditionally `no_std`-compatible and supports
-(De-)Serialization via `serde` (enable the feature `serde` if you want this).
+This crate is `no_std`-compatible with `default-features = false`. This will
+disable the `std` feature, which at the time of writing will only omit the
+implementation of `std::error::Error` for `TryFromIntError`.
+
+(De-)Serialization via `serde` is supported via the `serde` feature, even
+without the `std` feature.

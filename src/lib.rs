@@ -19,9 +19,10 @@
 //!
 //! * `serde`: Serialization and deserialization support via [serde](https://serde.rs). Disabled by
 //! default. `js_int` is still `#![no_std]`-compatible with this feature enabled.
+//! * `std`: Enable `impl std::error::Error for TryFromIntError`. Enabled by default.
 
 #![deny(missing_debug_implementations, missing_docs, warnings)]
-#![no_std]
+#![cfg_attr(not(feature = "std"), no_std)]
 
 use core::{
     convert::{From, TryFrom},
@@ -347,7 +348,7 @@ fmt_impls!(Int);
 fmt_impls!(UInt);
 
 /// The error type returned when a checked integral type conversion fails.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone)]
 pub struct TryFromIntError {
     _private: (),
 }
@@ -357,6 +358,21 @@ impl TryFromIntError {
         Self { _private: () }
     }
 }
+
+impl Display for TryFromIntError {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        f.write_str("out of range integral type conversion attempted")
+    }
+}
+
+impl Debug for TryFromIntError {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        f.write_str("TryFromIntError")
+    }
+}
+
+#[cfg(feature = "std")]
+impl std::error::Error for TryFromIntError {}
 
 macro_rules! convert_impls {
     ($type:ident, $t8:ident, $t16:ident, $t32:ident, $t64:ident) => {
