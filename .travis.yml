@@ -11,4 +11,4 @@ script:
   # Almost all tests with std features enabled
   - "cargo test --all --all-features --verbose"
   # Remaining tests (that require cfg(not(debug_assertions)))
-  - "cargo test --releae --verbose"
+  - "cargo test --release --verbose"
