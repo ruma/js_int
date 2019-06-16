@@ -535,6 +535,10 @@ mod tests {
         assert_eq!(MAX_SAFE_INT, 9_007_199_254_740_991);
         assert_eq!(MIN_SAFE_INT, -9_007_199_254_740_991);
         assert_eq!(MAX_SAFE_UINT, 9_007_199_254_740_991);
+
+        assert_eq!(f64::from(INT_MIN) as i64, MIN_SAFE_INT);
+        assert_eq!(f64::from(INT_MAX) as i64, MAX_SAFE_INT);
+        assert_eq!(f64::from(UINT_MAX) as u64, MAX_SAFE_UINT);
     }
 
     #[test]
@@ -550,6 +554,11 @@ mod tests {
     }
 
     #[test]
+    fn uint_wrapping_new() {
+        assert_eq!(UInt::new_wrapping(MAX_SAFE_UINT + 1), UInt::from(0u32));
+    }
+
+    #[test]
     #[cfg_attr(debug_assertions, ignore)]
     fn uint_underflow_wrap() {
         assert_eq!(UInt::from(0u32) - UInt::from(1u32), UINT_MAX);
@@ -558,7 +567,6 @@ mod tests {
     #[test]
     #[cfg_attr(debug_assertions, ignore)]
     fn uint_overflow_wrap() {
-        assert_eq!(UInt::new_wrapping(MAX_SAFE_UINT + 1), UInt::from(0u32));
         assert_eq!(UINT_MAX + UInt::from(1u32), UInt::from(0u32));
         assert_eq!(UINT_MAX + UInt::from(5u32), UInt::from(4u32));
     }
