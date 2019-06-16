@@ -28,7 +28,7 @@ use core::{
     convert::{From, TryFrom},
     fmt::{self, Debug, Display, Formatter},
     num::TryFromIntError as StdTryFromIntError,
-    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Rem, RemAssign, Sub, SubAssign},
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign},
 };
 
 #[cfg(feature = "serde")]
@@ -103,6 +103,14 @@ int_op_impl!(Sub, sub, SubAssign, sub_assign);
 int_op_impl!(Mul, mul, MulAssign, mul_assign);
 int_op_impl!(Div, div, DivAssign, div_assign);
 int_op_impl!(Rem, rem, RemAssign, rem_assign);
+
+impl Neg for Int {
+    type Output = Self;
+
+    fn neg(self) -> Self {
+        Self(-self.0)
+    }
+}
 
 #[cfg(feature = "serde")]
 impl<'de> Deserialize<'de> for Int {
