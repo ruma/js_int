@@ -6,5 +6,9 @@ before_script:
 script:
   - "cargo fmt --all -- --check"
   - "cargo clippy --all --all-targets --all-features -- -D warnings"
+  # Almost all tests without std / no_std mode
   - "cargo test --all --no-default-features --verbose"
+  # Almost all tests with std features enabled
   - "cargo test --all --all-features --verbose"
+  # Remaining tests (that require cfg(not(debug_assertions)))
+  - "cargo test --releae --verbose"

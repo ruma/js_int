@@ -523,12 +523,57 @@ impl TryFrom<i64> for UInt {
 
 #[cfg(test)]
 mod tests {
-    use super::{MAX_SAFE_INT, MAX_SAFE_UINT, MIN_SAFE_INT};
+    use super::{Int, UInt, MAX_SAFE_INT, MAX_SAFE_UINT, MIN_SAFE_INT};
+
+    const INT_MIN: Int = Int(MIN_SAFE_INT);
+    const INT_MAX: Int = Int(MAX_SAFE_INT);
+
+    const UINT_MAX: UInt = UInt(MAX_SAFE_UINT);
 
     #[test]
     fn limits() {
         assert_eq!(MAX_SAFE_INT, 9_007_199_254_740_991);
         assert_eq!(MIN_SAFE_INT, -9_007_199_254_740_991);
         assert_eq!(MAX_SAFE_UINT, 9_007_199_254_740_991);
+    }
+
+    #[test]
+    #[should_panic]
+    fn int_underflow_panic() {
+        let _ = INT_MIN - Int::from(1);
+    }
+
+    #[test]
+    #[should_panic]
+    fn int_overflow_panic() {
+        let _ = INT_MAX + Int::from(1);
+    }
+
+    #[test]
+    #[cfg_attr(debug_assertions, ignore)]
+    fn uint_underflow_wrap() {
+        assert_eq!(UInt::from(0u32) - UInt::from(1u32), UINT_MAX);
+    }
+
+    #[test]
+    #[cfg_attr(debug_assertions, ignore)]
+    fn uint_overflow_wrap() {
+        assert_eq!(UInt::new_wrapping(MAX_SAFE_UINT + 1), UInt::from(0u32));
+        assert_eq!(UINT_MAX + UInt::from(1u32), UInt::from(0u32));
+        assert_eq!(UINT_MAX + UInt::from(5u32), UInt::from(4u32));
+    }
+
+    #[test]
+    #[should_panic]
+    #[cfg_attr(not(debug_assertions), ignore)]
+    fn uint_underflow_panic() {
+        let _ = UInt::from(0u32) - UInt::from(1u32);
+    }
+
+    #[test]
+    #[should_panic]
+    #[cfg_attr(not(debug_assertions), ignore)]
+    fn uint_overflow_panic() {
+        let _ = UINT_MAX + UInt::from(1u32);
     }
 }
