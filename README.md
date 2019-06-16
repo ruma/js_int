@@ -16,3 +16,6 @@ This crate provides the types `Int` and `UInt` which wrap `i64` and `u64`,
 respectively. These types add bounds checking to ensure the contained value is
 within the range representable by a JavaScript `Number`. They provide useful
 trait implementations to easily convert from Rust's primitive integer types.
+
+This crate is unconditionally `no_std`-compatible and supports
+(De-)Serialization via `serde` (enable the feature `serde` if you want this).
