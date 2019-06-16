@@ -124,21 +124,21 @@ impl<'de> Deserialize<'de> for Int {
             where
                 E: serde::de::Error,
             {
-                Ok(Int(i64::from(value)))
+                Ok(Int::from(value))
             }
 
             fn visit_i16<E>(self, value: i16) -> Result<Self::Value, E>
             where
                 E: serde::de::Error,
             {
-                Ok(Int(i64::from(value)))
+                Ok(Int::from(value))
             }
 
             fn visit_i32<E>(self, value: i32) -> Result<Self::Value, E>
             where
                 E: serde::de::Error,
             {
-                Ok(Int(i64::from(value)))
+                Ok(Int::from(value))
             }
 
             fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E>
@@ -152,21 +152,21 @@ impl<'de> Deserialize<'de> for Int {
             where
                 E: serde::de::Error,
             {
-                Ok(Int::try_from(value).map_err(|_| E::custom("out of bounds"))?)
+                Ok(Int::from(value))
             }
 
             fn visit_u16<E>(self, value: u16) -> Result<Self::Value, E>
             where
                 E: serde::de::Error,
             {
-                Ok(Int::try_from(value).map_err(|_| E::custom("out of bounds"))?)
+                Ok(Int::from(value))
             }
 
             fn visit_u32<E>(self, value: u32) -> Result<Self::Value, E>
             where
                 E: serde::de::Error,
             {
-                Ok(Int::try_from(value).map_err(|_| E::custom("out of bounds"))?)
+                Ok(Int::from(value))
             }
 
             fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
@@ -301,21 +301,21 @@ impl<'de> Deserialize<'de> for UInt {
             where
                 E: serde::de::Error,
             {
-                Ok(UInt(u64::from(value)))
+                Ok(UInt::from(value))
             }
 
             fn visit_u16<E>(self, value: u16) -> Result<Self::Value, E>
             where
                 E: serde::de::Error,
             {
-                Ok(UInt(u64::from(value)))
+                Ok(UInt::from(value))
             }
 
             fn visit_u32<E>(self, value: u32) -> Result<Self::Value, E>
             where
                 E: serde::de::Error,
             {
-                Ok(UInt(u64::from(value)))
+                Ok(UInt::from(value))
             }
 
             fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
