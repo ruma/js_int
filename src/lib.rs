@@ -31,9 +31,6 @@ use core::{
 };
 
 #[cfg(feature = "serde")]
-use core::fmt::Result as FmtResult;
-
-#[cfg(feature = "serde")]
 use serde::{de::Visitor, Deserialize, Deserializer, Serialize};
 
 /// The largest integer value that can be represented exactly by an f64.
@@ -116,7 +113,7 @@ impl<'de> Deserialize<'de> for Int {
         impl<'de> Visitor<'de> for IntVisitor {
             type Value = Int;
 
-            fn expecting(&self, formatter: &mut Formatter) -> FmtResult {
+            fn expecting(&self, formatter: &mut Formatter) -> fmt::Result {
                 formatter.write_str("a signed integer between -(2**53) + 1 and (2**53) - 1")
             }
 
@@ -265,7 +262,7 @@ impl<'de> Deserialize<'de> for UInt {
         impl<'de> Visitor<'de> for UIntVisitor {
             type Value = UInt;
 
-            fn expecting(&self, formatter: &mut Formatter) -> FmtResult {
+            fn expecting(&self, formatter: &mut Formatter) -> fmt::Result {
                 formatter.write_str("an unsigned integer between 0 and (2**53) - 1")
             }
 
