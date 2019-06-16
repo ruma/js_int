@@ -1,8 +1,14 @@
 [package]
 name = "js_int"
+description = "JavaScript-interoperable integer types"
 version = "0.1.0"
 authors = ["Jonas Platte <jplatte+git@posteo.de>"]
 edition = "2018"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/jplatte/js_int.git"
+keywords = ["integer", "no_std"]
+categories = ["no-std"]
 
 [dependencies.serde]
 version = "1.0"
@@ -13,6 +19,10 @@ features = ["derive"]
 [features]
 default = ["std"]
 std = []
+
+[badges.travis-ci]
+repository = "jplatte/js_int"
+branch = "master"
 
 [workspace]
 members = ["ext_tests"]
