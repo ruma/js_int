@@ -153,17 +153,17 @@ impl Int {
         Self(MAX_SAFE_INT)
     }
 
-    /// Computes the absolute value of self.
+    /// Computes the absolute value of `self`.
     pub fn abs(self) -> Self {
         Self(self.0.abs())
     }
 
-    /// Returns true if self is positive and false if the number is zero or negative.
+    /// Returns `true` if `self` is positive and `false` if the number is zero or negative.
     pub const fn is_positive(self) -> bool {
         self.0.is_positive()
     }
 
-    /// Returns true if self is negative and false if the number is zero or positive.
+    /// Returns `true` if `self` is negative and `false` if the number is zero or positive.
     pub const fn is_negative(self) -> bool {
         self.0.is_negative()
     }
