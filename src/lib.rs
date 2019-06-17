@@ -42,77 +42,6 @@ pub const MIN_SAFE_INT: i64 = -MAX_SAFE_INT;
 /// The same as `MAX_SAFE_INT`, but with `u64` as the type.
 pub const MAX_SAFE_UINT: u64 = 0x001F_FFFF_FFFF_FFFF;
 
-macro_rules! common_methods {
-    () => {
-        // TODO:
-        //pub fn from_str_radix(src: &str, radix: u32) -> Result<Self, ParseIntError>
-
-        /// Checked integer addition. Computes `self + rhs`, returning `None` if overflow
-        /// occurred.
-        pub fn checked_add(self, rhs: Self) -> Option<Self> {
-            self.0.checked_add(rhs.0).and_then(Self::new)
-        }
-
-        /// Checked integer subtraction. Computes `self - rhs`, returning `None` if overflow
-        /// occurred.
-        pub fn checked_sub(self, rhs: Self) -> Option<Self> {
-            self.0.checked_sub(rhs.0).and_then(Self::new)
-        }
-
-        /// Checked integer multiplication. Computes `self * rhs`, returning `None` if overflow
-        /// occurred.
-        pub fn checked_mul(self, rhs: Self) -> Option<Self> {
-            self.0.checked_mul(rhs.0).and_then(Self::new)
-        }
-
-        /// Checked integer division. Computes `self / rhs`, returning `None` if `rhs == 0`.
-        pub fn checked_div(self, rhs: Self) -> Option<Self> {
-            // TODO: Range checks from Self::new shouldn't be necessary here since this type
-            // has MIN_VALUE = -MAX_VALUE, different from i8, i16, i32, i64. There needs to be
-            // a test before implementing this though.
-            self.0.checked_div(rhs.0).and_then(Self::new)
-        }
-
-        /// Checked integer remainder. Computes `self % rhs`, returning `None` if `rhs == 0`.
-        pub fn checked_rem(self, rhs: Self) -> Option<Self> {
-            // Comment from checked_div also applies here
-            self.0.checked_rem(rhs.0).and_then(Self::new)
-        }
-
-        /// Checked exponentiation. Computes `self.pow(exp)`, returning `None` if overflow or
-        /// underflow occurred.
-        pub fn checked_pow(self, exp: u32) -> Option<Self> {
-            self.0.checked_pow(exp).and_then(Self::new)
-        }
-
-        /// Saturating integer addition. Computes `self + rhs`, saturating at the numeric bounds
-        /// instead of overflowing.
-        pub fn saturating_add(self, rhs: Self) -> Self {
-            self.checked_add(rhs).unwrap_or_else(Self::max_value)
-        }
-
-        /// Saturating integer subtraction. Computes `self - rhs`, saturating at the numeric
-        /// bounds instead of underflowing.
-        pub fn saturating_sub(self, rhs: Self) -> Self {
-            self.checked_sub(rhs).unwrap_or_else(Self::min_value)
-        }
-
-        /// Saturating integer multiplication. Computes `self * rhs`, saturating at the numeric
-        /// bounds instead of overflowing.
-        pub fn saturating_mul(self, rhs: Self) -> Self {
-            self.checked_mul(rhs).unwrap_or_else(Self::max_value)
-        }
-
-        /// Saturating integer exponentiation. Computes `self.pow(exp)`, saturating at the
-        /// numeric bounds instead of overflowing or underflowing.
-        pub fn saturating_pow(self, exp: u32) -> Self {
-            Self::new_saturating(self.0.saturating_pow(exp))
-        }
-
-        // TODO: wrapping_* methods, overflowing_* methods
-    };
-}
-
 /// An integer limited to the range of integers that can be represented exactly by an f64.
 #[derive(Clone, Copy, Default, Hash, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
@@ -143,6 +72,9 @@ impl Int {
         }
     }
 
+    // TODO:
+    //pub fn from_str_radix(src: &str, radix: u32) -> Result<Self, ParseIntError>
+
     /// Returns the smallest value that can be represented by this integer type.
     pub const fn min_value() -> Self {
         Self(MIN_SAFE_INT)
@@ -154,6 +86,19 @@ impl Int {
     }
 
     /// Computes the absolute value of `self`.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::Int;
+    /// assert_eq!(Int::from(10).abs(), Int::from(10));
+    /// assert_eq!(Int::from(-10).abs(), Int::from(10));
+    ///
+    /// // Differently from i8 / i16 / i32 / i128, Int's min_value is its max_value negated
+    /// assert_eq!(Int::min_value().abs(), Int::max_value());
+    /// ```
     pub fn abs(self) -> Self {
         Self(self.0.abs())
     }
@@ -168,7 +113,86 @@ impl Int {
         self.0.is_negative()
     }
 
-    common_methods!();
+    /// Checked integer addition. Computes `self + rhs`, returning `None` if overflow
+    /// occurred.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::Int;
+    /// assert_eq!(
+    ///     (Int::max_value() - Int::from(1)).checked_add(Int::from(1)),
+    ///     Some(Int::max_value())
+    /// );
+    ///
+    /// assert_eq!(
+    ///     (Int::max_value() - Int::from(1)).checked_add(Int::from(2)),
+    ///     None
+    /// );
+    /// ```
+    pub fn checked_add(self, rhs: Self) -> Option<Self> {
+        self.0.checked_add(rhs.0).and_then(Self::new)
+    }
+
+    /// Checked integer subtraction. Computes `self - rhs`, returning `None` if overflow
+    /// occurred.
+    pub fn checked_sub(self, rhs: Self) -> Option<Self> {
+        self.0.checked_sub(rhs.0).and_then(Self::new)
+    }
+
+    /// Checked integer multiplication. Computes `self * rhs`, returning `None` if overflow
+    /// occurred.
+    pub fn checked_mul(self, rhs: Self) -> Option<Self> {
+        self.0.checked_mul(rhs.0).and_then(Self::new)
+    }
+
+    /// Checked integer division. Computes `self / rhs`, returning `None` if `rhs == 0`.
+    pub fn checked_div(self, rhs: Self) -> Option<Self> {
+        // TODO: Range checks from Self::new shouldn't be necessary here since this type
+        // has MIN_VALUE = -MAX_VALUE, different from i8, i16, i32, i64. There needs to be
+        // a test before implementing this though.
+        self.0.checked_div(rhs.0).and_then(Self::new)
+    }
+
+    /// Checked integer remainder. Computes `self % rhs`, returning `None` if `rhs == 0`.
+    pub fn checked_rem(self, rhs: Self) -> Option<Self> {
+        // Comment from checked_div also applies here
+        self.0.checked_rem(rhs.0).and_then(Self::new)
+    }
+
+    /// Checked exponentiation. Computes `self.pow(exp)`, returning `None` if overflow or
+    /// underflow occurred.
+    pub fn checked_pow(self, exp: u32) -> Option<Self> {
+        self.0.checked_pow(exp).and_then(Self::new)
+    }
+
+    /// Saturating integer addition. Computes `self + rhs`, saturating at the numeric bounds
+    /// instead of overflowing.
+    pub fn saturating_add(self, rhs: Self) -> Self {
+        self.checked_add(rhs).unwrap_or_else(Self::max_value)
+    }
+
+    /// Saturating integer subtraction. Computes `self - rhs`, saturating at the numeric
+    /// bounds instead of underflowing.
+    pub fn saturating_sub(self, rhs: Self) -> Self {
+        self.checked_sub(rhs).unwrap_or_else(Self::min_value)
+    }
+
+    /// Saturating integer multiplication. Computes `self * rhs`, saturating at the numeric
+    /// bounds instead of overflowing.
+    pub fn saturating_mul(self, rhs: Self) -> Self {
+        self.checked_mul(rhs).unwrap_or_else(Self::max_value)
+    }
+
+    /// Saturating integer exponentiation. Computes `self.pow(exp)`, saturating at the
+    /// numeric bounds instead of overflowing or underflowing.
+    pub fn saturating_pow(self, exp: u32) -> Self {
+        Self::new_saturating(self.0.saturating_pow(exp))
+    }
+
+    // TODO: wrapping_* methods, overflowing_* methods
 }
 
 macro_rules! int_op_impl {
@@ -343,7 +367,72 @@ impl UInt {
         self.0.checked_next_power_of_two().and_then(Self::new)
     }
 
-    common_methods!();
+    // TODO:
+    //pub fn from_str_radix(src: &str, radix: u32) -> Result<Self, ParseIntError>
+
+    /// Checked integer addition. Computes `self + rhs`, returning `None` if overflow
+    /// occurred.
+    pub fn checked_add(self, rhs: Self) -> Option<Self> {
+        self.0.checked_add(rhs.0).and_then(Self::new)
+    }
+
+    /// Checked integer subtraction. Computes `self - rhs`, returning `None` if overflow
+    /// occurred.
+    pub fn checked_sub(self, rhs: Self) -> Option<Self> {
+        self.0.checked_sub(rhs.0).and_then(Self::new)
+    }
+
+    /// Checked integer multiplication. Computes `self * rhs`, returning `None` if overflow
+    /// occurred.
+    pub fn checked_mul(self, rhs: Self) -> Option<Self> {
+        self.0.checked_mul(rhs.0).and_then(Self::new)
+    }
+
+    /// Checked integer division. Computes `self / rhs`, returning `None` if `rhs == 0`.
+    pub fn checked_div(self, rhs: Self) -> Option<Self> {
+        // TODO: Range checks from Self::new shouldn't be necessary here since this type
+        // has MIN_VALUE = -MAX_VALUE, different from i8, i16, i32, i64. There needs to be
+        // a test before implementing this though.
+        self.0.checked_div(rhs.0).and_then(Self::new)
+    }
+
+    /// Checked integer remainder. Computes `self % rhs`, returning `None` if `rhs == 0`.
+    pub fn checked_rem(self, rhs: Self) -> Option<Self> {
+        // Comment from checked_div also applies here
+        self.0.checked_rem(rhs.0).and_then(Self::new)
+    }
+
+    /// Checked exponentiation. Computes `self.pow(exp)`, returning `None` if overflow or
+    /// underflow occurred.
+    pub fn checked_pow(self, exp: u32) -> Option<Self> {
+        self.0.checked_pow(exp).and_then(Self::new)
+    }
+
+    /// Saturating integer addition. Computes `self + rhs`, saturating at the numeric bounds
+    /// instead of overflowing.
+    pub fn saturating_add(self, rhs: Self) -> Self {
+        self.checked_add(rhs).unwrap_or_else(Self::max_value)
+    }
+
+    /// Saturating integer subtraction. Computes `self - rhs`, saturating at the numeric
+    /// bounds instead of underflowing.
+    pub fn saturating_sub(self, rhs: Self) -> Self {
+        self.checked_sub(rhs).unwrap_or_else(Self::min_value)
+    }
+
+    /// Saturating integer multiplication. Computes `self * rhs`, saturating at the numeric
+    /// bounds instead of overflowing.
+    pub fn saturating_mul(self, rhs: Self) -> Self {
+        self.checked_mul(rhs).unwrap_or_else(Self::max_value)
+    }
+
+    /// Saturating integer exponentiation. Computes `self.pow(exp)`, saturating at the
+    /// numeric bounds instead of overflowing or underflowing.
+    pub fn saturating_pow(self, exp: u32) -> Self {
+        Self::new_saturating(self.0.saturating_pow(exp))
+    }
+
+    // TODO: wrapping_* methods, overflowing_* methods
 }
 
 macro_rules! uint_op_impl {
