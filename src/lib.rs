@@ -27,7 +27,7 @@
 use core::{
     convert::{From, TryFrom},
     fmt::{self, Debug, Display, Formatter},
-    num::TryFromIntError as StdTryFromIntError,
+    num::{ParseIntError as StdParseIntError, TryFromIntError as StdTryFromIntError},
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign},
 };
 
@@ -72,8 +72,42 @@ impl Int {
         }
     }
 
-    // TODO:
-    //pub fn from_str_radix(src: &str, radix: u32) -> Result<Self, ParseIntError>
+    /// Converts a string slice in a given base to an integer.
+    ///
+    /// The string is expected to be an optional `+` or `-` sign followed by digits.
+    /// Leading and trailing whitespace represent an error. Digits are a subset of these characters,
+    /// depending on `radix`:
+    ///
+    /// * `0-9`
+    /// * `a-z`
+    /// * `A-Z`
+    ///
+    /// # Panics
+    ///
+    /// This function panics if `radix` is not in the range from 2 to 36.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::Int;
+    /// assert_eq!(Int::from_str_radix("A", 16), Ok(Int::from(10)));
+    /// ```
+    pub fn from_str_radix(src: &str, radix: u32) -> Result<Self, ParseIntError> {
+        let val = i64::from_str_radix(src, radix)?;
+        if val < MIN_SAFE_INT {
+            Err(ParseIntError {
+                kind: ParseIntErrorKind::Underflow,
+            })
+        } else if val > MAX_SAFE_INT {
+            Err(ParseIntError {
+                kind: ParseIntErrorKind::Overflow,
+            })
+        } else {
+            Ok(Self(val))
+        }
+    }
 
     /// Returns the smallest value that can be represented by this integer type.
     pub const fn min_value() -> Self {
@@ -367,8 +401,38 @@ impl UInt {
         self.0.checked_next_power_of_two().and_then(Self::new)
     }
 
-    // TODO:
-    //pub fn from_str_radix(src: &str, radix: u32) -> Result<Self, ParseIntError>
+    /// Converts a string slice in a given base to an integer.
+    ///
+    /// The string is expected to be an optional `+` sign followed by digits. Leading and trailing
+    /// whitespace represent an error. Digits are a subset of these characters, depending on
+    /// `radix`:
+    ///
+    /// * `0-9`
+    /// * `a-z`
+    /// * `A-Z`
+    ///
+    /// # Panics
+    ///
+    /// This function panics if `radix` is not in the range from 2 to 36.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::from_str_radix("A", 16), Ok(UInt::from(10u32)));
+    /// ```
+    pub fn from_str_radix(src: &str, radix: u32) -> Result<Self, ParseIntError> {
+        let val = u64::from_str_radix(src, radix)?;
+        if val > MAX_SAFE_UINT {
+            Err(ParseIntError {
+                kind: ParseIntErrorKind::Overflow,
+            })
+        } else {
+            Ok(Self(val))
+        }
+    }
 
     /// Checked integer addition. Computes `self + rhs`, returning `None` if overflow
     /// occurred.
@@ -567,6 +631,43 @@ macro_rules! fmt_impls {
 
 fmt_impls!(Int);
 fmt_impls!(UInt);
+
+/// The error type returned when when parsing an integer fails.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ParseIntError {
+    kind: ParseIntErrorKind,
+}
+
+// When https://github.com/rust-lang/rust/issues/22639 is resolved, the error kind can be provided
+// publicly as well. For now, distinguishing between overflow / underflow and anything else doesn't
+// seem very useful.
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum ParseIntErrorKind {
+    Overflow,
+    Underflow,
+    Unknown(StdParseIntError),
+}
+
+impl From<StdParseIntError> for ParseIntError {
+    fn from(e: StdParseIntError) -> Self {
+        ParseIntError {
+            kind: ParseIntErrorKind::Unknown(e),
+        }
+    }
+}
+
+impl Display for ParseIntError {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        match &self.kind {
+            ParseIntErrorKind::Overflow => f.write_str("number too large to fit in target type"),
+            ParseIntErrorKind::Underflow => f.write_str("number too small to fit in target type"),
+            ParseIntErrorKind::Unknown(e) => write!(f, "{}", e),
+        }
+    }
+}
+
+#[cfg(feature = "std")]
+impl std::error::Error for ParseIntError {}
 
 /// The error type returned when a checked integral type conversion fails.
 #[derive(Clone)]
