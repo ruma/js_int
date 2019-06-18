@@ -19,7 +19,8 @@ trait implementations to easily convert from Rust's primitive integer types.
 
 This crate is `no_std`-compatible with `default-features = false`. This will
 disable the `std` feature, which at the time of writing will only omit the
-implementation of `std::error::Error` for `TryFromIntError`.
+implementations of `std::error::Error` for `ParseIntError` and
+`TryFromIntError`.
 
 (De-)Serialization via `serde` is supported via the `serde` feature, even
 without the `std` feature.

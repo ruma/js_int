@@ -19,7 +19,8 @@
 //!
 //! * `serde`: Serialization and deserialization support via [serde](https://serde.rs). Disabled by
 //! default. `js_int` is still `#![no_std]`-compatible with this feature enabled.
-//! * `std`: Enable `impl std::error::Error for TryFromIntError`. Enabled by default.
+//! * `std`: Enable `std::error::Error` implementations for `ParseIntError`, `TryFromIntError`.
+//! Enabled by default.
 
 #![deny(missing_debug_implementations, missing_docs, warnings)]
 #![cfg_attr(not(feature = "std"), no_std)]
