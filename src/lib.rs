@@ -346,7 +346,7 @@ impl<'de> Deserialize<'de> for Int {
     }
 }
 
-/// An integer limited to the range of positive integers (including zero) that can be represented
+/// An integer limited to the range of non-negative integers that can be represented
 /// exactly by an f64.
 #[derive(Clone, Copy, Default, Hash, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
