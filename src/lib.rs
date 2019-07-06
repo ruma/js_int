@@ -184,21 +184,50 @@ impl Int {
     }
 
     /// Checked integer division. Computes `self / rhs`, returning `None` if `rhs == 0`.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::Int;
+    /// assert_eq!(Int::min_value().checked_div(Int::from(-1)), Some(Int::max_value()));
+    /// assert_eq!(Int::from(1).checked_div(Int::from(0)), None);
+    /// ```
     pub fn checked_div(self, rhs: Self) -> Option<Self> {
-        // TODO: Range checks from Self::new shouldn't be necessary here since this type
-        // has MIN_VALUE = -MAX_VALUE, different from i8, i16, i32, i64. There needs to be
-        // a test before implementing this though.
-        self.0.checked_div(rhs.0).and_then(Self::new)
+        self.0.checked_div(rhs.0).map(Self)
     }
 
     /// Checked integer remainder. Computes `self % rhs`, returning `None` if `rhs == 0`.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::Int;
+    /// assert_eq!(Int::from(5).checked_rem(Int::from(2)), Some(Int::from(1)));
+    /// assert_eq!(Int::from(5).checked_rem(Int::from(0)), None);
+    /// assert_eq!(Int::min_value().checked_rem(Int::from(-1)), Some(Int::from(0)));
+    /// ```
     pub fn checked_rem(self, rhs: Self) -> Option<Self> {
-        // Comment from checked_div also applies here
-        self.0.checked_rem(rhs.0).and_then(Self::new)
+        self.0.checked_rem(rhs.0).map(Self)
     }
 
     /// Checked exponentiation. Computes `self.pow(exp)`, returning `None` if overflow or
     /// underflow occurred.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::Int;
+    /// assert_eq!(Int::from(8).checked_pow(2), Some(Int::from(64)));
+    /// assert_eq!(Int::max_value().checked_pow(2), None);
+    /// assert_eq!(Int::min_value().checked_pow(2), None);
+    /// assert_eq!(Int::from(1_000_000_000).checked_pow(2), None);
+    /// ```
     pub fn checked_pow(self, exp: u32) -> Option<Self> {
         self.0.checked_pow(exp).and_then(Self::new)
     }
