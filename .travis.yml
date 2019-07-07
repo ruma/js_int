@@ -19,10 +19,11 @@ matrix:
     - rust: nightly
 
 script:
-  - ( rustup component list | grep -q clippy ) &&
-      cargo fmt --all -- --check
-  - ( rustup component list | grep -q rustfmt ) &&
-      cargo clippy --all --all-targets --features "$ALL_FEATURES" -- -D warnings
+  - if ( rustup component list | grep -q clippy ); then cargo fmt --all -- --check; fi
+  - |
+      if ( rustup component list | grep -q rustfmt ); then
+        cargo clippy --all --all-targets --features "$ALL_FEATURES" -- -D warnings
+      fi
   # Almost all tests without std / no_std mode
   - cargo test --all --no-default-features --verbose
   # Almost all tests with std features enabled
