@@ -323,6 +323,16 @@ impl Int {
 
     /// Saturating integer addition. Computes `self + rhs`, saturating at the numeric bounds
     /// instead of overflowing.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::Int;
+    /// assert_eq!(Int::from(100).saturating_add(Int::from(1)), Int::from(101));
+    /// assert_eq!(Int::max_value().saturating_add(Int::from(1)), Int::max_value());
+    /// ```
     #[must_use]
     pub fn saturating_add(self, rhs: Self) -> Self {
         self.checked_add(rhs).unwrap_or_else(Self::max_value)
@@ -330,6 +340,16 @@ impl Int {
 
     /// Saturating integer subtraction. Computes `self - rhs`, saturating at the numeric
     /// bounds instead of underflowing.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::Int;
+    /// assert_eq!(Int::from(100).saturating_sub(Int::from(1)), Int::from(99));
+    /// assert_eq!(Int::min_value().saturating_sub(Int::from(1)), Int::min_value());
+    /// ```
     #[must_use]
     pub fn saturating_sub(self, rhs: Self) -> Self {
         self.checked_sub(rhs).unwrap_or_else(Self::min_value)
@@ -337,6 +357,18 @@ impl Int {
 
     /// Saturating integer multiplication. Computes `self * rhs`, saturating at the numeric
     /// bounds instead of overflowing.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::Int;
+    /// assert_eq!(Int::from(100).saturating_mul(Int::from(2)), Int::from(200));
+    /// assert_eq!(Int::max_value().saturating_mul(Int::from(2)), Int::max_value());
+    /// assert_eq!(Int::max_value().saturating_mul(Int::max_value()), Int::max_value());
+    /// assert_eq!(Int::max_value().saturating_mul(Int::min_value()), Int::min_value());
+    /// ```
     #[must_use]
     pub fn saturating_mul(self, rhs: Self) -> Self {
         Self::new_saturating(self.0.saturating_mul(rhs.0))
@@ -344,6 +376,18 @@ impl Int {
 
     /// Saturating integer exponentiation. Computes `self.pow(exp)`, saturating at the
     /// numeric bounds instead of overflowing or underflowing.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::Int;
+    /// assert_eq!(Int::from(5).saturating_pow(2), Int::from(25));
+    /// assert_eq!(Int::from(-2).saturating_pow(3), Int::from(-8));
+    /// assert_eq!(Int::max_value().saturating_pow(2), Int::max_value());
+    /// assert_eq!(Int::min_value().saturating_pow(2), Int::max_value());
+    /// ```
     #[must_use]
     pub fn saturating_pow(self, exp: u32) -> Self {
         Self::new_saturating(self.0.saturating_pow(exp))
