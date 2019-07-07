@@ -2,8 +2,8 @@ language: rust
 cache: cargo
 
 before_script:
-  - rustup component add rustfmt
-  - rustup component add clippy
+  - rustup component add rustfmt || true
+  - rustup component add clippy || true
 
 matrix:
   include:
@@ -11,14 +11,18 @@ matrix:
     - rust: stable
     - rust: beta
     - rust: nightly
+  allow_failure:
+    - rust: nightly
 
 script:
-  - cargo fmt --all -- --check
-  - cargo clippy --all --all-targets --all-features -- -D warnings
+  - (rustup component list | grep -q clippy) && \
+      cargo fmt --all -- --check
+  - (rustup component list | grep -q rustfmt) && \
+      cargo clippy --all --all-targets --all-features -- -D warnings
   # Almost all tests without std / no_std mode
   - cargo test --all --no-default-features --verbose
   # Almost all tests with std features enabled
-  - if [ "$TRAVIS_RUST_VERSION" = 'nightly' ]; then
+  - if [[ "$TRAVIS_RUST_VERSION" = 'nightly' ]]; then
       cargo test --all --all-features --verbose
     else
       cargo test --all --features std,serde --verbose
