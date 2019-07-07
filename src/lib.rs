@@ -54,6 +54,18 @@ impl Int {
     ///
     /// This is the same as the `TryFrom<u64>` implementation for `Int`, except that it returns
     /// an `Option` instead of a `Result`.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::Int;
+    /// assert_eq!(Int::new(js_int::MIN_SAFE_INT), Some(Int::min_value()));
+    /// assert_eq!(Int::new(js_int::MAX_SAFE_INT), Some(Int::max_value()));
+    /// assert_eq!(Int::new(js_int::MIN_SAFE_INT - 1), None);
+    /// assert_eq!(Int::new(js_int::MAX_SAFE_INT + 1), None);
+    /// ```
     pub fn new(val: i64) -> Option<Self> {
         if val >= MIN_SAFE_INT && val <= MAX_SAFE_INT {
             Some(Self(val))
@@ -387,6 +399,16 @@ impl UInt {
     ///
     /// This is the same as the `TryFrom<u64>` implementation for `UInt`, except that it returns
     /// an `Option` instead of a `Result`.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::new(js_int::MAX_SAFE_UINT), Some(UInt::max_value()));
+    /// assert_eq!(UInt::new(js_int::MAX_SAFE_UINT + 1), None);
+    /// ```
     pub fn new(val: u64) -> Option<Self> {
         if val <= MAX_SAFE_UINT {
             Some(Self(val))
@@ -396,6 +418,16 @@ impl UInt {
     }
 
     /// Create a `UInt` from the provided `u64`, wrapping at `MAX_SAFE_UINT`.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::new_wrapping(js_int::MAX_SAFE_UINT), UInt::max_value());
+    /// assert_eq!(UInt::new_wrapping(js_int::MAX_SAFE_UINT + 1), UInt::from(0u32));
+    /// ```
     pub fn new_wrapping(val: u64) -> Self {
         Self(val & MAX_SAFE_UINT)
     }
