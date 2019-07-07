@@ -1245,22 +1245,24 @@ impl TryFrom<i64> for UInt {
 #[cfg(feature = "rocket_04")]
 macro_rules! rocket_04_impls {
     ($type:ident) => {
-        impl<'v> rocket_04::FromFormValue<'v> for $type {
+        impl<'v> rocket_04::request::FromFormValue<'v> for $type {
             type Error = &'v rocket_04::http::RawStr;
 
-            fn from_form_value(form_value: &'v rocket_04::http::RawStr) -> Result<Self, Self::Error> {
-                form_value.parse::<$type>().or_else(|_| form_value)
+            fn from_form_value(
+                form_value: &'v rocket_04::http::RawStr,
+            ) -> Result<Self, Self::Error> {
+                form_value.parse::<$type>().map_err(|_| form_value)
             }
         }
 
-        impl<'r> rocket_04::FromParam<'r> for $type {
+        impl<'r> rocket_04::request::FromParam<'r> for $type {
             type Error = &'r rocket_04::http::RawStr;
 
             fn from_param(param: &'r rocket_04::http::RawStr) -> Result<Self, Self::Error> {
-                param.parse::<$type>().or_else(|_| param)
+                param.parse::<$type>().map_err(|_| param)
             }
         }
-    }
+    };
 }
 
 #[cfg(feature = "rocket_04")]
