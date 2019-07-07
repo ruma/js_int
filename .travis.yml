@@ -8,26 +8,25 @@ before_script:
 matrix:
   include:
     - rust: 1.34.2
+      env: ALL_FEATURES='std,serde'
     - rust: stable
+      env: ALL_FEATURES='std,serde'
     - rust: beta
+      env: ALL_FEATURES='std,serde'
     - rust: nightly
+      env: ALL_FEATURES='std,serde,rocket'
   allow_failure:
     - rust: nightly
 
 script:
-  - (rustup component list | grep -q clippy) &&
+  - ( rustup component list | grep -q clippy ) &&
       cargo fmt --all -- --check
-  - (rustup component list | grep -q rustfmt) &&
-      cargo clippy --all --all-targets --all-features -- -D warnings
+  - ( rustup component list | grep -q rustfmt ) &&
+      cargo clippy --all --all-targets --features "$ALL_FEATURES" -- -D warnings
   # Almost all tests without std / no_std mode
   - cargo test --all --no-default-features --verbose
   # Almost all tests with std features enabled
-  - |
-      if [[ "$TRAVIS_RUST_VERSION" = 'nightly' ]]; then
-        cargo test --all --all-features --verbose
-      else
-        cargo test --all --features std,serde --verbose
-      fi
+  - cargo test --all --features "$ALL_FEATURES" --verbose
   # Remaining tests (that require `cfg(not(debug_assertions))`)
   - cargo test --release --verbose
 
