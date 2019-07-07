@@ -339,7 +339,7 @@ impl Int {
     /// bounds instead of overflowing.
     #[must_use]
     pub fn saturating_mul(self, rhs: Self) -> Self {
-        self.checked_mul(rhs).unwrap_or_else(Self::max_value)
+        Self::new_saturating(self.0.saturating_mul(rhs.0))
     }
 
     /// Saturating integer exponentiation. Computes `self.pow(exp)`, saturating at the
