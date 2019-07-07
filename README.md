@@ -17,6 +17,8 @@ respectively. These types add bounds checking to ensure the contained value is
 within the range representable by a JavaScript `Number`. They provide useful
 trait implementations to easily convert from Rust's primitive integer types.
 
+This crate requires rustc >= 1.34.2.
+
 This crate is `no_std`-compatible with `default-features = false`. This will
 disable the `std` feature, which at the time of writing will only omit the
 implementations of `std::error::Error` for `ParseIntError` and
