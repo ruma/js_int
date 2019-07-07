@@ -624,7 +624,7 @@ impl UInt {
     /// Basic usage:
     ///
     /// ```
-    /// use js_int::UInt;
+    /// # use js_int::UInt;
     /// assert_eq!(UInt::from(2u32).checked_next_power_of_two(), Some(UInt::from(2u32)));
     /// assert_eq!(UInt::from(3u32).checked_next_power_of_two(), Some(UInt::from(4u32)));
     /// assert_eq!(UInt::max_value().checked_next_power_of_two(), None);
@@ -771,6 +771,18 @@ impl UInt {
 
     /// Checked exponentiation. Computes `self.pow(exp)`, returning `None` if overflow or
     /// underflow occurred.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::from(0u32).checked_pow(2), Some(UInt::from(0u32)));
+    /// assert_eq!(UInt::from(8u32).checked_pow(2), Some(UInt::from(64u32)));
+    /// assert_eq!(UInt::from(1_000_000_000u32).checked_pow(2), None);
+    /// assert_eq!(UInt::max_value().checked_pow(2), None);
+    /// ```
     #[must_use]
     pub fn checked_pow(self, exp: u32) -> Option<Self> {
         self.0.checked_pow(exp).and_then(Self::new)
@@ -778,6 +790,16 @@ impl UInt {
 
     /// Saturating integer addition. Computes `self + rhs`, saturating at the numeric bounds
     /// instead of overflowing.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::from(100u32).saturating_add(UInt::from(1u32)), UInt::from(101u32));
+    /// assert_eq!(UInt::max_value().saturating_add(UInt::from(1u32)), UInt::max_value());
+    /// ```
     #[must_use]
     pub fn saturating_add(self, rhs: Self) -> Self {
         self.checked_add(rhs).unwrap_or_else(Self::max_value)
@@ -785,6 +807,16 @@ impl UInt {
 
     /// Saturating integer subtraction. Computes `self - rhs`, saturating at the numeric
     /// bounds instead of underflowing.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::from(100u32).saturating_sub(UInt::from(1u32)), UInt::from(99u32));
+    /// assert_eq!(UInt::from(1u32).saturating_sub(UInt::from(2u32)), UInt::from(0u32));
+    /// ```
     #[must_use]
     pub fn saturating_sub(self, rhs: Self) -> Self {
         self.checked_sub(rhs).unwrap_or_else(Self::min_value)
@@ -792,6 +824,17 @@ impl UInt {
 
     /// Saturating integer multiplication. Computes `self * rhs`, saturating at the numeric
     /// bounds instead of overflowing.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::from(100u32).saturating_mul(UInt::from(2u32)), UInt::from(200u32));
+    /// assert_eq!(UInt::max_value().saturating_mul(UInt::from(2u32)), UInt::max_value());
+    /// assert_eq!(UInt::max_value().saturating_mul(UInt::max_value()), UInt::max_value());
+    /// ```
     #[must_use]
     pub fn saturating_mul(self, rhs: Self) -> Self {
         self.checked_mul(rhs).unwrap_or_else(Self::max_value)
@@ -799,6 +842,16 @@ impl UInt {
 
     /// Saturating integer exponentiation. Computes `self.pow(exp)`, saturating at the
     /// numeric bounds instead of overflowing or underflowing.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// use js_int::UInt;
+    /// assert_eq!(UInt::from(5u32).saturating_pow(2), UInt::from(25u32));
+    /// assert_eq!(UInt::max_value().saturating_pow(2), UInt::max_value());
+    /// ```
     #[must_use]
     pub fn saturating_pow(self, exp: u32) -> Self {
         Self::new_saturating(self.0.saturating_pow(exp))
