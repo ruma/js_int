@@ -30,6 +30,7 @@ use core::{
     fmt::{self, Debug, Display, Formatter},
     num::{ParseIntError as StdParseIntError, TryFromIntError as StdTryFromIntError},
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign},
+    str::FromStr,
 };
 
 #[cfg(feature = "serde")]
@@ -427,6 +428,25 @@ int_op_impl!(Sub, sub, SubAssign, sub_assign);
 int_op_impl!(Mul, mul, MulAssign, mul_assign);
 int_op_impl!(Div, div, DivAssign, div_assign);
 int_op_impl!(Rem, rem, RemAssign, rem_assign);
+
+impl FromStr for Int {
+    type Err = ParseIntError;
+
+    fn from_str(src: &str) -> Result<Self, Self::Err> {
+        let val = i64::from_str(src)?;
+        if val < MIN_SAFE_INT {
+            Err(ParseIntError {
+                kind: ParseIntErrorKind::Underflow,
+            })
+        } else if val > MAX_SAFE_INT {
+            Err(ParseIntError {
+                kind: ParseIntErrorKind::Overflow,
+            })
+        } else {
+            Ok(Self(val))
+        }
+    }
+}
 
 impl Neg for Int {
     type Output = Self;
@@ -897,6 +917,21 @@ uint_op_impl!(Sub, sub, SubAssign, sub_assign);
 uint_op_impl!(Mul, mul, MulAssign, mul_assign);
 uint_op_impl!(Div, div, DivAssign, div_assign);
 uint_op_impl!(Rem, rem, RemAssign, rem_assign);
+
+impl FromStr for UInt {
+    type Err = ParseIntError;
+
+    fn from_str(src: &str) -> Result<Self, Self::Err> {
+        let val = u64::from_str(src)?;
+        if val > MAX_SAFE_UINT {
+            Err(ParseIntError {
+                kind: ParseIntErrorKind::Overflow,
+            })
+        } else {
+            Ok(Self(val))
+        }
+    }
+}
 
 #[cfg(feature = "serde")]
 impl<'de> Deserialize<'de> for UInt {
