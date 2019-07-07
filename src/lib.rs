@@ -66,6 +66,7 @@ impl Int {
     /// assert_eq!(Int::new(js_int::MIN_SAFE_INT - 1), None);
     /// assert_eq!(Int::new(js_int::MAX_SAFE_INT + 1), None);
     /// ```
+    #[must_use]
     pub fn new(val: i64) -> Option<Self> {
         if val >= MIN_SAFE_INT && val <= MAX_SAFE_INT {
             Some(Self(val))
@@ -75,6 +76,7 @@ impl Int {
     }
 
     // TODO: make public if name is deemed sensible, rename and make public otherwise.
+    #[must_use]
     fn new_saturating(val: i64) -> Self {
         if val < MIN_SAFE_INT {
             Self::min_value()
@@ -107,6 +109,7 @@ impl Int {
     /// # use js_int::Int;
     /// assert_eq!(Int::from_str_radix("A", 16), Ok(Int::from(10)));
     /// ```
+    #[must_use]
     pub fn from_str_radix(src: &str, radix: u32) -> Result<Self, ParseIntError> {
         let val = i64::from_str_radix(src, radix)?;
         if val < MIN_SAFE_INT {
@@ -132,6 +135,7 @@ impl Int {
     /// # use {std::convert::TryFrom, js_int::Int};
     /// assert_eq!(Int::min_value(), Int::try_from(-9_007_199_254_740_991i64).unwrap());
     /// ```
+    #[must_use]
     pub const fn min_value() -> Self {
         Self(MIN_SAFE_INT)
     }
@@ -146,6 +150,7 @@ impl Int {
     /// # use {std::convert::TryFrom, js_int::Int};
     /// assert_eq!(Int::max_value(), Int::try_from(9_007_199_254_740_991i64).unwrap());
     /// ```
+    #[must_use]
     pub const fn max_value() -> Self {
         Self(MAX_SAFE_INT)
     }
@@ -164,6 +169,7 @@ impl Int {
     /// // Differently from i8 / i16 / i32 / i128, Int's min_value is its max_value negated
     /// assert_eq!(Int::min_value().abs(), Int::max_value());
     /// ```
+    #[must_use]
     pub fn abs(self) -> Self {
         Self(self.0.abs())
     }
@@ -180,6 +186,7 @@ impl Int {
     /// assert!(!Int::from(0).is_positive());
     /// assert!(!Int::from(-10).is_positive());
     /// ```
+    #[must_use]
     pub const fn is_positive(self) -> bool {
         self.0.is_positive()
     }
@@ -196,6 +203,7 @@ impl Int {
     /// assert!(!Int::from(0).is_negative());
     /// assert!(!Int::from(10).is_negative());
     /// ```
+    #[must_use]
     pub const fn is_negative(self) -> bool {
         self.0.is_negative()
     }
@@ -219,6 +227,7 @@ impl Int {
     ///     None
     /// );
     /// ```
+    #[must_use]
     pub fn checked_add(self, rhs: Self) -> Option<Self> {
         self.0.checked_add(rhs.0).and_then(Self::new)
     }
@@ -238,6 +247,7 @@ impl Int {
     /// );
     /// assert_eq!((Int::min_value() + Int::from(2)).checked_sub(Int::from(3)), None);
     /// ```
+    #[must_use]
     pub fn checked_sub(self, rhs: Self) -> Option<Self> {
         self.0.checked_sub(rhs.0).and_then(Self::new)
     }
@@ -254,6 +264,7 @@ impl Int {
     /// assert_eq!(Int::from(5).checked_mul(Int::from(1)), Some(Int::from(5)));
     /// assert_eq!(Int::max_value().checked_mul(Int::from(2)), None);
     /// ```
+    #[must_use]
     pub fn checked_mul(self, rhs: Self) -> Option<Self> {
         self.0.checked_mul(rhs.0).and_then(Self::new)
     }
@@ -269,6 +280,7 @@ impl Int {
     /// assert_eq!(Int::min_value().checked_div(Int::from(-1)), Some(Int::max_value()));
     /// assert_eq!(Int::from(1).checked_div(Int::from(0)), None);
     /// ```
+    #[must_use]
     pub fn checked_div(self, rhs: Self) -> Option<Self> {
         self.0.checked_div(rhs.0).map(Self)
     }
@@ -285,6 +297,7 @@ impl Int {
     /// assert_eq!(Int::from(5).checked_rem(Int::from(0)), None);
     /// assert_eq!(Int::min_value().checked_rem(Int::from(-1)), Some(Int::from(0)));
     /// ```
+    #[must_use]
     pub fn checked_rem(self, rhs: Self) -> Option<Self> {
         self.0.checked_rem(rhs.0).map(Self)
     }
@@ -303,30 +316,35 @@ impl Int {
     /// assert_eq!(Int::min_value().checked_pow(2), None);
     /// assert_eq!(Int::from(1_000_000_000).checked_pow(2), None);
     /// ```
+    #[must_use]
     pub fn checked_pow(self, exp: u32) -> Option<Self> {
         self.0.checked_pow(exp).and_then(Self::new)
     }
 
     /// Saturating integer addition. Computes `self + rhs`, saturating at the numeric bounds
     /// instead of overflowing.
+    #[must_use]
     pub fn saturating_add(self, rhs: Self) -> Self {
         self.checked_add(rhs).unwrap_or_else(Self::max_value)
     }
 
     /// Saturating integer subtraction. Computes `self - rhs`, saturating at the numeric
     /// bounds instead of underflowing.
+    #[must_use]
     pub fn saturating_sub(self, rhs: Self) -> Self {
         self.checked_sub(rhs).unwrap_or_else(Self::min_value)
     }
 
     /// Saturating integer multiplication. Computes `self * rhs`, saturating at the numeric
     /// bounds instead of overflowing.
+    #[must_use]
     pub fn saturating_mul(self, rhs: Self) -> Self {
         self.checked_mul(rhs).unwrap_or_else(Self::max_value)
     }
 
     /// Saturating integer exponentiation. Computes `self.pow(exp)`, saturating at the
     /// numeric bounds instead of overflowing or underflowing.
+    #[must_use]
     pub fn saturating_pow(self, exp: u32) -> Self {
         Self::new_saturating(self.0.saturating_pow(exp))
     }
@@ -472,6 +490,7 @@ impl UInt {
     /// assert_eq!(UInt::new(js_int::MAX_SAFE_UINT), Some(UInt::max_value()));
     /// assert_eq!(UInt::new(js_int::MAX_SAFE_UINT + 1), None);
     /// ```
+    #[must_use]
     pub fn new(val: u64) -> Option<Self> {
         if val <= MAX_SAFE_UINT {
             Some(Self(val))
@@ -491,11 +510,13 @@ impl UInt {
     /// assert_eq!(UInt::new_wrapping(js_int::MAX_SAFE_UINT), UInt::max_value());
     /// assert_eq!(UInt::new_wrapping(js_int::MAX_SAFE_UINT + 1), UInt::from(0u32));
     /// ```
+    #[must_use]
     pub fn new_wrapping(val: u64) -> Self {
         Self(val & MAX_SAFE_UINT)
     }
 
     // TODO: make public if name is deemed sensible, rename and make public otherwise.
+    #[must_use]
     fn new_saturating(val: u64) -> Self {
         if val <= MAX_SAFE_UINT {
             Self(val)
@@ -514,6 +535,7 @@ impl UInt {
     /// # use js_int::UInt;
     /// assert_eq!(UInt::min_value(), UInt::from(0u32));
     /// ```
+    #[must_use]
     pub const fn min_value() -> Self {
         Self(0)
     }
@@ -528,6 +550,7 @@ impl UInt {
     /// # use {std::convert::TryFrom, js_int::UInt};
     /// assert_eq!(UInt::max_value(), UInt::try_from(9_007_199_254_740_991u64).unwrap());
     /// ```
+    #[must_use]
     pub const fn max_value() -> Self {
         Self(MAX_SAFE_UINT)
     }
@@ -543,6 +566,7 @@ impl UInt {
     /// assert!(UInt::from(16u32).is_power_of_two());
     /// assert!(!UInt::from(10u32).is_power_of_two());
     /// ```
+    #[must_use]
     pub fn is_power_of_two(self) -> bool {
         self.0.is_power_of_two()
     }
@@ -561,6 +585,7 @@ impl UInt {
     /// assert_eq!(UInt::from(3u32).checked_next_power_of_two(), Some(UInt::from(4u32)));
     /// assert_eq!(UInt::max_value().checked_next_power_of_two(), None);
     /// ```
+    #[must_use]
     pub fn checked_next_power_of_two(self) -> Option<Self> {
         self.0.checked_next_power_of_two().and_then(Self::new)
     }
@@ -587,6 +612,7 @@ impl UInt {
     /// # use js_int::UInt;
     /// assert_eq!(UInt::from_str_radix("A", 16), Ok(UInt::from(10u32)));
     /// ```
+    #[must_use]
     pub fn from_str_radix(src: &str, radix: u32) -> Result<Self, ParseIntError> {
         let val = u64::from_str_radix(src, radix)?;
         if val > MAX_SAFE_UINT {
@@ -611,6 +637,7 @@ impl UInt {
     ///     None
     /// );
     /// ```
+    #[must_use]
     pub fn checked_add(self, rhs: Self) -> Option<Self> {
         self.0.checked_add(rhs.0).and_then(Self::new)
     }
@@ -626,6 +653,7 @@ impl UInt {
     /// assert_eq!(UInt::from(1u32).checked_sub(UInt::from(1u32)), Some(UInt::from(0u32)));
     /// assert_eq!(UInt::from(0u32).checked_sub(UInt::from(1u32)), None);
     /// ```
+    #[must_use]
     pub fn checked_sub(self, rhs: Self) -> Option<Self> {
         self.0.checked_sub(rhs.0).and_then(Self::new)
     }
@@ -642,6 +670,7 @@ impl UInt {
     /// assert_eq!(UInt::from(5u32).checked_mul(UInt::from(1u32)), Some(UInt::from(5u32)));
     /// assert_eq!(UInt::max_value().checked_mul(UInt::from(2u32)), None);
     /// ```
+    #[must_use]
     pub fn checked_mul(self, rhs: Self) -> Option<Self> {
         self.0.checked_mul(rhs.0).and_then(Self::new)
     }
@@ -657,6 +686,7 @@ impl UInt {
     /// assert_eq!(UInt::from(128u32).checked_div(UInt::from(2u32)), Some(UInt::from(64u32)));
     /// assert_eq!(UInt::from(1u32).checked_div(UInt::from(0u32)), None);
     /// ```
+    #[must_use]
     pub fn checked_div(self, rhs: Self) -> Option<Self> {
         self.0.checked_div(rhs.0).map(Self)
     }
@@ -672,6 +702,7 @@ impl UInt {
     /// assert_eq!(UInt::from(5u32).checked_rem(UInt::from(2u32)), Some(UInt::from(1u32)));
     /// assert_eq!(UInt::from(5u32).checked_rem(UInt::from(0u32)), None);
     /// ```
+    #[must_use]
     pub fn checked_rem(self, rhs: Self) -> Option<Self> {
         self.0.checked_rem(rhs.0).map(Self)
     }
@@ -689,36 +720,42 @@ impl UInt {
     /// assert_eq!(UInt::from(0u32).checked_neg(), Some(UInt::from(0u32)));
     /// assert_eq!(UInt::from(1u32).checked_neg(), None);
     /// ```
+    #[must_use]
     pub fn checked_neg(self) -> Option<Self> {
         self.0.checked_neg().map(Self)
     }
 
     /// Checked exponentiation. Computes `self.pow(exp)`, returning `None` if overflow or
     /// underflow occurred.
+    #[must_use]
     pub fn checked_pow(self, exp: u32) -> Option<Self> {
         self.0.checked_pow(exp).and_then(Self::new)
     }
 
     /// Saturating integer addition. Computes `self + rhs`, saturating at the numeric bounds
     /// instead of overflowing.
+    #[must_use]
     pub fn saturating_add(self, rhs: Self) -> Self {
         self.checked_add(rhs).unwrap_or_else(Self::max_value)
     }
 
     /// Saturating integer subtraction. Computes `self - rhs`, saturating at the numeric
     /// bounds instead of underflowing.
+    #[must_use]
     pub fn saturating_sub(self, rhs: Self) -> Self {
         self.checked_sub(rhs).unwrap_or_else(Self::min_value)
     }
 
     /// Saturating integer multiplication. Computes `self * rhs`, saturating at the numeric
     /// bounds instead of overflowing.
+    #[must_use]
     pub fn saturating_mul(self, rhs: Self) -> Self {
         self.checked_mul(rhs).unwrap_or_else(Self::max_value)
     }
 
     /// Saturating integer exponentiation. Computes `self.pow(exp)`, saturating at the
     /// numeric bounds instead of overflowing or underflowing.
+    #[must_use]
     pub fn saturating_pow(self, exp: u32) -> Self {
         Self::new_saturating(self.0.saturating_pow(exp))
     }
