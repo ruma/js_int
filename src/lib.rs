@@ -17,8 +17,11 @@
 //!
 //! # Features
 //!
+//! * `rocket_04`: Deserialization support from form values (`impl FromFormValue`) and path segments
+//! (`impl FromParam`) for users of the Rocket web framework version 0.4. Disabled by default.
 //! * `serde`: Serialization and deserialization support via [serde](https://serde.rs). Disabled by
-//! default. `js_int` is still `#![no_std]`-compatible with this feature enabled.
+//! default. You can use `js_int` + `serde` in `#![no_std]` contexts if you use
+//! `default-features = false` for both.
 //! * `std`: Enable `std::error::Error` implementations for `ParseIntError`, `TryFromIntError`.
 //! Enabled by default.
 
@@ -1238,6 +1241,32 @@ impl TryFrom<i64> for UInt {
         }
     }
 }
+
+#[cfg(feature = "rocket_04")]
+macro_rules! rocket_04_impls {
+    ($type:ident) => {
+        impl<'v> rocket_04::FromFormValue<'v> for $type {
+            type Error = &'v rocket_04::http::RawStr;
+
+            fn from_form_value(form_value: &'v rocket_04::http::RawStr) -> Result<Self, Self::Error> {
+                form_value.parse::<$type>().or_else(|_| form_value)
+            }
+        }
+
+        impl<'r> rocket_04::FromParam<'r> for $type {
+            type Error = &'r rocket_04::http::RawStr;
+
+            fn from_param(param: &'r rocket_04::http::RawStr) -> Result<Self, Self::Error> {
+                param.parse::<$type>().or_else(|_| param)
+            }
+        }
+    }
+}
+
+#[cfg(feature = "rocket_04")]
+rocket_04_impls!(Int);
+#[cfg(feature = "rocket_04")]
+rocket_04_impls!(UInt);
 
 #[cfg(test)]
 mod tests {

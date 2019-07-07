@@ -24,3 +24,7 @@ implementations of `std::error::Error` for `ParseIntError` and
 
 (De-)Serialization via `serde` is supported via the `serde` feature, even
 without the `std` feature.
+
+Deserialization of `Int` and `UInt` form values and path parameters for users
+of the Rocket web framework version 0.4 are supported via the `rocket_04`
+feature.
