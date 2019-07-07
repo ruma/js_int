@@ -2,6 +2,7 @@
 
 * Add doctests for every inherent method of `Int` and `UInt`
 * Fix buggy implementation of `Int::saturating_mul`
+* Add (optional) implementations of `rocket::{FromFormValue, FromParam}` (for rocket 0.4)
 
 # 0.1.0
 
