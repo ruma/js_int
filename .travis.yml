@@ -14,14 +14,14 @@ matrix:
     - rust: beta
       env: ALL_FEATURES='std,serde'
     - rust: nightly
-      env: ALL_FEATURES='std,serde,rocket'
+      env: ALL_FEATURES='std,serde,rocket_04'
   allow_failure:
     - rust: nightly
 
 script:
-  - if ( rustup component list | grep -q clippy ); then cargo fmt --all -- --check; fi
+  - if ( rustup component list | grep -q rustfmt ); then cargo fmt --all -- --check; fi
   - |
-      if ( rustup component list | grep -q rustfmt ); then
+      if ( rustup component list | grep -q clippy ); then
         cargo clippy --all --all-targets --features "$ALL_FEATURES" -- -D warnings
       fi
   # Almost all tests without std / no_std mode
