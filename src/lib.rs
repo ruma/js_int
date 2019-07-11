@@ -459,6 +459,46 @@ impl Neg for Int {
     }
 }
 
+impl std::iter::Sum for Int {
+    fn sum<I: Iterator<Item = Int>>(iter: I) -> Int {
+        let result = iter.map(|i| i.0).sum();
+        assert!(result >= MIN_SAFE_INT);
+        assert!(result <= MAX_SAFE_INT);
+
+        Self(result)
+    }
+}
+
+impl std::iter::Product for Int {
+    fn product<I: Iterator<Item = Int>>(iter: I) -> Int {
+        let result = iter.map(|i| i.0).product();
+        assert!(result >= MIN_SAFE_INT);
+        assert!(result <= MAX_SAFE_INT);
+
+        Self(result)
+    }
+}
+
+impl<'a> std::iter::Sum<&'a Int> for Int {
+    fn sum<I: Iterator<Item = &'a Int>>(iter: I) -> Int {
+        let result = iter.map(|i| i.0).sum();
+        assert!(result >= MIN_SAFE_INT);
+        assert!(result <= MAX_SAFE_INT);
+
+        Self(result)
+    }
+}
+
+impl<'a> std::iter::Product<&'a Int> for Int {
+    fn product<I: Iterator<Item = &'a Int>>(iter: I) -> Int {
+        let result = iter.map(|i| i.0).product();
+        assert!(result >= MIN_SAFE_INT);
+        assert!(result <= MAX_SAFE_INT);
+
+        Self(result)
+    }
+}
+
 #[cfg(feature = "serde")]
 impl<'de> Deserialize<'de> for Int {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
@@ -921,6 +961,42 @@ uint_op_impl!(Mul, mul, MulAssign, mul_assign);
 uint_op_impl!(Div, div, DivAssign, div_assign);
 uint_op_impl!(Rem, rem, RemAssign, rem_assign);
 
+impl std::iter::Sum for UInt {
+    fn sum<I: Iterator<Item = UInt>>(iter: I) -> UInt {
+        let result = iter.map(|i| i.0).sum();
+        assert!(result <= MAX_SAFE_UINT);
+
+        Self(result)
+    }
+}
+
+impl std::iter::Product for UInt {
+    fn product<I: Iterator<Item = UInt>>(iter: I) -> UInt {
+        let result = iter.map(|i| i.0).product();
+        assert!(result <= MAX_SAFE_UINT);
+
+        Self(result)
+    }
+}
+
+impl<'a> std::iter::Sum<&'a UInt> for UInt {
+    fn sum<I: Iterator<Item = &'a UInt>>(iter: I) -> UInt {
+        let result = iter.map(|i| i.0).sum();
+        assert!(result <= MAX_SAFE_UINT);
+
+        Self(result)
+    }
+}
+
+impl<'a> std::iter::Product<&'a UInt> for UInt {
+    fn product<I: Iterator<Item = &'a UInt>>(iter: I) -> UInt {
+        let result = iter.map(|i| i.0).product();
+        assert!(result <= MAX_SAFE_UINT);
+
+        Self(result)
+    }
+}
+
 impl FromStr for UInt {
     type Err = ParseIntError;
 
@@ -1316,5 +1392,65 @@ mod tests {
     #[cfg_attr(not(debug_assertions), ignore)]
     fn uint_overflow_panic() {
         let _ = UInt::max_value() + UInt::from(1u32);
+    }
+
+    #[test]
+    fn int_iter_sum() {
+        assert_eq!(vec![Int::from(2i32), Int::from(3i32), Int::from(4i32)].into_iter().sum::<Int>(), Int::from(9i32));
+    }
+
+    #[test]
+    fn int_iter_sum_2() {
+        assert_eq!(vec![Int::from(2i32), Int::from(-3i32), Int::from(4i32)].into_iter().sum::<Int>(), Int::from(3i32));
+    }
+
+    #[test]
+    fn int_iter_sum_3() {
+        assert_eq!((&[Int::from(2i32), Int::from(3i32), Int::from(4i32)]).iter().sum::<Int>(), Int::from(9i32));
+    }
+
+    #[test]
+    fn int_iter_sum_4() {
+        assert_eq!((&[Int::from(2i32), Int::from(-3i32), Int::from(4i32)]).iter().sum::<Int>(), Int::from(3i32));
+    }
+
+    #[test]
+    fn int_iter_product() {
+        assert_eq!(vec![Int::from(2i32), Int::from(3i32), Int::from(4i32)].into_iter().product::<Int>(), Int::from(24i32));
+    }
+
+    #[test]
+    fn int_iter_product_2() {
+        assert_eq!(vec![Int::from(2i32), Int::from(-3i32), Int::from(4i32)].into_iter().product::<Int>(), Int::from(-24i32));
+    }
+
+    #[test]
+    fn int_iter_product_3() {
+        assert_eq!((&[Int::from(2i32), Int::from(3i32), Int::from(4i32)]).iter().product::<Int>(), Int::from(24i32));
+    }
+
+    #[test]
+    fn int_iter_product_4() {
+        assert_eq!((&[Int::from(2i32), Int::from(-3i32), Int::from(4i32)]).iter().product::<Int>(), Int::from(-24i32));
+    }
+
+    #[test]
+    fn uint_iter_sum() {
+        assert_eq!(vec![UInt::from(2u32), UInt::from(3u32), UInt::from(4u32)].into_iter().sum::<UInt>(), UInt::from(9u32));
+    }
+
+    #[test]
+    fn uint_iter_sum_2() {
+        assert_eq!((&[UInt::from(2u32), UInt::from(3u32), UInt::from(4u32)]).iter().sum::<UInt>(), UInt::from(9u32));
+    }
+
+    #[test]
+    fn uint_iter_product() {
+        assert_eq!(vec![UInt::from(2u32), UInt::from(3u32), UInt::from(4u32)].into_iter().product::<UInt>(), UInt::from(24u32));
+    }
+
+    #[test]
+    fn uint_iter_product_2() {
+        assert_eq!((&[UInt::from(2u32), UInt::from(3u32), UInt::from(4u32)]).iter().product::<UInt>(), UInt::from(24u32));
     }
 }
