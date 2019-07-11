@@ -1396,61 +1396,85 @@ mod tests {
 
     #[test]
     fn int_iter_sum() {
-        assert_eq!(vec![Int::from(2i32), Int::from(3i32), Int::from(4i32)].into_iter().sum::<Int>(), Int::from(9i32));
+        let mut numbers = (2i32..=4).map(Int::from);
+        let iter: &mut dyn Iterator<Item = Int> = &mut numbers; // type assertion
+        assert_eq!(iter.sum::<Int>(), Int::from(9i32));
     }
 
     #[test]
-    fn int_iter_sum_2() {
-        assert_eq!(vec![Int::from(2i32), Int::from(-3i32), Int::from(4i32)].into_iter().sum::<Int>(), Int::from(3i32));
+    fn int_iter_sum_with_negative() {
+        let numbers = vec![Int::from(2i32), Int::from(-3i32), Int::from(4i32)];
+        let iter: &mut dyn Iterator<Item = Int> = &mut numbers.into_iter();
+        assert_eq!(iter.sum::<Int>(), Int::from(3i32));
     }
 
     #[test]
-    fn int_iter_sum_3() {
-        assert_eq!((&[Int::from(2i32), Int::from(3i32), Int::from(4i32)]).iter().sum::<Int>(), Int::from(9i32));
+    fn int_iter_sum_ref() {
+        let numbers = [Int::from(2i32), Int::from(3i32), Int::from(4i32)];
+        let iter: &mut dyn Iterator<Item = &Int> = &mut numbers.iter();
+        assert_eq!(iter.sum::<Int>(), Int::from(9i32));
     }
 
     #[test]
-    fn int_iter_sum_4() {
-        assert_eq!((&[Int::from(2i32), Int::from(-3i32), Int::from(4i32)]).iter().sum::<Int>(), Int::from(3i32));
+    fn int_iter_sum_ref_with_negative() {
+        let numbers = [Int::from(2i32), Int::from(-3i32), Int::from(4i32)];
+        let iter: &mut dyn Iterator<Item = &Int> = &mut numbers.iter();
+        assert_eq!(iter.sum::<Int>(), Int::from(3i32));
     }
 
     #[test]
     fn int_iter_product() {
-        assert_eq!(vec![Int::from(2i32), Int::from(3i32), Int::from(4i32)].into_iter().product::<Int>(), Int::from(24i32));
+        let numbers = vec![Int::from(2i32), Int::from(3i32), Int::from(4i32)];
+        let iter: &mut dyn Iterator<Item = Int> = &mut numbers.into_iter();
+        assert_eq!(iter.product::<Int>(), Int::from(24i32));
     }
 
     #[test]
-    fn int_iter_product_2() {
-        assert_eq!(vec![Int::from(2i32), Int::from(-3i32), Int::from(4i32)].into_iter().product::<Int>(), Int::from(-24i32));
+    fn int_iter_product_with_negative() {
+        let numbers = vec![Int::from(2i32), Int::from(-3i32), Int::from(4i32)];
+        let iter: &mut dyn Iterator<Item = Int> = &mut numbers.into_iter();
+        assert_eq!(iter.product::<Int>(), Int::from(-24i32));
     }
 
     #[test]
-    fn int_iter_product_3() {
-        assert_eq!((&[Int::from(2i32), Int::from(3i32), Int::from(4i32)]).iter().product::<Int>(), Int::from(24i32));
+    fn int_iter_product_ref() {
+        let numbers = [Int::from(2i32), Int::from(3i32), Int::from(4i32)];
+        let iter: &mut dyn Iterator<Item = &Int> = &mut numbers.iter();
+        assert_eq!(iter.product::<Int>(), Int::from(24i32));
     }
 
     #[test]
-    fn int_iter_product_4() {
-        assert_eq!((&[Int::from(2i32), Int::from(-3i32), Int::from(4i32)]).iter().product::<Int>(), Int::from(-24i32));
+    fn int_iter_product_ref_with_negative() {
+        let numbers = [Int::from(2i32), Int::from(-3i32), Int::from(4i32)];
+        let iter: &mut dyn Iterator<Item = &Int> = &mut numbers.iter();
+        assert_eq!(iter.product::<Int>(), Int::from(-24i32));
     }
 
     #[test]
     fn uint_iter_sum() {
-        assert_eq!(vec![UInt::from(2u32), UInt::from(3u32), UInt::from(4u32)].into_iter().sum::<UInt>(), UInt::from(9u32));
+        let mut numbers = (2u32..=4).map(UInt::from);
+        let iter: &mut dyn Iterator<Item = UInt> = &mut numbers; // type assertion
+        assert_eq!(iter.sum::<UInt>(), UInt::from(9u32));
     }
 
     #[test]
-    fn uint_iter_sum_2() {
-        assert_eq!((&[UInt::from(2u32), UInt::from(3u32), UInt::from(4u32)]).iter().sum::<UInt>(), UInt::from(9u32));
+    fn uint_iter_sum_ref() {
+        let numbers = [UInt::from(2u32), UInt::from(3u32), UInt::from(4u32)];
+        let iter: &mut dyn Iterator<Item = &UInt> = &mut numbers.iter();
+        assert_eq!(iter.sum::<UInt>(), UInt::from(9u32));
     }
 
     #[test]
     fn uint_iter_product() {
-        assert_eq!(vec![UInt::from(2u32), UInt::from(3u32), UInt::from(4u32)].into_iter().product::<UInt>(), UInt::from(24u32));
+        let mut numbers = (2u32..=4).map(UInt::from);
+        let iter: &mut dyn Iterator<Item = UInt> = &mut numbers;
+        assert_eq!(iter.product::<UInt>(), UInt::from(24u32));
     }
 
     #[test]
-    fn uint_iter_product_2() {
-        assert_eq!((&[UInt::from(2u32), UInt::from(3u32), UInt::from(4u32)]).iter().product::<UInt>(), UInt::from(24u32));
+    fn uint_iter_product_ref() {
+        let numbers = [UInt::from(2u32), UInt::from(3u32), UInt::from(4u32)];
+        let iter: &mut dyn Iterator<Item = &UInt> = &mut numbers.iter();
+        assert_eq!(iter.product::<UInt>(), UInt::from(24u32));
     }
 }
