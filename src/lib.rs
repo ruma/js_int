@@ -871,7 +871,7 @@ impl UInt {
     /// Basic usage:
     ///
     /// ```
-    /// use js_int::UInt;
+    /// # use js_int::UInt;
     /// assert_eq!(UInt::from(5u32).saturating_pow(2), UInt::from(25u32));
     /// assert_eq!(UInt::max_value().saturating_pow(2), UInt::max_value());
     /// ```
