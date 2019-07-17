@@ -91,6 +91,23 @@ impl Int {
         }
     }
 
+    /// The constructor used for arithmetic operations
+    #[must_use]
+    fn new_(val: i64) -> Self {
+        assert!(val >= MIN_SAFE_INT);
+        assert!(val <= MAX_SAFE_INT);
+
+        Self(val)
+    }
+
+    /// Helper function for mutable arithmetic operations (`+=`, `-=`, …)
+    fn assign_(&mut self, val: i64) {
+        assert!(val >= MIN_SAFE_INT);
+        assert!(val <= MAX_SAFE_INT);
+
+        *self = Self(val);
+    }
+
     /// Converts a string slice in a given base to an integer.
     ///
     /// The string is expected to be an optional `+` or `-` sign followed by digits.
@@ -406,21 +423,13 @@ macro_rules! int_op_impl {
             type Output = Self;
 
             fn $method(self, rhs: Self) -> Self {
-                let result = <i64 as $trait>::$method(self.0, rhs.0);
-                assert!(result >= MIN_SAFE_INT);
-                assert!(result <= MAX_SAFE_INT);
-
-                Self(result)
+                Self::new_(<i64 as $trait>::$method(self.0, rhs.0))
             }
         }
 
         impl $assign_trait for Int {
             fn $assign_method(&mut self, other: Self) {
-                let result = <i64 as $trait>::$method(self.0, other.0);
-                assert!(result >= MIN_SAFE_INT);
-                assert!(result <= MAX_SAFE_INT);
-
-                *self = Self(result);
+                self.assign_(<i64 as $trait>::$method(self.0, other.0));
             }
         }
     };
@@ -589,6 +598,27 @@ impl UInt {
             Self(val)
         } else {
             Self::max_value()
+        }
+    }
+
+    /// The constructor used for arithmetic operations
+    #[must_use]
+    fn new_(val: u64) -> Self {
+        if cfg!(debug_assertions) {
+            assert!(val <= MAX_SAFE_UINT);
+            Self(val)
+        } else {
+            Self::new_wrapping(val)
+        }
+    }
+
+    /// Helper function for mutable arithmetic operations (`+=`, `-=`, …)
+    fn assign_(&mut self, val: u64) {
+        if cfg!(debug_assertions) {
+            assert!(val <= MAX_SAFE_UINT);
+            *self = Self(val);
+        } else {
+            *self = Self::new_wrapping(val);
         }
     }
 
@@ -889,27 +919,13 @@ macro_rules! uint_op_impl {
             type Output = Self;
 
             fn $method(self, rhs: Self) -> Self {
-                let result = <u64 as $trait>::$method(self.0, rhs.0);
-
-                if cfg!(debug_assertions) {
-                    assert!(result <= MAX_SAFE_UINT);
-                    Self(result)
-                } else {
-                    Self::new_wrapping(result)
-                }
+                Self::new_(<u64 as $trait>::$method(self.0, rhs.0))
             }
         }
 
         impl $assign_trait for UInt {
             fn $assign_method(&mut self, other: Self) {
-                let result = <u64 as $trait>::$method(self.0, other.0);
-
-                if cfg!(debug_assertions) {
-                    assert!(result <= MAX_SAFE_UINT);
-                    *self = Self(result);
-                } else {
-                    *self = Self::new_wrapping(result);
-                }
+                self.assign_(<u64 as $trait>::$method(self.0, other.0));
             }
         }
     };
