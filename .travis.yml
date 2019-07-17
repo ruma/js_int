@@ -24,11 +24,11 @@ script:
       if ( rustup component list | grep -q clippy ); then
         cargo clippy --all --all-targets --features "$ALL_FEATURES" -- -D warnings
       fi
-  # Almost all tests without std / no_std mode
-  - cargo test --all --no-default-features --verbose
-  # Almost all tests with std features enabled
+  # crate-internal all tests without std / no_std mode
+  - cargo test --no-default-features --verbose
+  # almost all tests with std features enabled
   - cargo test --all --features "$ALL_FEATURES" --verbose
-  # Remaining tests (that require `cfg(not(debug_assertions))`)
+  # remaining tests (that require `cfg(not(debug_assertions))`)
   - cargo test --release --verbose
 
 notifications:
