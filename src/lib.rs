@@ -1274,6 +1274,37 @@ rocket_04_impls!(UInt);
 mod tests {
     use super::{Int, UInt, MAX_SAFE_UINT};
 
+    // Int tests
+
+    #[test]
+    fn int_ops() {
+        assert_eq!(Int::from(5) + Int::from(3), Int::from(8));
+        assert_eq!(Int::from(1) - Int::from(2), Int::from(-1));
+        assert_eq!(Int::from(4) * Int::from(-7), Int::from(-28));
+        assert_eq!(Int::from(5) / Int::from(2), Int::from(2));
+        assert_eq!(Int::from(9) % Int::from(3), Int::from(0));
+    }
+
+    #[test]
+    fn int_assign_ops() {
+        let mut int = Int::from(1);
+
+        int += Int::from(1);
+        assert_eq!(int, Int::from(2));
+
+        int -= Int::from(-1);
+        assert_eq!(int, Int::from(3));
+
+        int *= Int::from(3);
+        assert_eq!(int, Int::from(9));
+
+        int /= Int::from(3);
+        assert_eq!(int, Int::from(3));
+
+        int %= Int::from(2);
+        assert_eq!(int, Int::from(1));
+    }
+
     #[test]
     #[should_panic]
     fn int_underflow_panic() {
@@ -1284,6 +1315,37 @@ mod tests {
     #[should_panic]
     fn int_overflow_panic() {
         let _ = Int::max_value() + Int::from(1);
+    }
+
+    // UInt tests
+
+    #[test]
+    fn uint_ops() {
+        assert_eq!(UInt::from(5u32) + UInt::from(3u32), UInt::from(8u32));
+        assert_eq!(UInt::from(2u32) - UInt::from(1u32), UInt::from(1u32));
+        assert_eq!(UInt::from(4u32) * UInt::from(2u32), UInt::from(8u32));
+        assert_eq!(UInt::from(5u32) / UInt::from(2u32), UInt::from(2u32));
+        assert_eq!(UInt::from(11u32) % UInt::from(4u32), UInt::from(3u32));
+    }
+
+    #[test]
+    fn uint_assign_ops() {
+        let mut uint = UInt::from(1u32);
+
+        uint += UInt::from(3u32);
+        assert_eq!(uint, UInt::from(4u32));
+
+        uint -= UInt::from(1u32);
+        assert_eq!(uint, UInt::from(3u32));
+
+        uint *= UInt::from(3u32);
+        assert_eq!(uint, UInt::from(9u32));
+
+        uint /= UInt::from(3u32);
+        assert_eq!(uint, UInt::from(3u32));
+
+        uint %= UInt::from(2u32);
+        assert_eq!(uint, UInt::from(1u32));
     }
 
     #[test]
