@@ -774,7 +774,7 @@ impl UInt {
         self.0.checked_rem(rhs.0).map(Self)
     }
 
-    /// Checked negation. Computes -self, returning None unless self == 0.
+    /// Checked negation. Computes `-self`, returning None unless `self == 0`.
     ///
     /// Note that negating any positive integer will overflow.
     ///
