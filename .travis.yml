@@ -24,12 +24,23 @@ script:
       if ( rustup component list | grep -q clippy ); then
         cargo clippy --all --all-targets --features "$ALL_FEATURES" -- -D warnings
       fi
-  # crate-internal all tests without std / no_std mode
+  # crate-internal tests without std (no_std mode)
   - cargo test --no-default-features --verbose
-  # almost all tests with std features enabled
+  # almost all tests with all available features enabled
   - cargo test --all --features "$ALL_FEATURES" --verbose
   # remaining tests (that require `cfg(not(debug_assertions))`)
   - cargo test --release --verbose
+  # additional nightly-only tests (allowed to fail)
+  - if [[ "$TRAVIS_RUST_VERSION" == 'nightly' ]]; then
+      # deny warnings
+      cargo rustc --all --all-features -- -D warnings
+      # run tests with the minimum versions that Cargo.toml allows
+      cargo update -Z minimal-versions
+      cargo test --no-default-features --verbose
+      cargo test --all --all-features --verbose
+      cargo test --release --verbose
+    fi
+
 
 notifications:
   email:

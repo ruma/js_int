@@ -25,7 +25,7 @@
 //! * `std`: Enable `std::error::Error` implementations for `ParseIntError`, `TryFromIntError`.
 //! Enabled by default.
 
-#![deny(missing_debug_implementations, missing_docs, warnings)]
+#![deny(missing_debug_implementations, missing_docs)]
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use core::{
