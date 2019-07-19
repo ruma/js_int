@@ -31,16 +31,16 @@ script:
   # remaining tests (that require `cfg(not(debug_assertions))`)
   - cargo test --release --verbose
   # additional nightly-only tests (allowed to fail)
-  - if [[ "$TRAVIS_RUST_VERSION" == 'nightly' ]]; then
-      # deny warnings
-      cargo rustc --all --all-features -- -D warnings
-      # run tests with the minimum versions that Cargo.toml allows
-      cargo update -Z minimal-versions
-      cargo test --no-default-features --verbose
-      cargo test --all --all-features --verbose
-      cargo test --release --verbose
-    fi
-
+  - |
+      if [[ "$TRAVIS_RUST_VERSION" == 'nightly' ]]; then
+        # deny warnings
+        cargo rustc --all --all-features -- -D warnings
+        # run tests with the minimum versions that Cargo.toml allows
+        cargo update -Z minimal-versions
+        cargo test --no-default-features --verbose
+        cargo test --all --all-features --verbose
+        cargo test --release --verbose
+      fi
 
 notifications:
   email:
