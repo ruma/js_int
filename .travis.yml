@@ -34,7 +34,7 @@ script:
   - |
       if [[ "$TRAVIS_RUST_VERSION" == 'nightly' ]]; then
         # deny warnings
-        cargo rustc --all --all-features -- -D warnings
+        cargo rustc --all-features -- -D warnings
         # run tests with the minimum versions that Cargo.toml allows
         cargo update -Z minimal-versions
         cargo test --no-default-features --verbose
