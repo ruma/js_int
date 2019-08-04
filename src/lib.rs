@@ -453,7 +453,7 @@ impl Neg for Int {
 impl iter::Sum for Int {
     fn sum<I>(iter: I) -> Self
     where
-        I: Iterator<Item = Int>
+        I: Iterator<Item = Int>,
     {
         Self::new_(iter.map(|x| x.0).sum())
     }
@@ -462,7 +462,7 @@ impl iter::Sum for Int {
 impl<'a> iter::Sum<&'a Int> for Int {
     fn sum<I>(iter: I) -> Self
     where
-        I: Iterator<Item = &'a Int>
+        I: Iterator<Item = &'a Int>,
     {
         Self::new_(iter.map(|x| x.0).sum())
     }
@@ -471,7 +471,7 @@ impl<'a> iter::Sum<&'a Int> for Int {
 impl iter::Product for Int {
     fn product<I>(iter: I) -> Self
     where
-        I: Iterator<Item = Int>
+        I: Iterator<Item = Int>,
     {
         Self::new_(iter.map(|x| x.0).product())
     }
@@ -480,7 +480,7 @@ impl iter::Product for Int {
 impl<'a> iter::Product<&'a Int> for Int {
     fn product<I>(iter: I) -> Self
     where
-        I: Iterator<Item = &'a Int>
+        I: Iterator<Item = &'a Int>,
     {
         Self::new_(iter.map(|x| x.0).product())
     }
@@ -977,7 +977,7 @@ uint_op_impl!(Rem, rem, RemAssign, rem_assign);
 impl iter::Sum for UInt {
     fn sum<I>(iter: I) -> Self
     where
-        I: Iterator<Item = UInt>
+        I: Iterator<Item = UInt>,
     {
         Self::new_(iter.map(|x| x.0).sum())
     }
@@ -986,7 +986,7 @@ impl iter::Sum for UInt {
 impl<'a> iter::Sum<&'a UInt> for UInt {
     fn sum<I>(iter: I) -> Self
     where
-        I: Iterator<Item = &'a UInt>
+        I: Iterator<Item = &'a UInt>,
     {
         Self::new_(iter.map(|x| x.0).sum())
     }
@@ -995,7 +995,7 @@ impl<'a> iter::Sum<&'a UInt> for UInt {
 impl iter::Product for UInt {
     fn product<I>(iter: I) -> Self
     where
-        I: Iterator<Item = UInt>
+        I: Iterator<Item = UInt>,
     {
         Self::new_(iter.map(|x| x.0).product())
     }
@@ -1004,7 +1004,7 @@ impl iter::Product for UInt {
 impl<'a> iter::Product<&'a UInt> for UInt {
     fn product<I>(iter: I) -> Self
     where
-        I: Iterator<Item = &'a UInt>
+        I: Iterator<Item = &'a UInt>,
     {
         Self::new_(iter.map(|x| x.0).product())
     }
