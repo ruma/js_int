@@ -1,3 +1,8 @@
+# 0.1.2
+
+* Implement `std::iter::Sum` and `std::iter::Product` for `Int` and `UInt`
+* Mention JavaScript's propsed BigInt type in documentation
+
 # 0.1.1
 
 * Add doctests for every inherent method of `Int` and `UInt`
