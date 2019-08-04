@@ -1038,7 +1038,7 @@ macro_rules! fmt_impls {
 
         impl Debug for $type {
             fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-                write!(f, "{}", self.0)
+                write!(f, "{:?}", self.0)
             }
         }
     };
