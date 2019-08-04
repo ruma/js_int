@@ -441,6 +441,14 @@ int_op_impl!(Mul, mul, MulAssign, mul_assign);
 int_op_impl!(Div, div, DivAssign, div_assign);
 int_op_impl!(Rem, rem, RemAssign, rem_assign);
 
+impl Neg for Int {
+    type Output = Self;
+
+    fn neg(self) -> Self {
+        Self(-self.0)
+    }
+}
+
 impl FromStr for Int {
     type Err = ParseIntError;
 
@@ -457,14 +465,6 @@ impl FromStr for Int {
         } else {
             Ok(Self(val))
         }
-    }
-}
-
-impl Neg for Int {
-    type Output = Self;
-
-    fn neg(self) -> Self {
-        Self(-self.0)
     }
 }
 
