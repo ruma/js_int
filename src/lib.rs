@@ -31,6 +31,7 @@
 use core::{
     convert::{From, TryFrom},
     fmt::{self, Debug, Display, Formatter},
+    iter,
     num::{ParseIntError as StdParseIntError, TryFromIntError as StdTryFromIntError},
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign},
     str::FromStr,
@@ -446,6 +447,42 @@ impl Neg for Int {
 
     fn neg(self) -> Self {
         Self(-self.0)
+    }
+}
+
+impl iter::Sum for Int {
+    fn sum<I>(iter: I) -> Self
+    where
+        I: Iterator<Item = Int>
+    {
+        Self::new_(iter.map(|x| x.0).sum())
+    }
+}
+
+impl<'a> iter::Sum<&'a Int> for Int {
+    fn sum<I>(iter: I) -> Self
+    where
+        I: Iterator<Item = &'a Int>
+    {
+        Self::new_(iter.map(|x| x.0).sum())
+    }
+}
+
+impl iter::Product for Int {
+    fn product<I>(iter: I) -> Self
+    where
+        I: Iterator<Item = Int>
+    {
+        Self::new_(iter.map(|x| x.0).product())
+    }
+}
+
+impl<'a> iter::Product<&'a Int> for Int {
+    fn product<I>(iter: I) -> Self
+    where
+        I: Iterator<Item = &'a Int>
+    {
+        Self::new_(iter.map(|x| x.0).product())
     }
 }
 
@@ -936,6 +973,42 @@ uint_op_impl!(Sub, sub, SubAssign, sub_assign);
 uint_op_impl!(Mul, mul, MulAssign, mul_assign);
 uint_op_impl!(Div, div, DivAssign, div_assign);
 uint_op_impl!(Rem, rem, RemAssign, rem_assign);
+
+impl iter::Sum for UInt {
+    fn sum<I>(iter: I) -> Self
+    where
+        I: Iterator<Item = UInt>
+    {
+        Self::new_(iter.map(|x| x.0).sum())
+    }
+}
+
+impl<'a> iter::Sum<&'a UInt> for UInt {
+    fn sum<I>(iter: I) -> Self
+    where
+        I: Iterator<Item = &'a UInt>
+    {
+        Self::new_(iter.map(|x| x.0).sum())
+    }
+}
+
+impl iter::Product for UInt {
+    fn product<I>(iter: I) -> Self
+    where
+        I: Iterator<Item = UInt>
+    {
+        Self::new_(iter.map(|x| x.0).product())
+    }
+}
+
+impl<'a> iter::Product<&'a UInt> for UInt {
+    fn product<I>(iter: I) -> Self
+    where
+        I: Iterator<Item = &'a UInt>
+    {
+        Self::new_(iter.map(|x| x.0).product())
+    }
+}
 
 impl FromStr for UInt {
     type Err = ParseIntError;
