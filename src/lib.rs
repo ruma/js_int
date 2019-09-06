@@ -57,7 +57,7 @@ pub const MIN_SAFE_INT: i64 = -MAX_SAFE_INT;
 pub const MAX_SAFE_UINT: u64 = 0x001F_FFFF_FFFF_FFFF;
 
 /// An integer limited to the range of integers that can be represented exactly by an f64.
-#[derive(Clone, Copy, Default, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Default, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
 pub struct Int(i64);
 
@@ -591,7 +591,7 @@ impl<'de> Deserialize<'de> for Int {
 
 /// An integer limited to the range of non-negative integers that can be represented exactly by an
 /// f64.
-#[derive(Clone, Copy, Default, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Default, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
 pub struct UInt(u64);
 
