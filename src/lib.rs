@@ -139,7 +139,6 @@ impl Int {
     /// # use js_int::Int;
     /// assert_eq!(Int::from_str_radix("A", 16), Ok(Int::from(10)));
     /// ```
-    #[must_use]
     pub fn from_str_radix(src: &str, radix: u32) -> Result<Self, ParseIntError> {
         let val = i64::from_str_radix(src, radix)?;
         if val < MIN_SAFE_INT {
@@ -754,7 +753,6 @@ impl UInt {
     /// # use js_int::UInt;
     /// assert_eq!(UInt::from_str_radix("A", 16), Ok(UInt::from(10u32)));
     /// ```
-    #[must_use]
     pub fn from_str_radix(src: &str, radix: u32) -> Result<Self, ParseIntError> {
         let val = u64::from_str_radix(src, radix)?;
         if val > MAX_SAFE_UINT {
