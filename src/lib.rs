@@ -1309,7 +1309,7 @@ impl TryFrom<u128> for Int {
     type Error = TryFromIntError;
 
     fn try_from(val: u128) -> Result<Self, TryFromIntError> {
-        if val <= MAX_SAFE_UINT as u128 {
+        if val <= u128::from(MAX_SAFE_UINT) {
             Ok(Self(val as i64))
         } else {
             Err(TryFromIntError::new())
@@ -1369,7 +1369,7 @@ impl TryFrom<i128> for UInt {
     type Error = TryFromIntError;
 
     fn try_from(val: i128) -> Result<Self, TryFromIntError> {
-        if val >= 0 && val <= MAX_SAFE_INT as i128 {
+        if val >= 0 && val <= i128::from(MAX_SAFE_INT) {
             Ok(Self(val as u64))
         } else {
             Err(TryFromIntError::new())
