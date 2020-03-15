@@ -1,5 +1,7 @@
 # [unreleased]
 
+# 0.1.3
+
 * Add conversions to / from 128 bit integer types
 
 # 0.1.2
