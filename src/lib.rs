@@ -1191,7 +1191,7 @@ impl Debug for TryFromIntError {
 impl std::error::Error for TryFromIntError {}
 
 macro_rules! convert_impls {
-    ($type:ident, $t8:ident, $t16:ident, $t32:ident, $t64:ident) => {
+    ($type:ident, $t8:ident, $t16:ident, $t32:ident, $t64:ident, $t128:ident) => {
         impl From<$t8> for $type {
             fn from(val: $t8) -> Self {
                 Self($t64::from(val))
@@ -1215,6 +1215,16 @@ macro_rules! convert_impls {
 
             fn try_from(val: $t64) -> Result<Self, TryFromIntError> {
                 Self::new(val).ok_or_else(TryFromIntError::new)
+            }
+        }
+
+        impl TryFrom<$t128> for $type {
+            type Error = TryFromIntError;
+
+            fn try_from(val: $t128) -> Result<Self, TryFromIntError> {
+                $t64::try_from(val)
+                    .map_err(|_| TryFromIntError::new())
+                    .and_then($type::try_from)
             }
         }
 
@@ -1248,6 +1258,12 @@ macro_rules! convert_impls {
             }
         }
 
+        impl From<$type> for $t128 {
+            fn from(val: $type) -> Self {
+                $t128::from(val.0)
+            }
+        }
+
         impl From<$type> for f64 {
             fn from(val: $type) -> Self {
                 val.0 as f64
@@ -1256,8 +1272,8 @@ macro_rules! convert_impls {
     };
 }
 
-convert_impls!(Int, i8, i16, i32, i64);
-convert_impls!(UInt, u8, u16, u32, u64);
+convert_impls!(Int, i8, i16, i32, i64, i128);
+convert_impls!(UInt, u8, u16, u32, u64, u128);
 
 impl From<u8> for Int {
     fn from(val: u8) -> Self {
@@ -1282,6 +1298,18 @@ impl TryFrom<u64> for Int {
 
     fn try_from(val: u64) -> Result<Self, TryFromIntError> {
         if val <= MAX_SAFE_UINT {
+            Ok(Self(val as i64))
+        } else {
+            Err(TryFromIntError::new())
+        }
+    }
+}
+
+impl TryFrom<u128> for Int {
+    type Error = TryFromIntError;
+
+    fn try_from(val: u128) -> Result<Self, TryFromIntError> {
+        if val <= MAX_SAFE_UINT as u128 {
             Ok(Self(val as i64))
         } else {
             Err(TryFromIntError::new())
@@ -1330,6 +1358,18 @@ impl TryFrom<i64> for UInt {
 
     fn try_from(val: i64) -> Result<Self, TryFromIntError> {
         if val >= 0 && val <= MAX_SAFE_INT {
+            Ok(Self(val as u64))
+        } else {
+            Err(TryFromIntError::new())
+        }
+    }
+}
+
+impl TryFrom<i128> for UInt {
+    type Error = TryFromIntError;
+
+    fn try_from(val: i128) -> Result<Self, TryFromIntError> {
+        if val >= 0 && val <= MAX_SAFE_INT as i128 {
             Ok(Self(val as u64))
         } else {
             Err(TryFromIntError::new())

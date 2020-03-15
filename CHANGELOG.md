@@ -1,3 +1,7 @@
+# [unreleased]
+
+* Add conversions to / from 128 bit integer types
+
 # 0.1.2
 
 * Implement `std::iter::Sum` and `std::iter::Product` for `Int` and `UInt`
