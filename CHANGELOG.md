@@ -1,5 +1,7 @@
 # [unreleased]
 
+# 0.1.4
+
 * Allow deserialization of `Int`s and `UInt`s from non-self-describing formats
 
 # 0.1.3
