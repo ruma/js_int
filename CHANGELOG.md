@@ -1,5 +1,7 @@
 # [unreleased]
 
+* Allow deserialization of `Int`s and `UInt`s from non-self-describing formats
+
 # 0.1.3
 
 * Add conversions to / from 128 bit integer types

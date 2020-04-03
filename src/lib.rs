@@ -46,7 +46,10 @@ use core::{
 };
 
 #[cfg(feature = "serde")]
-use serde::{de::Visitor, Deserialize, Deserializer, Serialize};
+use serde::{
+    de::{Error as _, Unexpected},
+    Deserialize, Deserializer, Serialize,
+};
 
 /// The largest integer value that can be represented exactly by an f64.
 pub const MAX_SAFE_INT: i64 = 0x001F_FFFF_FFFF_FFFF;
@@ -518,73 +521,13 @@ impl<'de> Deserialize<'de> for Int {
     where
         D: Deserializer<'de>,
     {
-        struct IntVisitor;
-
-        impl<'de> Visitor<'de> for IntVisitor {
-            type Value = Int;
-
-            fn expecting(&self, formatter: &mut Formatter) -> fmt::Result {
-                formatter.write_str("a signed integer between -(2**53) + 1 and (2**53) - 1")
-            }
-
-            fn visit_i8<E>(self, value: i8) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(Int::from(value))
-            }
-
-            fn visit_i16<E>(self, value: i16) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(Int::from(value))
-            }
-
-            fn visit_i32<E>(self, value: i32) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(Int::from(value))
-            }
-
-            fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(Int::try_from(value).map_err(|_| E::custom("out of bounds"))?)
-            }
-
-            fn visit_u8<E>(self, value: u8) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(Int::from(value))
-            }
-
-            fn visit_u16<E>(self, value: u16) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(Int::from(value))
-            }
-
-            fn visit_u32<E>(self, value: u32) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(Int::from(value))
-            }
-
-            fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(Int::try_from(value).map_err(|_| E::custom("out of bounds"))?)
-            }
-        }
-
-        deserializer.deserialize_any(IntVisitor)
+        let val = i64::deserialize(deserializer)?;
+        Self::new(val).ok_or_else(|| {
+            D::Error::invalid_value(
+                Unexpected::Signed(val),
+                &"an integer between -2^53 + 1 and 2^53 - 1",
+            )
+        })
     }
 }
 
@@ -1037,73 +980,13 @@ impl<'de> Deserialize<'de> for UInt {
     where
         D: Deserializer<'de>,
     {
-        struct UIntVisitor;
-
-        impl<'de> Visitor<'de> for UIntVisitor {
-            type Value = UInt;
-
-            fn expecting(&self, formatter: &mut Formatter) -> fmt::Result {
-                formatter.write_str("an unsigned integer between 0 and (2**53) - 1")
-            }
-
-            fn visit_i8<E>(self, value: i8) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(UInt::try_from(value).map_err(|_| E::custom("out of bounds"))?)
-            }
-
-            fn visit_i16<E>(self, value: i16) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(UInt::try_from(value).map_err(|_| E::custom("out of bounds"))?)
-            }
-
-            fn visit_i32<E>(self, value: i32) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(UInt::try_from(value).map_err(|_| E::custom("out of bounds"))?)
-            }
-
-            fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(UInt::try_from(value).map_err(|_| E::custom("out of bounds"))?)
-            }
-
-            fn visit_u8<E>(self, value: u8) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(UInt::from(value))
-            }
-
-            fn visit_u16<E>(self, value: u16) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(UInt::from(value))
-            }
-
-            fn visit_u32<E>(self, value: u32) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(UInt::from(value))
-            }
-
-            fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(UInt::try_from(value).map_err(|_| E::custom("out of bounds"))?)
-            }
-        }
-
-        deserializer.deserialize_any(UIntVisitor)
+        let val = u64::deserialize(deserializer)?;
+        Self::new(val).ok_or_else(|| {
+            D::Error::invalid_value(
+                Unexpected::Unsigned(val),
+                &"an integer between 0 and 2^53 - 1",
+            )
+        })
     }
 }
 
