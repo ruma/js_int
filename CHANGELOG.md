@@ -1,5 +1,8 @@
 # [unreleased]
 
+* Introduce `Int::MIN`, `Int::MAX`, `UInt::MIN`, `UInt::MAX` and deprecate `const fn min_value` and
+  `const fn max_value`s.
+
 # 0.1.4
 
 * Allow deserialization of `Int`s and `UInt`s from non-self-describing formats

@@ -65,6 +65,30 @@ pub const MAX_SAFE_UINT: u64 = 0x001F_FFFF_FFFF_FFFF;
 pub struct Int(i64);
 
 impl Int {
+    /// The smallest value that can be represented by this integer type.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use {std::convert::TryFrom, js_int::Int};
+    /// assert_eq!(Int::MIN, Int::try_from(-9_007_199_254_740_991i64).unwrap());
+    /// ```
+    pub const MIN: Self = Self(MIN_SAFE_INT);
+
+    /// The largest value that can be represented by this integer type.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use {std::convert::TryFrom, js_int::Int};
+    /// assert_eq!(Int::MAX, Int::try_from(9_007_199_254_740_991i64).unwrap());
+    /// ```
+    pub const MAX: Self = Self(MAX_SAFE_INT);
+
     /// Try to create an `Int` from the provided `i64`, returning `None` if it is smaller than
     /// `MIN_SAFE_INT` or larger than `MAX_SAFE_INT`.
     ///
@@ -77,8 +101,8 @@ impl Int {
     ///
     /// ```
     /// # use js_int::Int;
-    /// assert_eq!(Int::new(js_int::MIN_SAFE_INT), Some(Int::min_value()));
-    /// assert_eq!(Int::new(js_int::MAX_SAFE_INT), Some(Int::max_value()));
+    /// assert_eq!(Int::new(js_int::MIN_SAFE_INT), Some(Int::MIN));
+    /// assert_eq!(Int::new(js_int::MAX_SAFE_INT), Some(Int::MAX));
     /// assert_eq!(Int::new(js_int::MIN_SAFE_INT - 1), None);
     /// assert_eq!(Int::new(js_int::MAX_SAFE_INT + 1), None);
     /// ```
@@ -95,9 +119,9 @@ impl Int {
     #[must_use]
     fn new_saturating(val: i64) -> Self {
         if val < MIN_SAFE_INT {
-            Self::min_value()
+            Self::MIN
         } else if val > MAX_SAFE_INT {
-            Self::max_value()
+            Self::MAX
         } else {
             Self(val)
         }
@@ -168,6 +192,7 @@ impl Int {
     /// assert_eq!(Int::min_value(), Int::try_from(-9_007_199_254_740_991i64).unwrap());
     /// ```
     #[must_use]
+    #[deprecated = "Use `UInt::MIN` instead."]
     pub const fn min_value() -> Self {
         Self(MIN_SAFE_INT)
     }
@@ -183,6 +208,7 @@ impl Int {
     /// assert_eq!(Int::max_value(), Int::try_from(9_007_199_254_740_991i64).unwrap());
     /// ```
     #[must_use]
+    #[deprecated = "Use `Int::MAX` instead."]
     pub const fn max_value() -> Self {
         Self(MAX_SAFE_INT)
     }
@@ -199,7 +225,7 @@ impl Int {
     /// assert_eq!(Int::from(-10).abs(), Int::from(10));
     ///
     /// // Differently from i8 / i16 / i32 / i128, Int's min_value is its max_value negated
-    /// assert_eq!(Int::min_value().abs(), Int::max_value());
+    /// assert_eq!(Int::MIN.abs(), Int::MAX);
     /// ```
     #[must_use]
     pub fn abs(self) -> Self {
@@ -250,14 +276,10 @@ impl Int {
     /// ```
     /// # use js_int::Int;
     /// assert_eq!(
-    ///     (Int::max_value() - Int::from(1)).checked_add(Int::from(1)),
-    ///     Some(Int::max_value())
+    ///     (Int::MAX - Int::from(1)).checked_add(Int::from(1)),
+    ///     Some(Int::MAX)
     /// );
-    ///
-    /// assert_eq!(
-    ///     (Int::max_value() - Int::from(1)).checked_add(Int::from(2)),
-    ///     None
-    /// );
+    /// assert_eq!((Int::MAX - Int::from(1)).checked_add(Int::from(2)), None);
     /// ```
     #[must_use]
     pub fn checked_add(self, rhs: Self) -> Option<Self> {
@@ -274,10 +296,10 @@ impl Int {
     /// ```
     /// # use js_int::Int;
     /// assert_eq!(
-    ///     (Int::min_value() + Int::from(2)).checked_sub(Int::from(1)),
-    ///     Some(Int::min_value() + Int::from(1))
+    ///     (Int::MIN + Int::from(2)).checked_sub(Int::from(1)),
+    ///     Some(Int::MIN + Int::from(1))
     /// );
-    /// assert_eq!((Int::min_value() + Int::from(2)).checked_sub(Int::from(3)), None);
+    /// assert_eq!((Int::MIN + Int::from(2)).checked_sub(Int::from(3)), None);
     /// ```
     #[must_use]
     pub fn checked_sub(self, rhs: Self) -> Option<Self> {
@@ -294,7 +316,7 @@ impl Int {
     /// ```
     /// # use js_int::Int;
     /// assert_eq!(Int::from(5).checked_mul(Int::from(1)), Some(Int::from(5)));
-    /// assert_eq!(Int::max_value().checked_mul(Int::from(2)), None);
+    /// assert_eq!(Int::MAX.checked_mul(Int::from(2)), None);
     /// ```
     #[must_use]
     pub fn checked_mul(self, rhs: Self) -> Option<Self> {
@@ -309,7 +331,7 @@ impl Int {
     ///
     /// ```
     /// # use js_int::Int;
-    /// assert_eq!(Int::min_value().checked_div(Int::from(-1)), Some(Int::max_value()));
+    /// assert_eq!(Int::MIN.checked_div(Int::from(-1)), Some(Int::MAX));
     /// assert_eq!(Int::from(1).checked_div(Int::from(0)), None);
     /// ```
     #[must_use]
@@ -327,7 +349,7 @@ impl Int {
     /// # use js_int::Int;
     /// assert_eq!(Int::from(5).checked_rem(Int::from(2)), Some(Int::from(1)));
     /// assert_eq!(Int::from(5).checked_rem(Int::from(0)), None);
-    /// assert_eq!(Int::min_value().checked_rem(Int::from(-1)), Some(Int::from(0)));
+    /// assert_eq!(Int::MIN.checked_rem(Int::from(-1)), Some(Int::from(0)));
     /// ```
     #[must_use]
     pub fn checked_rem(self, rhs: Self) -> Option<Self> {
@@ -344,8 +366,8 @@ impl Int {
     /// ```
     /// # use js_int::Int;
     /// assert_eq!(Int::from(8).checked_pow(2), Some(Int::from(64)));
-    /// assert_eq!(Int::max_value().checked_pow(2), None);
-    /// assert_eq!(Int::min_value().checked_pow(2), None);
+    /// assert_eq!(Int::MAX.checked_pow(2), None);
+    /// assert_eq!(Int::MIN.checked_pow(2), None);
     /// assert_eq!(Int::from(1_000_000_000).checked_pow(2), None);
     /// ```
     #[must_use]
@@ -363,11 +385,11 @@ impl Int {
     /// ```
     /// # use js_int::Int;
     /// assert_eq!(Int::from(100).saturating_add(Int::from(1)), Int::from(101));
-    /// assert_eq!(Int::max_value().saturating_add(Int::from(1)), Int::max_value());
+    /// assert_eq!(Int::MAX.saturating_add(Int::from(1)), Int::MAX);
     /// ```
     #[must_use]
     pub fn saturating_add(self, rhs: Self) -> Self {
-        self.checked_add(rhs).unwrap_or_else(Self::max_value)
+        self.checked_add(rhs).unwrap_or(Self::MAX)
     }
 
     /// Saturating integer subtraction. Computes `self - rhs`, saturating at the numeric
@@ -380,11 +402,11 @@ impl Int {
     /// ```
     /// # use js_int::Int;
     /// assert_eq!(Int::from(100).saturating_sub(Int::from(1)), Int::from(99));
-    /// assert_eq!(Int::min_value().saturating_sub(Int::from(1)), Int::min_value());
+    /// assert_eq!(Int::MIN.saturating_sub(Int::from(1)), Int::MIN);
     /// ```
     #[must_use]
     pub fn saturating_sub(self, rhs: Self) -> Self {
-        self.checked_sub(rhs).unwrap_or_else(Self::min_value)
+        self.checked_sub(rhs).unwrap_or(Self::MIN)
     }
 
     /// Saturating integer multiplication. Computes `self * rhs`, saturating at the numeric
@@ -397,9 +419,9 @@ impl Int {
     /// ```
     /// # use js_int::Int;
     /// assert_eq!(Int::from(100).saturating_mul(Int::from(2)), Int::from(200));
-    /// assert_eq!(Int::max_value().saturating_mul(Int::from(2)), Int::max_value());
-    /// assert_eq!(Int::max_value().saturating_mul(Int::max_value()), Int::max_value());
-    /// assert_eq!(Int::max_value().saturating_mul(Int::min_value()), Int::min_value());
+    /// assert_eq!(Int::MAX.saturating_mul(Int::from(2)), Int::MAX);
+    /// assert_eq!(Int::MAX.saturating_mul(Int::MAX), Int::MAX);
+    /// assert_eq!(Int::MAX.saturating_mul(Int::MIN), Int::MIN);
     /// ```
     #[must_use]
     pub fn saturating_mul(self, rhs: Self) -> Self {
@@ -417,8 +439,8 @@ impl Int {
     /// # use js_int::Int;
     /// assert_eq!(Int::from(5).saturating_pow(2), Int::from(25));
     /// assert_eq!(Int::from(-2).saturating_pow(3), Int::from(-8));
-    /// assert_eq!(Int::max_value().saturating_pow(2), Int::max_value());
-    /// assert_eq!(Int::min_value().saturating_pow(2), Int::max_value());
+    /// assert_eq!(Int::MAX.saturating_pow(2), Int::MAX);
+    /// assert_eq!(Int::MIN.saturating_pow(2), Int::MAX);
     /// ```
     #[must_use]
     pub fn saturating_pow(self, exp: u32) -> Self {
@@ -538,6 +560,30 @@ impl<'de> Deserialize<'de> for Int {
 pub struct UInt(u64);
 
 impl UInt {
+    /// The smallest value that can be represented by this integer type.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::MIN, UInt::from(0u32));
+    /// ```
+    pub const MIN: Self = Self(0);
+
+    /// The largest value that can be represented by this integer type.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use {std::convert::TryFrom, js_int::UInt};
+    /// assert_eq!(UInt::MAX, UInt::try_from(9_007_199_254_740_991u64).unwrap());
+    /// ```
+    pub const MAX: Self = Self(MAX_SAFE_UINT);
+
     /// Try to create a `UInt` from the provided `u64`, returning `None` if it is larger than
     /// `MAX_SAFE_UINT`.
     ///
@@ -550,7 +596,7 @@ impl UInt {
     ///
     /// ```
     /// # use js_int::UInt;
-    /// assert_eq!(UInt::new(js_int::MAX_SAFE_UINT), Some(UInt::max_value()));
+    /// assert_eq!(UInt::new(js_int::MAX_SAFE_UINT), Some(UInt::MAX));
     /// assert_eq!(UInt::new(js_int::MAX_SAFE_UINT + 1), None);
     /// ```
     #[must_use]
@@ -570,7 +616,7 @@ impl UInt {
     ///
     /// ```
     /// # use js_int::UInt;
-    /// assert_eq!(UInt::new_wrapping(js_int::MAX_SAFE_UINT), UInt::max_value());
+    /// assert_eq!(UInt::new_wrapping(js_int::MAX_SAFE_UINT), UInt::MAX);
     /// assert_eq!(UInt::new_wrapping(js_int::MAX_SAFE_UINT + 1), UInt::from(0u32));
     /// ```
     #[must_use]
@@ -584,7 +630,7 @@ impl UInt {
         if val <= MAX_SAFE_UINT {
             Self(val)
         } else {
-            Self::max_value()
+            Self::MAX
         }
     }
 
@@ -620,6 +666,7 @@ impl UInt {
     /// assert_eq!(UInt::min_value(), UInt::from(0u32));
     /// ```
     #[must_use]
+    #[deprecated = "Use `UInt::MIN` instead."]
     pub const fn min_value() -> Self {
         Self(0)
     }
@@ -635,6 +682,7 @@ impl UInt {
     /// assert_eq!(UInt::max_value(), UInt::try_from(9_007_199_254_740_991u64).unwrap());
     /// ```
     #[must_use]
+    #[deprecated = "Use `UInt::MAX` instead."]
     pub const fn max_value() -> Self {
         Self(MAX_SAFE_UINT)
     }
@@ -667,7 +715,7 @@ impl UInt {
     /// # use js_int::UInt;
     /// assert_eq!(UInt::from(2u32).checked_next_power_of_two(), Some(UInt::from(2u32)));
     /// assert_eq!(UInt::from(3u32).checked_next_power_of_two(), Some(UInt::from(4u32)));
-    /// assert_eq!(UInt::max_value().checked_next_power_of_two(), None);
+    /// assert_eq!(UInt::MAX.checked_next_power_of_two(), None);
     /// ```
     #[must_use]
     pub fn checked_next_power_of_two(self) -> Option<Self> {
@@ -712,13 +760,10 @@ impl UInt {
     /// ```
     /// # use js_int::UInt;
     /// assert_eq!(
-    ///     (UInt::max_value() - UInt::from(2u32)).checked_add(UInt::from(1u32)),
-    ///     Some(UInt::max_value() - UInt::from(1u32))
+    ///     (UInt::MAX - UInt::from(2u32)).checked_add(UInt::from(1u32)),
+    ///     Some(UInt::MAX - UInt::from(1u32))
     /// );
-    /// assert_eq!(
-    ///     (UInt::max_value() - UInt::from(2u32)).checked_add(UInt::from(3u32)),
-    ///     None
-    /// );
+    /// assert_eq!((UInt::MAX - UInt::from(2u32)).checked_add(UInt::from(3u32)), None);
     /// ```
     #[must_use]
     pub fn checked_add(self, rhs: Self) -> Option<Self> {
@@ -751,7 +796,7 @@ impl UInt {
     /// ```
     /// # use js_int::UInt;
     /// assert_eq!(UInt::from(5u32).checked_mul(UInt::from(1u32)), Some(UInt::from(5u32)));
-    /// assert_eq!(UInt::max_value().checked_mul(UInt::from(2u32)), None);
+    /// assert_eq!(UInt::MAX.checked_mul(UInt::from(2u32)), None);
     /// ```
     #[must_use]
     pub fn checked_mul(self, rhs: Self) -> Option<Self> {
@@ -820,7 +865,7 @@ impl UInt {
     /// assert_eq!(UInt::from(0u32).checked_pow(2), Some(UInt::from(0u32)));
     /// assert_eq!(UInt::from(8u32).checked_pow(2), Some(UInt::from(64u32)));
     /// assert_eq!(UInt::from(1_000_000_000u32).checked_pow(2), None);
-    /// assert_eq!(UInt::max_value().checked_pow(2), None);
+    /// assert_eq!(UInt::MAX.checked_pow(2), None);
     /// ```
     #[must_use]
     pub fn checked_pow(self, exp: u32) -> Option<Self> {
@@ -837,11 +882,11 @@ impl UInt {
     /// ```
     /// # use js_int::UInt;
     /// assert_eq!(UInt::from(100u32).saturating_add(UInt::from(1u32)), UInt::from(101u32));
-    /// assert_eq!(UInt::max_value().saturating_add(UInt::from(1u32)), UInt::max_value());
+    /// assert_eq!(UInt::MAX.saturating_add(UInt::from(1u32)), UInt::MAX);
     /// ```
     #[must_use]
     pub fn saturating_add(self, rhs: Self) -> Self {
-        self.checked_add(rhs).unwrap_or_else(Self::max_value)
+        self.checked_add(rhs).unwrap_or(Self::MAX)
     }
 
     /// Saturating integer subtraction. Computes `self - rhs`, saturating at the numeric
@@ -858,7 +903,7 @@ impl UInt {
     /// ```
     #[must_use]
     pub fn saturating_sub(self, rhs: Self) -> Self {
-        self.checked_sub(rhs).unwrap_or_else(Self::min_value)
+        self.checked_sub(rhs).unwrap_or(Self::MIN)
     }
 
     /// Saturating integer multiplication. Computes `self * rhs`, saturating at the numeric
@@ -871,12 +916,12 @@ impl UInt {
     /// ```
     /// # use js_int::UInt;
     /// assert_eq!(UInt::from(100u32).saturating_mul(UInt::from(2u32)), UInt::from(200u32));
-    /// assert_eq!(UInt::max_value().saturating_mul(UInt::from(2u32)), UInt::max_value());
-    /// assert_eq!(UInt::max_value().saturating_mul(UInt::max_value()), UInt::max_value());
+    /// assert_eq!(UInt::MAX.saturating_mul(UInt::from(2u32)), UInt::MAX);
+    /// assert_eq!(UInt::MAX.saturating_mul(UInt::MAX), UInt::MAX);
     /// ```
     #[must_use]
     pub fn saturating_mul(self, rhs: Self) -> Self {
-        self.checked_mul(rhs).unwrap_or_else(Self::max_value)
+        self.checked_mul(rhs).unwrap_or(Self::MAX)
     }
 
     /// Saturating integer exponentiation. Computes `self.pow(exp)`, saturating at the
@@ -889,7 +934,7 @@ impl UInt {
     /// ```
     /// # use js_int::UInt;
     /// assert_eq!(UInt::from(5u32).saturating_pow(2), UInt::from(25u32));
-    /// assert_eq!(UInt::max_value().saturating_pow(2), UInt::max_value());
+    /// assert_eq!(UInt::MAX.saturating_pow(2), UInt::MAX);
     /// ```
     #[must_use]
     pub fn saturating_pow(self, exp: u32) -> Self {
@@ -1326,13 +1371,13 @@ mod tests {
     #[test]
     #[should_panic]
     fn int_underflow_panic() {
-        let _ = Int::min_value() - Int::from(1);
+        let _ = Int::MIN - Int::from(1);
     }
 
     #[test]
     #[should_panic]
     fn int_overflow_panic() {
-        let _ = Int::max_value() + Int::from(1);
+        let _ = Int::MAX + Int::from(1);
     }
 
     // UInt tests
@@ -1374,14 +1419,14 @@ mod tests {
     #[test]
     #[cfg_attr(debug_assertions, ignore)]
     fn uint_underflow_wrap() {
-        assert_eq!(UInt::from(0u32) - UInt::from(1u32), UInt::max_value());
+        assert_eq!(UInt::from(0u32) - UInt::from(1u32), UInt::MAX);
     }
 
     #[test]
     #[cfg_attr(debug_assertions, ignore)]
     fn uint_overflow_wrap() {
-        assert_eq!(UInt::max_value() + UInt::from(1u32), UInt::from(0u32));
-        assert_eq!(UInt::max_value() + UInt::from(5u32), UInt::from(4u32));
+        assert_eq!(UInt::MAX + UInt::from(1u32), UInt::from(0u32));
+        assert_eq!(UInt::MAX + UInt::from(5u32), UInt::from(4u32));
     }
 
     #[test]
@@ -1395,6 +1440,6 @@ mod tests {
     #[should_panic]
     #[cfg_attr(not(debug_assertions), ignore)]
     fn uint_overflow_panic() {
-        let _ = UInt::max_value() + UInt::from(1u32);
+        let _ = UInt::MAX + UInt::from(1u32);
     }
 }
