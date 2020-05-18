@@ -596,6 +596,30 @@ impl<'de> Deserialize<'de> for Int {
 pub struct UInt(u64);
 
 impl UInt {
+    /// The smallest value that can be represented by this integer type.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::MIN, UInt::from(0u32));
+    /// ```
+    pub const MIN: Self = Self(0);
+
+    /// The largest value that can be represented by this integer type.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use {std::convert::TryFrom, js_int::UInt};
+    /// assert_eq!(UInt::MAX, UInt::try_from(9_007_199_254_740_991u64).unwrap());
+    /// ```
+    pub const MAX: Self = Self(MAX_SAFE_UINT);
+
     /// Try to create a `UInt` from the provided `u64`, returning `None` if it is larger than
     /// `MAX_SAFE_UINT`.
     ///
@@ -608,7 +632,7 @@ impl UInt {
     ///
     /// ```
     /// # use js_int::UInt;
-    /// assert_eq!(UInt::new(js_int::MAX_SAFE_UINT), Some(UInt::max_value()));
+    /// assert_eq!(UInt::new(js_int::MAX_SAFE_UINT), Some(UInt::MAX));
     /// assert_eq!(UInt::new(js_int::MAX_SAFE_UINT + 1), None);
     /// ```
     #[must_use]
@@ -628,7 +652,7 @@ impl UInt {
     ///
     /// ```
     /// # use js_int::UInt;
-    /// assert_eq!(UInt::new_wrapping(js_int::MAX_SAFE_UINT), UInt::max_value());
+    /// assert_eq!(UInt::new_wrapping(js_int::MAX_SAFE_UINT), UInt::MAX);
     /// assert_eq!(UInt::new_wrapping(js_int::MAX_SAFE_UINT + 1), UInt::from(0u32));
     /// ```
     #[must_use]
@@ -642,7 +666,7 @@ impl UInt {
         if val <= MAX_SAFE_UINT {
             Self(val)
         } else {
-            Self::max_value()
+            Self::MAX
         }
     }
 
@@ -656,7 +680,7 @@ impl UInt {
     ///
     /// ```
     /// # use js_int::UInt;
-    /// assert_eq!(UInt::new_overflowing(js_int::MAX_SAFE_UINT), (UInt::max_value(), false));
+    /// assert_eq!(UInt::new_overflowing(js_int::MAX_SAFE_UINT), (UInt::MAX, false));
     /// assert_eq!(UInt::new_overflowing(js_int::MAX_SAFE_UINT + 1), (UInt::from(0u32), true));
     /// ```
     #[must_use]
@@ -697,7 +721,7 @@ impl UInt {
     ///
     /// ```
     /// # use js_int::UInt;
-    /// assert_eq!(UInt::min_value(), UInt::from(0u32));
+    /// assert_eq!(UInt::MIN, UInt::from(0u32));
     /// ```
     #[must_use]
     pub const fn min_value() -> Self {
@@ -712,7 +736,7 @@ impl UInt {
     ///
     /// ```
     /// # use {std::convert::TryFrom, js_int::UInt};
-    /// assert_eq!(UInt::max_value(), UInt::try_from(9_007_199_254_740_991u64).unwrap());
+    /// assert_eq!(UInt::MAX, UInt::try_from(9_007_199_254_740_991u64).unwrap());
     /// ```
     #[must_use]
     pub const fn max_value() -> Self {
@@ -747,7 +771,7 @@ impl UInt {
     /// # use js_int::UInt;
     /// assert_eq!(UInt::from(2u32).checked_next_power_of_two(), Some(UInt::from(2u32)));
     /// assert_eq!(UInt::from(3u32).checked_next_power_of_two(), Some(UInt::from(4u32)));
-    /// assert_eq!(UInt::max_value().checked_next_power_of_two(), None);
+    /// assert_eq!(UInt::MAX.checked_next_power_of_two(), None);
     /// ```
     #[must_use]
     pub fn checked_next_power_of_two(self) -> Option<Self> {
@@ -793,10 +817,10 @@ impl UInt {
     /// # use js_int::UInt;
     /// assert_eq!(
     ///     (UInt::max_value() - UInt::from(2u32)).checked_add(UInt::from(1u32)),
-    ///     Some(UInt::max_value() - UInt::from(1u32))
+    ///     Some(UInt::MAX - UInt::from(1u32))
     /// );
     /// assert_eq!(
-    ///     (UInt::max_value() - UInt::from(2u32)).checked_add(UInt::from(3u32)),
+    ///     (UInt::MAX - UInt::from(2u32)).checked_add(UInt::from(3u32)),
     ///     None
     /// );
     /// ```
@@ -831,7 +855,7 @@ impl UInt {
     /// ```
     /// # use js_int::UInt;
     /// assert_eq!(UInt::from(5u32).checked_mul(UInt::from(1u32)), Some(UInt::from(5u32)));
-    /// assert_eq!(UInt::max_value().checked_mul(UInt::from(2u32)), None);
+    /// assert_eq!(UInt::MAX.checked_mul(UInt::from(2u32)), None);
     /// ```
     #[must_use]
     pub fn checked_mul(self, rhs: Self) -> Option<Self> {
@@ -900,7 +924,7 @@ impl UInt {
     /// assert_eq!(UInt::from(0u32).checked_pow(2), Some(UInt::from(0u32)));
     /// assert_eq!(UInt::from(8u32).checked_pow(2), Some(UInt::from(64u32)));
     /// assert_eq!(UInt::from(1_000_000_000u32).checked_pow(2), None);
-    /// assert_eq!(UInt::max_value().checked_pow(2), None);
+    /// assert_eq!(UInt::MAX.checked_pow(2), None);
     /// ```
     #[must_use]
     pub fn checked_pow(self, exp: u32) -> Option<Self> {
@@ -917,7 +941,7 @@ impl UInt {
     /// ```
     /// # use js_int::UInt;
     /// assert_eq!(UInt::from(100u32).saturating_add(UInt::from(1u32)), UInt::from(101u32));
-    /// assert_eq!(UInt::max_value().saturating_add(UInt::from(1u32)), UInt::max_value());
+    /// assert_eq!(UInt::MAX.saturating_add(UInt::from(1u32)), UInt::MAX);
     /// ```
     #[must_use]
     pub fn saturating_add(self, rhs: Self) -> Self {
@@ -951,12 +975,12 @@ impl UInt {
     /// ```
     /// # use js_int::UInt;
     /// assert_eq!(UInt::from(100u32).saturating_mul(UInt::from(2u32)), UInt::from(200u32));
-    /// assert_eq!(UInt::max_value().saturating_mul(UInt::from(2u32)), UInt::max_value());
-    /// assert_eq!(UInt::max_value().saturating_mul(UInt::max_value()), UInt::max_value());
+    /// assert_eq!(UInt::MAX.saturating_mul(UInt::from(2u32)), UInt::MAX);
+    /// assert_eq!(UInt::MAX.saturating_mul(UInt::MAX), UInt::MAX);
     /// ```
     #[must_use]
     pub fn saturating_mul(self, rhs: Self) -> Self {
-        self.checked_mul(rhs).unwrap_or_else(Self::max_value)
+        self.checked_mul(rhs).unwrap_or(Self::MAX)
     }
 
     /// Saturating integer exponentiation. Computes `self.pow(exp)`, saturating at the
@@ -969,7 +993,7 @@ impl UInt {
     /// ```
     /// # use js_int::UInt;
     /// assert_eq!(UInt::from(5u32).saturating_pow(2), UInt::from(25u32));
-    /// assert_eq!(UInt::max_value().saturating_pow(2), UInt::max_value());
+    /// assert_eq!(UInt::max_value().saturating_pow(2), UInt::MAX);
     /// ```
     #[must_use]
     pub fn saturating_pow(self, exp: u32) -> Self {
@@ -983,15 +1007,15 @@ impl UInt {
     ///
     /// ```
     /// # use js_int::UInt;
-    /// assert_eq!(UInt::max_value().wrapping_add(UInt::from(0u32)), UInt::max_value());
-    /// assert_eq!(UInt::from(200u32).wrapping_add(UInt::max_value()), UInt::from(199u32));
-    /// assert_eq!(UInt::max_value().wrapping_add(UInt::max_value()), UInt::max_value() - UInt::from(1u32));
+    /// assert_eq!(UInt::MAX.wrapping_add(UInt::from(0u32)), UInt::MAX);
+    /// assert_eq!(UInt::from(200u32).wrapping_add(UInt::MAX), UInt::from(199u32));
+    /// assert_eq!(UInt::MAX.wrapping_add(UInt::MAX), UInt::MAX - UInt::from(1u32));
     /// ```
     #[must_use]
     pub fn wrapping_add(self, rhs: Self) -> Self {
         Self::new_wrapping(match self.0.checked_add(rhs.0) {
             Some(val) => val,
-            // Safety: The maximum value this addition can produce is `2 * UInt::max_value()`,
+            // Safety: The maximum value this addition can produce is `2 * UInt::MAX`,
             // which comfortably fits in a u64.
             None => unsafe { unreachable_unchecked() },
         })
@@ -1006,7 +1030,7 @@ impl UInt {
     /// ```
     /// # use js_int::UInt;
     /// assert_eq!(UInt::from(100u32).wrapping_sub(UInt::from(100u32)), UInt::from(0u32));
-    /// assert_eq!(UInt::from(100u32).wrapping_sub(UInt::from(UInt::max_value())), UInt::from(101u32));
+    /// assert_eq!(UInt::from(100u32).wrapping_sub(UInt::from(UInt::MAX)), UInt::from(101u32));
     /// ```
     #[must_use]
     pub fn wrapping_sub(self, rhs: Self) -> Self {
@@ -1022,7 +1046,7 @@ impl UInt {
     /// ```
     /// # use js_int::UInt;
     /// assert_eq!(UInt::from(12u32).wrapping_mul(UInt::from(10u32)), UInt::from(120u32));
-    /// assert_eq!(UInt::from(2u32).wrapping_mul(UInt::max_value()), UInt::max_value() - UInt::from(1u32));
+    /// assert_eq!(UInt::from(2u32).wrapping_mul(UInt::MAX), UInt::MAX - UInt::from(1u32));
     #[must_use]
     pub fn wrapping_mul(self, rhs: Self) -> Self {
         Self::new_wrapping(self.0.wrapping_mul(rhs.0))
@@ -1091,7 +1115,7 @@ impl UInt {
     /// ```
     /// # use js_int::UInt;
     /// assert_eq!(UInt::from(100u32).overflowing_add(UInt::from(1u32)), (UInt::from(101u32), false));
-    /// assert_eq!(UInt::max_value().overflowing_add(UInt::from(1u32)), (UInt::from(0u32), true));
+    /// assert_eq!(UInt::MAX.overflowing_add(UInt::from(1u32)), (UInt::from(0u32), true));
     /// ```
     #[must_use]
     pub fn overflowing_add(self, rhs: Self) -> (Self, bool) {
@@ -1110,7 +1134,7 @@ impl UInt {
     /// ```
     /// # use js_int::UInt;
     /// assert_eq!(UInt::from(5u32).overflowing_sub(UInt::from(2u32)), (UInt::from(3u32), false));
-    /// assert_eq!(UInt::from(0u32).overflowing_sub(UInt::from(1u32)), (UInt::max_value(), true));
+    /// assert_eq!(UInt::from(0u32).overflowing_sub(UInt::from(1u32)), (UInt::MAX, true));
     /// ```
     #[must_use]
     pub fn overflowing_sub(self, rhs: Self) -> (Self, bool) {
@@ -1130,8 +1154,8 @@ impl UInt {
     /// # use js_int::UInt;
     /// assert_eq!(UInt::from(5u32).overflowing_mul(UInt::from(2u32)), (UInt::from(10u32), false));
     /// assert_eq!(
-    ///     UInt::max_value().overflowing_mul(UInt::from(2u32)),
-    ///     (UInt::max_value() - UInt::from(1u32), true)
+    ///     UInt::MAX.overflowing_mul(UInt::from(2u32)),
+    ///     (UInt::MAX - UInt::from(1u32), true)
     /// );
     /// ```
     #[must_use]
@@ -1638,7 +1662,6 @@ mod tests {
         assert_eq!(Int::from(4) * Int::from(-7), Int::from(-28));
         assert_eq!(Int::from(5) / Int::from(2), Int::from(2));
         assert_eq!(Int::from(9) % Int::from(3), Int::from(0));
-        assert_eq!(Int::from(3).checked_pow(3), Some(Int::from(27)));
     }
 
     #[test]
@@ -1712,14 +1735,14 @@ mod tests {
     #[test]
     #[cfg_attr(debug_assertions, ignore)]
     fn uint_underflow_wrap() {
-        assert_eq!(UInt::from(0u32) - UInt::from(1u32), UInt::max_value());
+        assert_eq!(UInt::from(0u32) - UInt::from(1u32), UInt::MAX);
     }
 
     #[test]
     #[cfg_attr(debug_assertions, ignore)]
     fn uint_overflow_wrap() {
-        assert_eq!(UInt::max_value() + UInt::from(1u32), UInt::from(0u32));
-        assert_eq!(UInt::max_value() + UInt::from(5u32), UInt::from(4u32));
+        assert_eq!(UInt::MAX + UInt::from(1u32), UInt::from(0u32));
+        assert_eq!(UInt::MAX + UInt::from(5u32), UInt::from(4u32));
     }
 
     #[test]
@@ -1733,6 +1756,6 @@ mod tests {
     #[should_panic]
     #[cfg_attr(not(debug_assertions), ignore)]
     fn uint_overflow_panic() {
-        let _ = UInt::max_value() + UInt::from(1u32);
+        let _ = UInt::MAX + UInt::from(1u32);
     }
 }
