@@ -47,7 +47,10 @@ use core::{
 };
 
 #[cfg(feature = "serde")]
-use serde::{de::Visitor, Deserialize, Deserializer, Serialize};
+use serde::{
+    de::{Error as _, Unexpected},
+    Deserialize, Deserializer, Serialize,
+};
 
 /// The largest integer value that can be represented exactly by an f64.
 pub const MAX_SAFE_INT: i64 = 0x001F_FFFF_FFFF_FFFF;
@@ -63,6 +66,30 @@ pub const MAX_SAFE_UINT: u64 = 0x001F_FFFF_FFFF_FFFF;
 pub struct Int(i64);
 
 impl Int {
+    /// The smallest value that can be represented by this integer type.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use {std::convert::TryFrom, js_int::Int};
+    /// assert_eq!(Int::MIN, Int::try_from(-9_007_199_254_740_991i64).unwrap());
+    /// ```
+    pub const MIN: Self = Self(MIN_SAFE_INT);
+
+    /// The largest value that can be represented by this integer type.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use {std::convert::TryFrom, js_int::Int};
+    /// assert_eq!(Int::MAX, Int::try_from(9_007_199_254_740_991i64).unwrap());
+    /// ```
+    pub const MAX: Self = Self(MAX_SAFE_INT);
+
     /// Try to create an `Int` from the provided `i64`, returning `None` if it is smaller than
     /// `MIN_SAFE_INT` or larger than `MAX_SAFE_INT`.
     ///
@@ -75,8 +102,8 @@ impl Int {
     ///
     /// ```
     /// # use js_int::Int;
-    /// assert_eq!(Int::new(js_int::MIN_SAFE_INT), Some(Int::min_value()));
-    /// assert_eq!(Int::new(js_int::MAX_SAFE_INT), Some(Int::max_value()));
+    /// assert_eq!(Int::new(js_int::MIN_SAFE_INT), Some(Int::MIN));
+    /// assert_eq!(Int::new(js_int::MAX_SAFE_INT), Some(Int::MAX));
     /// assert_eq!(Int::new(js_int::MIN_SAFE_INT - 1), None);
     /// assert_eq!(Int::new(js_int::MAX_SAFE_INT + 1), None);
     /// ```
@@ -93,9 +120,9 @@ impl Int {
     #[must_use]
     fn new_saturating(val: i64) -> Self {
         if val < MIN_SAFE_INT {
-            Self::min_value()
+            Self::MIN
         } else if val > MAX_SAFE_INT {
-            Self::max_value()
+            Self::MAX
         } else {
             Self(val)
         }
@@ -166,6 +193,7 @@ impl Int {
     /// assert_eq!(Int::min_value(), Int::try_from(-9_007_199_254_740_991i64).unwrap());
     /// ```
     #[must_use]
+    #[deprecated = "Use `UInt::MIN` instead."]
     pub const fn min_value() -> Self {
         Self(MIN_SAFE_INT)
     }
@@ -181,6 +209,7 @@ impl Int {
     /// assert_eq!(Int::max_value(), Int::try_from(9_007_199_254_740_991i64).unwrap());
     /// ```
     #[must_use]
+    #[deprecated = "Use `Int::MAX` instead."]
     pub const fn max_value() -> Self {
         Self(MAX_SAFE_INT)
     }
@@ -197,7 +226,7 @@ impl Int {
     /// assert_eq!(Int::from(-10).abs(), Int::from(10));
     ///
     /// // Differently from i8 / i16 / i32 / i128, Int's min_value is its max_value negated
-    /// assert_eq!(Int::min_value().abs(), Int::max_value());
+    /// assert_eq!(Int::MIN.abs(), Int::MAX);
     /// ```
     #[must_use]
     pub fn abs(self) -> Self {
@@ -248,14 +277,10 @@ impl Int {
     /// ```
     /// # use js_int::Int;
     /// assert_eq!(
-    ///     (Int::max_value() - Int::from(1)).checked_add(Int::from(1)),
-    ///     Some(Int::max_value())
+    ///     (Int::MAX - Int::from(1)).checked_add(Int::from(1)),
+    ///     Some(Int::MAX)
     /// );
-    ///
-    /// assert_eq!(
-    ///     (Int::max_value() - Int::from(1)).checked_add(Int::from(2)),
-    ///     None
-    /// );
+    /// assert_eq!((Int::MAX - Int::from(1)).checked_add(Int::from(2)), None);
     /// ```
     #[must_use]
     pub fn checked_add(self, rhs: Self) -> Option<Self> {
@@ -272,10 +297,10 @@ impl Int {
     /// ```
     /// # use js_int::Int;
     /// assert_eq!(
-    ///     (Int::min_value() + Int::from(2)).checked_sub(Int::from(1)),
-    ///     Some(Int::min_value() + Int::from(1))
+    ///     (Int::MIN + Int::from(2)).checked_sub(Int::from(1)),
+    ///     Some(Int::MIN + Int::from(1))
     /// );
-    /// assert_eq!((Int::min_value() + Int::from(2)).checked_sub(Int::from(3)), None);
+    /// assert_eq!((Int::MIN + Int::from(2)).checked_sub(Int::from(3)), None);
     /// ```
     #[must_use]
     pub fn checked_sub(self, rhs: Self) -> Option<Self> {
@@ -292,7 +317,7 @@ impl Int {
     /// ```
     /// # use js_int::Int;
     /// assert_eq!(Int::from(5).checked_mul(Int::from(1)), Some(Int::from(5)));
-    /// assert_eq!(Int::max_value().checked_mul(Int::from(2)), None);
+    /// assert_eq!(Int::MAX.checked_mul(Int::from(2)), None);
     /// ```
     #[must_use]
     pub fn checked_mul(self, rhs: Self) -> Option<Self> {
@@ -307,7 +332,7 @@ impl Int {
     ///
     /// ```
     /// # use js_int::Int;
-    /// assert_eq!(Int::min_value().checked_div(Int::from(-1)), Some(Int::max_value()));
+    /// assert_eq!(Int::MIN.checked_div(Int::from(-1)), Some(Int::MAX));
     /// assert_eq!(Int::from(1).checked_div(Int::from(0)), None);
     /// ```
     #[must_use]
@@ -325,7 +350,7 @@ impl Int {
     /// # use js_int::Int;
     /// assert_eq!(Int::from(5).checked_rem(Int::from(2)), Some(Int::from(1)));
     /// assert_eq!(Int::from(5).checked_rem(Int::from(0)), None);
-    /// assert_eq!(Int::min_value().checked_rem(Int::from(-1)), Some(Int::from(0)));
+    /// assert_eq!(Int::MIN.checked_rem(Int::from(-1)), Some(Int::from(0)));
     /// ```
     #[must_use]
     pub fn checked_rem(self, rhs: Self) -> Option<Self> {
@@ -342,8 +367,8 @@ impl Int {
     /// ```
     /// # use js_int::Int;
     /// assert_eq!(Int::from(8).checked_pow(2), Some(Int::from(64)));
-    /// assert_eq!(Int::max_value().checked_pow(2), None);
-    /// assert_eq!(Int::min_value().checked_pow(2), None);
+    /// assert_eq!(Int::MAX.checked_pow(2), None);
+    /// assert_eq!(Int::MIN.checked_pow(2), None);
     /// assert_eq!(Int::from(1_000_000_000).checked_pow(2), None);
     /// ```
     #[must_use]
@@ -361,11 +386,11 @@ impl Int {
     /// ```
     /// # use js_int::Int;
     /// assert_eq!(Int::from(100).saturating_add(Int::from(1)), Int::from(101));
-    /// assert_eq!(Int::max_value().saturating_add(Int::from(1)), Int::max_value());
+    /// assert_eq!(Int::MAX.saturating_add(Int::from(1)), Int::MAX);
     /// ```
     #[must_use]
     pub fn saturating_add(self, rhs: Self) -> Self {
-        self.checked_add(rhs).unwrap_or_else(Self::max_value)
+        self.checked_add(rhs).unwrap_or(Self::MAX)
     }
 
     /// Saturating integer subtraction. Computes `self - rhs`, saturating at the numeric
@@ -378,11 +403,11 @@ impl Int {
     /// ```
     /// # use js_int::Int;
     /// assert_eq!(Int::from(100).saturating_sub(Int::from(1)), Int::from(99));
-    /// assert_eq!(Int::min_value().saturating_sub(Int::from(1)), Int::min_value());
+    /// assert_eq!(Int::MIN.saturating_sub(Int::from(1)), Int::MIN);
     /// ```
     #[must_use]
     pub fn saturating_sub(self, rhs: Self) -> Self {
-        self.checked_sub(rhs).unwrap_or_else(Self::min_value)
+        self.checked_sub(rhs).unwrap_or(Self::MIN)
     }
 
     /// Saturating integer multiplication. Computes `self * rhs`, saturating at the numeric
@@ -395,9 +420,9 @@ impl Int {
     /// ```
     /// # use js_int::Int;
     /// assert_eq!(Int::from(100).saturating_mul(Int::from(2)), Int::from(200));
-    /// assert_eq!(Int::max_value().saturating_mul(Int::from(2)), Int::max_value());
-    /// assert_eq!(Int::max_value().saturating_mul(Int::max_value()), Int::max_value());
-    /// assert_eq!(Int::max_value().saturating_mul(Int::min_value()), Int::min_value());
+    /// assert_eq!(Int::MAX.saturating_mul(Int::from(2)), Int::MAX);
+    /// assert_eq!(Int::MAX.saturating_mul(Int::MAX), Int::MAX);
+    /// assert_eq!(Int::MAX.saturating_mul(Int::MIN), Int::MIN);
     /// ```
     #[must_use]
     pub fn saturating_mul(self, rhs: Self) -> Self {
@@ -415,8 +440,8 @@ impl Int {
     /// # use js_int::Int;
     /// assert_eq!(Int::from(5).saturating_pow(2), Int::from(25));
     /// assert_eq!(Int::from(-2).saturating_pow(3), Int::from(-8));
-    /// assert_eq!(Int::max_value().saturating_pow(2), Int::max_value());
-    /// assert_eq!(Int::min_value().saturating_pow(2), Int::max_value());
+    /// assert_eq!(Int::MAX.saturating_pow(2), Int::MAX);
+    /// assert_eq!(Int::MIN.saturating_pow(2), Int::MAX);
     /// ```
     #[must_use]
     pub fn saturating_pow(self, exp: u32) -> Self {
@@ -519,73 +544,13 @@ impl<'de> Deserialize<'de> for Int {
     where
         D: Deserializer<'de>,
     {
-        struct IntVisitor;
-
-        impl<'de> Visitor<'de> for IntVisitor {
-            type Value = Int;
-
-            fn expecting(&self, formatter: &mut Formatter) -> fmt::Result {
-                formatter.write_str("a signed integer between -(2**53) + 1 and (2**53) - 1")
-            }
-
-            fn visit_i8<E>(self, value: i8) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(Int::from(value))
-            }
-
-            fn visit_i16<E>(self, value: i16) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(Int::from(value))
-            }
-
-            fn visit_i32<E>(self, value: i32) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(Int::from(value))
-            }
-
-            fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(Int::try_from(value).map_err(|_| E::custom("out of bounds"))?)
-            }
-
-            fn visit_u8<E>(self, value: u8) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(Int::from(value))
-            }
-
-            fn visit_u16<E>(self, value: u16) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(Int::from(value))
-            }
-
-            fn visit_u32<E>(self, value: u32) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(Int::from(value))
-            }
-
-            fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(Int::try_from(value).map_err(|_| E::custom("out of bounds"))?)
-            }
-        }
-
-        deserializer.deserialize_any(IntVisitor)
+        let val = i64::deserialize(deserializer)?;
+        Self::new(val).ok_or_else(|| {
+            D::Error::invalid_value(
+                Unexpected::Signed(val),
+                &"an integer between -2^53 + 1 and 2^53 - 1",
+            )
+        })
     }
 }
 
@@ -724,6 +689,7 @@ impl UInt {
     /// assert_eq!(UInt::MIN, UInt::from(0u32));
     /// ```
     #[must_use]
+    #[deprecated = "Use `UInt::MIN` instead."]
     pub const fn min_value() -> Self {
         Self(0)
     }
@@ -739,6 +705,7 @@ impl UInt {
     /// assert_eq!(UInt::MAX, UInt::try_from(9_007_199_254_740_991u64).unwrap());
     /// ```
     #[must_use]
+    #[deprecated = "Use `UInt::MAX` instead."]
     pub const fn max_value() -> Self {
         Self(MAX_SAFE_UINT)
     }
@@ -816,13 +783,10 @@ impl UInt {
     /// ```
     /// # use js_int::UInt;
     /// assert_eq!(
-    ///     (UInt::max_value() - UInt::from(2u32)).checked_add(UInt::from(1u32)),
+    ///     (UInt::MAX - UInt::from(2u32)).checked_add(UInt::from(1u32)),
     ///     Some(UInt::MAX - UInt::from(1u32))
     /// );
-    /// assert_eq!(
-    ///     (UInt::MAX - UInt::from(2u32)).checked_add(UInt::from(3u32)),
-    ///     None
-    /// );
+    /// assert_eq!((UInt::MAX - UInt::from(2u32)).checked_add(UInt::from(3u32)), None);
     /// ```
     #[must_use]
     pub fn checked_add(self, rhs: Self) -> Option<Self> {
@@ -945,7 +909,7 @@ impl UInt {
     /// ```
     #[must_use]
     pub fn saturating_add(self, rhs: Self) -> Self {
-        self.checked_add(rhs).unwrap_or_else(Self::max_value)
+        self.checked_add(rhs).unwrap_or(Self::MAX)
     }
 
     /// Saturating integer subtraction. Computes `self - rhs`, saturating at the numeric
@@ -962,7 +926,7 @@ impl UInt {
     /// ```
     #[must_use]
     pub fn saturating_sub(self, rhs: Self) -> Self {
-        self.checked_sub(rhs).unwrap_or_else(Self::min_value)
+        self.checked_sub(rhs).unwrap_or(Self::MIN)
     }
 
     /// Saturating integer multiplication. Computes `self * rhs`, saturating at the numeric
@@ -993,7 +957,7 @@ impl UInt {
     /// ```
     /// # use js_int::UInt;
     /// assert_eq!(UInt::from(5u32).saturating_pow(2), UInt::from(25u32));
-    /// assert_eq!(UInt::max_value().saturating_pow(2), UInt::MAX);
+    /// assert_eq!(UInt::MAX.saturating_pow(2), UInt::MAX);
     /// ```
     #[must_use]
     pub fn saturating_pow(self, exp: u32) -> Self {
@@ -1281,73 +1245,13 @@ impl<'de> Deserialize<'de> for UInt {
     where
         D: Deserializer<'de>,
     {
-        struct UIntVisitor;
-
-        impl<'de> Visitor<'de> for UIntVisitor {
-            type Value = UInt;
-
-            fn expecting(&self, formatter: &mut Formatter) -> fmt::Result {
-                formatter.write_str("an unsigned integer between 0 and (2**53) - 1")
-            }
-
-            fn visit_i8<E>(self, value: i8) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(UInt::try_from(value).map_err(|_| E::custom("out of bounds"))?)
-            }
-
-            fn visit_i16<E>(self, value: i16) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(UInt::try_from(value).map_err(|_| E::custom("out of bounds"))?)
-            }
-
-            fn visit_i32<E>(self, value: i32) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(UInt::try_from(value).map_err(|_| E::custom("out of bounds"))?)
-            }
-
-            fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(UInt::try_from(value).map_err(|_| E::custom("out of bounds"))?)
-            }
-
-            fn visit_u8<E>(self, value: u8) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(UInt::from(value))
-            }
-
-            fn visit_u16<E>(self, value: u16) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(UInt::from(value))
-            }
-
-            fn visit_u32<E>(self, value: u32) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(UInt::from(value))
-            }
-
-            fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(UInt::try_from(value).map_err(|_| E::custom("out of bounds"))?)
-            }
-        }
-
-        deserializer.deserialize_any(UIntVisitor)
+        let val = u64::deserialize(deserializer)?;
+        Self::new(val).ok_or_else(|| {
+            D::Error::invalid_value(
+                Unexpected::Unsigned(val),
+                &"an integer between 0 and 2^53 - 1",
+            )
+        })
     }
 }
 
@@ -1687,13 +1591,13 @@ mod tests {
     #[test]
     #[should_panic]
     fn int_underflow_panic() {
-        let _ = Int::min_value() - Int::from(1);
+        let _ = Int::MIN - Int::from(1);
     }
 
     #[test]
     #[should_panic]
     fn int_overflow_panic() {
-        let _ = Int::max_value() + Int::from(1);
+        let _ = Int::MAX + Int::from(1);
     }
 
     // UInt tests
