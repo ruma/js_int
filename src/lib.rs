@@ -1090,11 +1090,11 @@ impl UInt {
     ///
     /// ```
     /// # use js_int::UInt;
-    /// assert_eq!(UInt::from(100u32).overflow_add(UInt::from(1u32)), (UInt::from(101u32), false));
-    /// assert_eq!(UInt::max_value().overflow_add(UInt::from(1u32)), (UInt::from(0u32), true));
+    /// assert_eq!(UInt::from(100u32).overflowing_add(UInt::from(1u32)), (UInt::from(101u32), false));
+    /// assert_eq!(UInt::max_value().overflowing_add(UInt::from(1u32)), (UInt::from(0u32), true));
     /// ```
     #[must_use]
-    pub fn overflow_add(self, rhs: Self) -> (Self, bool) {
+    pub fn overflowing_add(self, rhs: Self) -> (Self, bool) {
         Self::new_overflowing(self.0.wrapping_add(rhs.0))
     }
 
@@ -1109,11 +1109,11 @@ impl UInt {
     ///
     /// ```
     /// # use js_int::UInt;
-    /// assert_eq!(UInt::from(5u32).overflow_sub(UInt::from(2u32)), (UInt::from(3u32), false));
-    /// assert_eq!(UInt::from(0u32).overflow_sub(UInt::from(1u32)), (UInt::max_value(), true));
+    /// assert_eq!(UInt::from(5u32).overflowing_sub(UInt::from(2u32)), (UInt::from(3u32), false));
+    /// assert_eq!(UInt::from(0u32).overflowing_sub(UInt::from(1u32)), (UInt::max_value(), true));
     /// ```
     #[must_use]
-    pub fn overflow_sub(self, rhs: Self) -> (Self, bool) {
+    pub fn overflowing_sub(self, rhs: Self) -> (Self, bool) {
         Self::new_overflowing(self.0.wrapping_sub(rhs.0))
     }
 
@@ -1128,14 +1128,14 @@ impl UInt {
     ///
     /// ```
     /// # use js_int::UInt;
-    /// assert_eq!(UInt::from(5u32).overflow_mul(UInt::from(2u32)), (UInt::from(10u32), false));
+    /// assert_eq!(UInt::from(5u32).overflowing_mul(UInt::from(2u32)), (UInt::from(10u32), false));
     /// assert_eq!(
-    ///     UInt::max_value().overflow_mul(UInt::from(2u32)),
+    ///     UInt::max_value().overflowing_mul(UInt::from(2u32)),
     ///     (UInt::max_value() - UInt::from(1u32), true)
     /// );
     /// ```
     #[must_use]
-    pub fn overflow_mul(self, rhs: Self) -> (Self, bool) {
+    pub fn overflowing_mul(self, rhs: Self) -> (Self, bool) {
         Self::new_overflowing(self.0.wrapping_mul(rhs.0))
     }
 
@@ -1150,10 +1150,10 @@ impl UInt {
     ///
     /// ```
     /// # use js_int::UInt;
-    /// assert_eq!(UInt::from(5u32).overflow_div(UInt::from(2u32)), (UInt::from(2u32), false));
+    /// assert_eq!(UInt::from(5u32).overflowing_div(UInt::from(2u32)), (UInt::from(2u32), false));
     /// ```
     #[must_use]
-    pub fn overflow_div(self, rhs: Self) -> (Self, bool) {
+    pub fn overflowing_div(self, rhs: Self) -> (Self, bool) {
         Self::new_overflowing(self.0.wrapping_div(rhs.0))
     }
 
@@ -1168,10 +1168,10 @@ impl UInt {
     ///
     /// ```
     /// # use js_int::UInt;
-    /// assert_eq!(UInt::from(5u32).overflow_rem(UInt::from(2u32)), (UInt::from(1u32), false));
+    /// assert_eq!(UInt::from(5u32).overflowing_rem(UInt::from(2u32)), (UInt::from(1u32), false));
     /// ```
     #[must_use]
-    pub fn overflow_rem(self, rhs: Self) -> (Self, bool) {
+    pub fn overflowing_rem(self, rhs: Self) -> (Self, bool) {
         Self::new_overflowing(self.0.wrapping_rem(rhs.0))
     }
 }
@@ -1638,7 +1638,7 @@ mod tests {
         assert_eq!(Int::from(4) * Int::from(-7), Int::from(-28));
         assert_eq!(Int::from(5) / Int::from(2), Int::from(2));
         assert_eq!(Int::from(9) % Int::from(3), Int::from(0));
-        // assert_eq!(Int::from(3).pow(3), Int::from(27));
+        assert_eq!(Int::from(3).checked_pow(3), Some(Int::from(27)));
     }
 
     #[test]
