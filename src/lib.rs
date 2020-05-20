@@ -686,7 +686,7 @@ impl UInt {
     ///
     /// ```
     /// # use js_int::UInt;
-    /// assert_eq!(UInt::MIN, UInt::from(0u32));
+    /// assert_eq!(UInt::min_value(), UInt::from(0u32));
     /// ```
     #[must_use]
     #[deprecated = "Use `UInt::MIN` instead."]
@@ -702,7 +702,7 @@ impl UInt {
     ///
     /// ```
     /// # use {std::convert::TryFrom, js_int::UInt};
-    /// assert_eq!(UInt::MAX, UInt::try_from(9_007_199_254_740_991u64).unwrap());
+    /// assert_eq!(UInt::max_value(), UInt::try_from(9_007_199_254_740_991u64).unwrap());
     /// ```
     #[must_use]
     #[deprecated = "Use `UInt::MAX` instead."]
@@ -985,7 +985,7 @@ impl UInt {
         })
     }
 
-    /// Wrapping (modular) subtraction. Computes self - rhs, wrapping around at the boundary of the type.
+    /// Wrapping (modular) subtraction. Computes `self - rhs`, wrapping around at the boundary of the type.
     ///
     /// # Examples
     ///
@@ -994,14 +994,15 @@ impl UInt {
     /// ```
     /// # use js_int::UInt;
     /// assert_eq!(UInt::from(100u32).wrapping_sub(UInt::from(100u32)), UInt::from(0u32));
-    /// assert_eq!(UInt::from(100u32).wrapping_sub(UInt::from(UInt::MAX)), UInt::from(101u32));
+    /// assert_eq!(UInt::from(100u32).wrapping_sub(UInt::MAX), UInt::from(101u32));
+    /// assert_eq!(UInt::from(0u32).wrapping_sub(UInt::MAX), UInt::from(1u32));
     /// ```
     #[must_use]
     pub fn wrapping_sub(self, rhs: Self) -> Self {
         Self::new_wrapping(self.0.wrapping_sub(rhs.0))
     }
 
-    /// Wrapping (modular) multiplication. Computes self * rhs, wrapping around at the boundary of the type.
+    /// Wrapping (modular) multiplication. Computes `self * rhs`, wrapping around at the boundary of the type.
     ///
     /// # Examples
     ///
@@ -1011,6 +1012,7 @@ impl UInt {
     /// # use js_int::UInt;
     /// assert_eq!(UInt::from(12u32).wrapping_mul(UInt::from(10u32)), UInt::from(120u32));
     /// assert_eq!(UInt::from(2u32).wrapping_mul(UInt::MAX), UInt::MAX - UInt::from(1u32));
+    /// ```
     #[must_use]
     pub fn wrapping_mul(self, rhs: Self) -> Self {
         Self::new_wrapping(self.0.wrapping_mul(rhs.0))
@@ -1048,7 +1050,7 @@ impl UInt {
     /// ```
     #[must_use]
     pub fn wrapping_rem(self, rhs: Self) -> Self {
-        Self::new_wrapping(self.0.wrapping_rem(rhs.0))
+        Self(self.0.wrapping_rem(rhs.0))
     }
 
     /// Wrapping (modular) exponentiation. Computes `self.pow(rhs)`, Wrapping around the boundary
@@ -1060,14 +1062,15 @@ impl UInt {
     ///
     /// ```
     /// # use js_int::UInt;
-    /// assert_eq!(UInt::from(100u32).wrapping_rem(UInt::from(10u32)), UInt::from(0u32));
+    /// assert_eq!(UInt::from(3u32).wrapping_pow(5), UInt::from(243u32));
+    /// assert_eq!(UInt::MAX.wrapping_pow(2), UInt::from(1u32));
     /// ```
     #[must_use]
     pub fn wrapping_pow(self, exp: u32) -> Self {
         Self::new_wrapping(self.0.wrapping_pow(exp))
     }
 
-    /// Calculates `self` + `rhs`
+    /// Overflowing addition. Computes `self + rhs` wrapping at the type boundary.
     ///
     /// Returns a tuple of the addition along with a boolean indicating whether an arithmetic
     /// overflow would occur. If an overflow would have occurred then the wrapped value is returned.
@@ -1086,7 +1089,7 @@ impl UInt {
         Self::new_overflowing(self.0.wrapping_add(rhs.0))
     }
 
-    /// Calculates `self` - `rhs`
+    /// Overflowing subtraction. Computes `self - rhs` wrapping at the type boundary.
     ///
     /// Returns a tuple of the subtraction along with a boolean indicating whether an arithmetic
     /// overflow would occur. If an overflow would have occurred then the wrapped value is returned.
@@ -1105,7 +1108,7 @@ impl UInt {
         Self::new_overflowing(self.0.wrapping_sub(rhs.0))
     }
 
-    /// Calculates multiplication of `self` and `rhs`
+    /// Overflowing multiplication. Computes `self * rhs` wrapping at the type boundary.
     ///
     /// Returns a tuple of the multiplication along with a boolean indicating whether an arithmetic
     /// overflow would occur. If an overflow would have occurred then the wrapped value is returned.
@@ -1127,10 +1130,11 @@ impl UInt {
         Self::new_overflowing(self.0.wrapping_mul(rhs.0))
     }
 
-    /// Calculates divisor of `self` is divided by `rhs`
+    /// Overflowing division. Computes `self / rhs` wrapping at the type boundary.
     ///
     /// Returns a tuple of the divisor along with a boolean indicating whether an arithmetic
-    /// overflow would occur. If an overflow would have occurred then the wrapped value is returned.
+    /// overflow would occur. Note that for unsigned integers overflow never occurs, so the
+    /// second value is always false.
     ///
     /// # Examples
     ///
@@ -1145,10 +1149,11 @@ impl UInt {
         Self::new_overflowing(self.0.wrapping_div(rhs.0))
     }
 
-    /// Calculates remainder when `self` is divided by `rhs`
+    /// Overflowing remainder. Computes `self % rhs` wrapping at the type boundary.
     ///
     /// Returns a tuple of the remainder after dividing along with a boolean indicating whether an arithmetic
-    /// overflow would occur. If an overflow would have occurred then the wrapped value is returned.
+    /// overflow would occur. Note that for unsigned integers overflow never occurs, so the
+    /// second value is always false.
     ///
     /// # Examples
     ///
