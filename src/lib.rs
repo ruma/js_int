@@ -1070,7 +1070,7 @@ impl UInt {
         Self::new_wrapping(self.0.wrapping_pow(exp))
     }
 
-    /// Overflowing addition. Computes `self + rhs` wrapping at the type boundary.
+    /// Overflowing addition. Computes `self + rhs`, wrapping at the type boundary.
     ///
     /// Returns a tuple of the addition along with a boolean indicating whether an arithmetic
     /// overflow would occur. If an overflow would have occurred then the wrapped value is returned.
@@ -1089,7 +1089,7 @@ impl UInt {
         Self::new_overflowing(self.0.wrapping_add(rhs.0))
     }
 
-    /// Overflowing subtraction. Computes `self - rhs` wrapping at the type boundary.
+    /// Overflowing subtraction. Computes `self - rhs`, wrapping at the type boundary.
     ///
     /// Returns a tuple of the subtraction along with a boolean indicating whether an arithmetic
     /// overflow would occur. If an overflow would have occurred then the wrapped value is returned.
@@ -1108,7 +1108,7 @@ impl UInt {
         Self::new_overflowing(self.0.wrapping_sub(rhs.0))
     }
 
-    /// Overflowing multiplication. Computes `self * rhs` wrapping at the type boundary.
+    /// Overflowing multiplication. Computes `self * rhs`, wrapping at the type boundary.
     ///
     /// Returns a tuple of the multiplication along with a boolean indicating whether an arithmetic
     /// overflow would occur. If an overflow would have occurred then the wrapped value is returned.
@@ -1130,7 +1130,7 @@ impl UInt {
         Self::new_overflowing(self.0.wrapping_mul(rhs.0))
     }
 
-    /// Overflowing division. Computes `self / rhs` wrapping at the type boundary.
+    /// Overflowing division. Computes `self / rhs`, wrapping at the type boundary.
     ///
     /// Returns a tuple of the divisor along with a boolean indicating whether an arithmetic
     /// overflow would occur. Note that for unsigned integers overflow never occurs, so the
@@ -1149,7 +1149,7 @@ impl UInt {
         Self::new_overflowing(self.0.wrapping_div(rhs.0))
     }
 
-    /// Overflowing remainder. Computes `self % rhs` wrapping at the type boundary.
+    /// Overflowing remainder. Computes `self % rhs`, wrapping at the type boundary.
     ///
     /// Returns a tuple of the remainder after dividing along with a boolean indicating whether an arithmetic
     /// overflow would occur. Note that for unsigned integers overflow never occurs, so the
