@@ -1127,6 +1127,8 @@ impl UInt {
     /// ```
     #[must_use]
     pub fn overflowing_mul(self, rhs: Self) -> (Self, bool) {
+        // TODO: is this actually correct? Can the inner wrapping operation not wrap to a value
+        // that once again fits UInt?
         Self::new_overflowing(self.0.wrapping_mul(rhs.0))
     }
 
@@ -1167,6 +1169,8 @@ impl UInt {
     pub fn overflowing_rem(self, rhs: Self) -> (Self, bool) {
         Self::new_overflowing(self.0.wrapping_rem(rhs.0))
     }
+
+    // TODO: overflowing_pow
 }
 
 macro_rules! uint_op_impl {
