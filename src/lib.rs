@@ -39,6 +39,7 @@
 use core::{
     convert::{From, TryFrom},
     fmt::{self, Debug, Display, Formatter},
+    hint::unreachable_unchecked,
     iter,
     num::{ParseIntError as StdParseIntError, TryFromIntError as StdTryFromIntError},
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign},
@@ -634,6 +635,28 @@ impl UInt {
         }
     }
 
+    /// Create a `UInt` from the provided `u64`, wrapping at `MAX_SAFE_UINT`.
+    ///
+    /// Returns a tuple of the value and true if overflow occurs.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::new_overflowing(js_int::MAX_SAFE_UINT), (UInt::MAX, false));
+    /// assert_eq!(UInt::new_overflowing(js_int::MAX_SAFE_UINT + 1), (UInt::from(0u32), true));
+    /// ```
+    #[must_use]
+    pub fn new_overflowing(val: u64) -> (Self, bool) {
+        if val <= MAX_SAFE_UINT {
+            (Self(val), false)
+        } else {
+            (Self::new_wrapping(val), true)
+        }
+    }
+
     /// The constructor used for arithmetic operations
     #[must_use]
     fn new_(val: u64) -> Self {
@@ -941,7 +964,209 @@ impl UInt {
         Self::new_saturating(self.0.saturating_pow(exp))
     }
 
-    // TODO: wrapping_* methods, overflowing_* methods
+    /// Wrapping (modular) addition. Computes `self + rhs`, wrapping around at the boundary of the
+    /// type.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::MAX.wrapping_add(UInt::from(0u32)), UInt::MAX);
+    /// assert_eq!(UInt::from(200u32).wrapping_add(UInt::MAX), UInt::from(199u32));
+    /// assert_eq!(UInt::MAX.wrapping_add(UInt::MAX), UInt::MAX - UInt::from(1u32));
+    /// ```
+    #[must_use]
+    pub fn wrapping_add(self, rhs: Self) -> Self {
+        Self::new_wrapping(match self.0.checked_add(rhs.0) {
+            Some(val) => val,
+            // Safety: The maximum value this addition can produce is `2 * UInt::MAX`,
+            // which comfortably fits in a u64.
+            None => unsafe { unreachable_unchecked() },
+        })
+    }
+
+    /// Wrapping (modular) subtraction. Computes `self - rhs`, wrapping around at the boundary of the type.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::from(100u32).wrapping_sub(UInt::from(100u32)), UInt::from(0u32));
+    /// assert_eq!(UInt::from(100u32).wrapping_sub(UInt::MAX), UInt::from(101u32));
+    /// assert_eq!(UInt::from(0u32).wrapping_sub(UInt::MAX), UInt::from(1u32));
+    /// ```
+    #[must_use]
+    pub fn wrapping_sub(self, rhs: Self) -> Self {
+        Self::new_wrapping(self.0.wrapping_sub(rhs.0))
+    }
+
+    /// Wrapping (modular) multiplication. Computes `self * rhs`, wrapping around at the boundary of the type.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::from(12u32).wrapping_mul(UInt::from(10u32)), UInt::from(120u32));
+    /// assert_eq!(UInt::from(2u32).wrapping_mul(UInt::MAX), UInt::MAX - UInt::from(1u32));
+    /// ```
+    #[must_use]
+    pub fn wrapping_mul(self, rhs: Self) -> Self {
+        Self::new_wrapping(self.0.wrapping_mul(rhs.0))
+    }
+
+    /// Wrapping (modular) division. Computes `self / rhs`. Wrapped division on unsigned types is
+    /// just normal division. There's no way wrapping could ever happen. This function exists, so
+    /// that all operations are accounted for in the wrapping operations.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::from(100u32).wrapping_div(UInt::from(10u32)), UInt::from(10u32));
+    /// ```
+    #[must_use]
+    pub fn wrapping_div(self, rhs: Self) -> Self {
+        Self(self.0.wrapping_div(rhs.0))
+    }
+
+    /// Wrapping (modular) remainder. Computes `self % rhs`. Wrapped remainder calculation on
+    /// unsigned types is just the regular remainder calculation. There's no way wrapping could ever
+    /// happen. This function exists, so that all operations are accounted for in the wrapping
+    /// operations.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::from(100u32).wrapping_rem(UInt::from(10u32)), UInt::from(0u32));
+    /// ```
+    #[must_use]
+    pub fn wrapping_rem(self, rhs: Self) -> Self {
+        Self(self.0.wrapping_rem(rhs.0))
+    }
+
+    /// Wrapping (modular) exponentiation. Computes `self.pow(rhs)`, Wrapping around the boundary
+    /// of the type.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::from(3u32).wrapping_pow(5), UInt::from(243u32));
+    /// assert_eq!(UInt::MAX.wrapping_pow(2), UInt::from(1u32));
+    /// ```
+    #[must_use]
+    pub fn wrapping_pow(self, exp: u32) -> Self {
+        Self::new_wrapping(self.0.wrapping_pow(exp))
+    }
+
+    /// Overflowing addition. Computes `self + rhs`, wrapping at the type boundary.
+    ///
+    /// Returns a tuple of the addition along with a boolean indicating whether an arithmetic
+    /// overflow would occur. If an overflow would have occurred then the wrapped value is returned.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::from(100u32).overflowing_add(UInt::from(1u32)), (UInt::from(101u32), false));
+    /// assert_eq!(UInt::MAX.overflowing_add(UInt::from(1u32)), (UInt::from(0u32), true));
+    /// ```
+    #[must_use]
+    pub fn overflowing_add(self, rhs: Self) -> (Self, bool) {
+        Self::new_overflowing(self.0.wrapping_add(rhs.0))
+    }
+
+    /// Overflowing subtraction. Computes `self - rhs`, wrapping at the type boundary.
+    ///
+    /// Returns a tuple of the subtraction along with a boolean indicating whether an arithmetic
+    /// overflow would occur. If an overflow would have occurred then the wrapped value is returned.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::from(5u32).overflowing_sub(UInt::from(2u32)), (UInt::from(3u32), false));
+    /// assert_eq!(UInt::from(0u32).overflowing_sub(UInt::from(1u32)), (UInt::MAX, true));
+    /// ```
+    #[must_use]
+    pub fn overflowing_sub(self, rhs: Self) -> (Self, bool) {
+        Self::new_overflowing(self.0.wrapping_sub(rhs.0))
+    }
+
+    /// Overflowing multiplication. Computes `self * rhs`, wrapping at the type boundary.
+    ///
+    /// Returns a tuple of the multiplication along with a boolean indicating whether an arithmetic
+    /// overflow would occur. If an overflow would have occurred then the wrapped value is returned.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::from(5u32).overflowing_mul(UInt::from(2u32)), (UInt::from(10u32), false));
+    /// assert_eq!(
+    ///     UInt::MAX.overflowing_mul(UInt::from(2u32)),
+    ///     (UInt::MAX - UInt::from(1u32), true)
+    /// );
+    /// ```
+    #[must_use]
+    pub fn overflowing_mul(self, rhs: Self) -> (Self, bool) {
+        Self::new_overflowing(self.0.wrapping_mul(rhs.0))
+    }
+
+    /// Overflowing division. Computes `self / rhs`, wrapping at the type boundary.
+    ///
+    /// Returns a tuple of the divisor along with a boolean indicating whether an arithmetic
+    /// overflow would occur. Note that for unsigned integers overflow never occurs, so the
+    /// second value is always false.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::from(5u32).overflowing_div(UInt::from(2u32)), (UInt::from(2u32), false));
+    /// ```
+    #[must_use]
+    pub fn overflowing_div(self, rhs: Self) -> (Self, bool) {
+        Self::new_overflowing(self.0.wrapping_div(rhs.0))
+    }
+
+    /// Overflowing remainder. Computes `self % rhs`, wrapping at the type boundary.
+    ///
+    /// Returns a tuple of the remainder after dividing along with a boolean indicating whether an arithmetic
+    /// overflow would occur. Note that for unsigned integers overflow never occurs, so the
+    /// second value is always false.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::UInt;
+    /// assert_eq!(UInt::from(5u32).overflowing_rem(UInt::from(2u32)), (UInt::from(1u32), false));
+    /// ```
+    #[must_use]
+    pub fn overflowing_rem(self, rhs: Self) -> (Self, bool) {
+        Self::new_overflowing(self.0.wrapping_rem(rhs.0))
+    }
 }
 
 macro_rules! uint_op_impl {
