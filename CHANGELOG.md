@@ -1,5 +1,7 @@
 # [unreleased]
 
+# 0.1.6
+
 * Introduce `int!` and `uint!` macros as shorthand for `Int::from(Ni32)` and `UInt::from(Nu32)`
 
 # 0.1.5
