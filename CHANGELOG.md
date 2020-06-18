@@ -1,5 +1,7 @@
 # [unreleased]
 
+* Introduce `int!` and `uint!` macros as shorthand for `Int::from(Ni32)` and `UInt::from(Nu32)`
+
 # 0.1.5
 
 * Introduce `Int::MIN`, `Int::MAX`, `UInt::MIN`, `UInt::MAX` and deprecate `const fn min_value` and

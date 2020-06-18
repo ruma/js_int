@@ -1,3 +1,19 @@
+/// Creates an `Int` from a numeric literal.
+#[macro_export]
+macro_rules! int {
+    ($n:literal) => {
+        <$crate::Int as ::std::convert::From<i32>>::from($n)
+    };
+}
+
+/// Creates a `UInt` from a numeric literal.
+#[macro_export]
+macro_rules! uint {
+    ($n:literal) => {
+        <$crate::UInt as ::std::convert::From<u32>>::from($n)
+    };
+}
+
 macro_rules! fmt_impls {
     ($type:ident) => {
         impl ::std::fmt::Display for $type {
