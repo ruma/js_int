@@ -1,5 +1,9 @@
 # [unreleased]
 
+# 0.1.7
+
+* Fix building without the `std` feature
+
 # 0.1.6
 
 * Introduce `int!` and `uint!` macros as shorthand for `Int::from(Ni32)` and `UInt::from(Nu32)`
