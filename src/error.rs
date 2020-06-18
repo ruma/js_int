@@ -1,4 +1,4 @@
-use std::{
+use core::{
     fmt::{self, Debug, Display, Formatter},
     num::ParseIntError as StdParseIntError,
 };

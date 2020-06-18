@@ -45,7 +45,7 @@ impl UInt {
     /// Basic usage:
     ///
     /// ```
-    /// # use {std::convert::TryFrom, js_int::UInt};
+    /// # use {core::convert::TryFrom, js_int::UInt};
     /// assert_eq!(UInt::MAX, UInt::try_from(9_007_199_254_740_991u64).unwrap());
     /// ```
     pub const MAX: Self = Self(MAX_SAFE_UINT);
@@ -144,7 +144,7 @@ impl UInt {
     /// Basic usage:
     ///
     /// ```
-    /// # use {std::convert::TryFrom, js_int::UInt};
+    /// # use {core::convert::TryFrom, js_int::UInt};
     /// assert_eq!(UInt::max_value(), UInt::try_from(9_007_199_254_740_991u64).unwrap());
     /// ```
     #[must_use]

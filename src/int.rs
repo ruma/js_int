@@ -34,7 +34,7 @@ impl Int {
     /// Basic usage:
     ///
     /// ```
-    /// # use {std::convert::TryFrom, js_int::Int};
+    /// # use {core::convert::TryFrom, js_int::Int};
     /// assert_eq!(Int::MIN, Int::try_from(-9_007_199_254_740_991i64).unwrap());
     /// ```
     pub const MIN: Self = Self(MIN_SAFE_INT);
@@ -46,7 +46,7 @@ impl Int {
     /// Basic usage:
     ///
     /// ```
-    /// # use {std::convert::TryFrom, js_int::Int};
+    /// # use {core::convert::TryFrom, js_int::Int};
     /// assert_eq!(Int::MAX, Int::try_from(9_007_199_254_740_991i64).unwrap());
     /// ```
     pub const MAX: Self = Self(MAX_SAFE_INT);
@@ -150,7 +150,7 @@ impl Int {
     /// Basic usage:
     ///
     /// ```
-    /// # use {std::convert::TryFrom, js_int::Int};
+    /// # use {core::convert::TryFrom, js_int::Int};
     /// assert_eq!(Int::min_value(), Int::try_from(-9_007_199_254_740_991i64).unwrap());
     /// ```
     #[must_use]
@@ -166,7 +166,7 @@ impl Int {
     /// Basic usage:
     ///
     /// ```
-    /// # use {std::convert::TryFrom, js_int::Int};
+    /// # use {core::convert::TryFrom, js_int::Int};
     /// assert_eq!(Int::max_value(), Int::try_from(9_007_199_254_740_991i64).unwrap());
     /// ```
     #[must_use]
