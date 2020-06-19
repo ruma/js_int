@@ -125,8 +125,8 @@ impl Int {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::Int;
-    /// assert_eq!(Int::from_str_radix("A", 16), Ok(Int::from(10)));
+    /// # use js_int::{int, Int};
+    /// assert_eq!(Int::from_str_radix("A", 16), Ok(int!(10)));
     /// ```
     pub fn from_str_radix(src: &str, radix: u32) -> Result<Self, ParseIntError> {
         let val = i64::from_str_radix(src, radix)?;
@@ -182,9 +182,9 @@ impl Int {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::Int;
-    /// assert_eq!(Int::from(10).abs(), Int::from(10));
-    /// assert_eq!(Int::from(-10).abs(), Int::from(10));
+    /// # use js_int::{int, Int};
+    /// assert_eq!(int!(10).abs(), int!(10));
+    /// assert_eq!(int!(-10).abs(), int!(10));
     ///
     /// // Differently from i8 / i16 / i32 / i128, Int's min_value is its max_value negated
     /// assert_eq!(Int::MIN.abs(), Int::MAX);
@@ -201,10 +201,10 @@ impl Int {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::Int;
-    /// assert!(Int::from(10).is_positive());
-    /// assert!(!Int::from(0).is_positive());
-    /// assert!(!Int::from(-10).is_positive());
+    /// # use js_int::int;
+    /// assert!(int!(10).is_positive());
+    /// assert!(!int!(0).is_positive());
+    /// assert!(!int!(-10).is_positive());
     /// ```
     #[must_use]
     pub const fn is_positive(self) -> bool {
@@ -218,10 +218,10 @@ impl Int {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::Int;
-    /// assert!(Int::from(-10).is_negative());
-    /// assert!(!Int::from(0).is_negative());
-    /// assert!(!Int::from(10).is_negative());
+    /// # use js_int::int;
+    /// assert!(int!(-10).is_negative());
+    /// assert!(!int!(0).is_negative());
+    /// assert!(!int!(10).is_negative());
     /// ```
     #[must_use]
     pub const fn is_negative(self) -> bool {
@@ -236,12 +236,12 @@ impl Int {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::Int;
+    /// # use js_int::{int, Int};
     /// assert_eq!(
-    ///     (Int::MAX - Int::from(1)).checked_add(Int::from(1)),
+    ///     (Int::MAX - int!(1)).checked_add(int!(1)),
     ///     Some(Int::MAX)
     /// );
-    /// assert_eq!((Int::MAX - Int::from(1)).checked_add(Int::from(2)), None);
+    /// assert_eq!((Int::MAX - int!(1)).checked_add(int!(2)), None);
     /// ```
     #[must_use]
     pub fn checked_add(self, rhs: Self) -> Option<Self> {
@@ -256,12 +256,12 @@ impl Int {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::Int;
+    /// # use js_int::{int, Int};
     /// assert_eq!(
-    ///     (Int::MIN + Int::from(2)).checked_sub(Int::from(1)),
-    ///     Some(Int::MIN + Int::from(1))
+    ///     (Int::MIN + int!(2)).checked_sub(int!(1)),
+    ///     Some(Int::MIN + int!(1))
     /// );
-    /// assert_eq!((Int::MIN + Int::from(2)).checked_sub(Int::from(3)), None);
+    /// assert_eq!((Int::MIN + int!(2)).checked_sub(int!(3)), None);
     /// ```
     #[must_use]
     pub fn checked_sub(self, rhs: Self) -> Option<Self> {
@@ -276,9 +276,9 @@ impl Int {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::Int;
-    /// assert_eq!(Int::from(5).checked_mul(Int::from(1)), Some(Int::from(5)));
-    /// assert_eq!(Int::MAX.checked_mul(Int::from(2)), None);
+    /// # use js_int::{int, Int};
+    /// assert_eq!(int!(5).checked_mul(int!(1)), Some(int!(5)));
+    /// assert_eq!(Int::MAX.checked_mul(int!(2)), None);
     /// ```
     #[must_use]
     pub fn checked_mul(self, rhs: Self) -> Option<Self> {
@@ -292,9 +292,9 @@ impl Int {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::Int;
-    /// assert_eq!(Int::MIN.checked_div(Int::from(-1)), Some(Int::MAX));
-    /// assert_eq!(Int::from(1).checked_div(Int::from(0)), None);
+    /// # use js_int::{int, Int};
+    /// assert_eq!(Int::MIN.checked_div(int!(-1)), Some(Int::MAX));
+    /// assert_eq!(int!(1).checked_div(int!(0)), None);
     /// ```
     #[must_use]
     pub fn checked_div(self, rhs: Self) -> Option<Self> {
@@ -308,10 +308,10 @@ impl Int {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::Int;
-    /// assert_eq!(Int::from(5).checked_rem(Int::from(2)), Some(Int::from(1)));
-    /// assert_eq!(Int::from(5).checked_rem(Int::from(0)), None);
-    /// assert_eq!(Int::MIN.checked_rem(Int::from(-1)), Some(Int::from(0)));
+    /// # use js_int::{int, Int};
+    /// assert_eq!(int!(5).checked_rem(int!(2)), Some(int!(1)));
+    /// assert_eq!(int!(5).checked_rem(int!(0)), None);
+    /// assert_eq!(Int::MIN.checked_rem(int!(-1)), Some(int!(0)));
     /// ```
     #[must_use]
     pub fn checked_rem(self, rhs: Self) -> Option<Self> {
@@ -326,11 +326,11 @@ impl Int {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::Int;
-    /// assert_eq!(Int::from(8).checked_pow(2), Some(Int::from(64)));
+    /// # use js_int::{int, Int};
+    /// assert_eq!(int!(8).checked_pow(2), Some(int!(64)));
     /// assert_eq!(Int::MAX.checked_pow(2), None);
     /// assert_eq!(Int::MIN.checked_pow(2), None);
-    /// assert_eq!(Int::from(1_000_000_000).checked_pow(2), None);
+    /// assert_eq!(int!(1_000_000_000).checked_pow(2), None);
     /// ```
     #[must_use]
     pub fn checked_pow(self, exp: u32) -> Option<Self> {
@@ -345,9 +345,9 @@ impl Int {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::Int;
-    /// assert_eq!(Int::from(100).saturating_add(Int::from(1)), Int::from(101));
-    /// assert_eq!(Int::MAX.saturating_add(Int::from(1)), Int::MAX);
+    /// # use js_int::{int, Int};
+    /// assert_eq!(int!(100).saturating_add(int!(1)), int!(101));
+    /// assert_eq!(Int::MAX.saturating_add(int!(1)), Int::MAX);
     /// ```
     #[must_use]
     pub fn saturating_add(self, rhs: Self) -> Self {
@@ -362,9 +362,9 @@ impl Int {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::Int;
-    /// assert_eq!(Int::from(100).saturating_sub(Int::from(1)), Int::from(99));
-    /// assert_eq!(Int::MIN.saturating_sub(Int::from(1)), Int::MIN);
+    /// # use js_int::{int, Int};
+    /// assert_eq!(int!(100).saturating_sub(int!(1)), int!(99));
+    /// assert_eq!(Int::MIN.saturating_sub(int!(1)), Int::MIN);
     /// ```
     #[must_use]
     pub fn saturating_sub(self, rhs: Self) -> Self {
@@ -379,9 +379,9 @@ impl Int {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::Int;
-    /// assert_eq!(Int::from(100).saturating_mul(Int::from(2)), Int::from(200));
-    /// assert_eq!(Int::MAX.saturating_mul(Int::from(2)), Int::MAX);
+    /// # use js_int::{int, Int};
+    /// assert_eq!(int!(100).saturating_mul(int!(2)), int!(200));
+    /// assert_eq!(Int::MAX.saturating_mul(int!(2)), Int::MAX);
     /// assert_eq!(Int::MAX.saturating_mul(Int::MAX), Int::MAX);
     /// assert_eq!(Int::MAX.saturating_mul(Int::MIN), Int::MIN);
     /// ```
@@ -398,9 +398,9 @@ impl Int {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::Int;
-    /// assert_eq!(Int::from(5).saturating_pow(2), Int::from(25));
-    /// assert_eq!(Int::from(-2).saturating_pow(3), Int::from(-8));
+    /// # use js_int::{int, Int};
+    /// assert_eq!(int!(5).saturating_pow(2), int!(25));
+    /// assert_eq!(int!(-2).saturating_pow(3), int!(-8));
     /// assert_eq!(Int::MAX.saturating_pow(2), Int::MAX);
     /// assert_eq!(Int::MIN.saturating_pow(2), Int::MAX);
     /// ```
@@ -566,42 +566,42 @@ mod tests {
 
     #[test]
     fn int_ops() {
-        assert_eq!(Int::from(5) + Int::from(3), Int::from(8));
-        assert_eq!(Int::from(1) - Int::from(2), Int::from(-1));
-        assert_eq!(Int::from(4) * Int::from(-7), Int::from(-28));
-        assert_eq!(Int::from(5) / Int::from(2), Int::from(2));
-        assert_eq!(Int::from(9) % Int::from(3), Int::from(0));
+        assert_eq!(int!(5) + int!(3), int!(8));
+        assert_eq!(int!(1) - int!(2), int!(-1));
+        assert_eq!(int!(4) * int!(-7), int!(-28));
+        assert_eq!(int!(5) / int!(2), int!(2));
+        assert_eq!(int!(9) % int!(3), int!(0));
     }
 
     #[test]
     fn int_assign_ops() {
-        let mut int = Int::from(1);
+        let mut int = int!(1);
 
-        int += Int::from(1);
-        assert_eq!(int, Int::from(2));
+        int += int!(1);
+        assert_eq!(int, int!(2));
 
-        int -= Int::from(-1);
-        assert_eq!(int, Int::from(3));
+        int -= int!(-1);
+        assert_eq!(int, int!(3));
 
-        int *= Int::from(3);
-        assert_eq!(int, Int::from(9));
+        int *= int!(3);
+        assert_eq!(int, int!(9));
 
-        int /= Int::from(3);
-        assert_eq!(int, Int::from(3));
+        int /= int!(3);
+        assert_eq!(int, int!(3));
 
-        int %= Int::from(2);
-        assert_eq!(int, Int::from(1));
+        int %= int!(2);
+        assert_eq!(int, int!(1));
     }
 
     #[test]
     #[should_panic]
     fn int_underflow_panic() {
-        let _ = Int::MIN - Int::from(1);
+        let _ = Int::MIN - int!(1);
     }
 
     #[test]
     #[should_panic]
     fn int_overflow_panic() {
-        let _ = Int::MAX + Int::from(1);
+        let _ = Int::MAX + int!(1);
     }
 }

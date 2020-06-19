@@ -33,8 +33,8 @@ impl UInt {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::UInt;
-    /// assert_eq!(UInt::MIN, UInt::from(0u32));
+    /// # use js_int::{uint, UInt};
+    /// assert_eq!(UInt::MIN, uint!(0));
     /// ```
     pub const MIN: Self = Self(0);
 
@@ -81,9 +81,9 @@ impl UInt {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::UInt;
+    /// # use js_int::{uint, UInt};
     /// assert_eq!(UInt::new_wrapping(js_int::MAX_SAFE_UINT), UInt::MAX);
-    /// assert_eq!(UInt::new_wrapping(js_int::MAX_SAFE_UINT + 1), UInt::from(0u32));
+    /// assert_eq!(UInt::new_wrapping(js_int::MAX_SAFE_UINT + 1), uint!(0));
     /// ```
     #[must_use]
     pub fn new_wrapping(val: u64) -> Self {
@@ -128,8 +128,8 @@ impl UInt {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::UInt;
-    /// assert_eq!(UInt::min_value(), UInt::from(0u32));
+    /// # use js_int::{uint, UInt};
+    /// assert_eq!(UInt::min_value(), uint!(0));
     /// ```
     #[must_use]
     #[deprecated = "Use `UInt::MIN` instead."]
@@ -160,9 +160,9 @@ impl UInt {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::UInt;
-    /// assert!(UInt::from(16u32).is_power_of_two());
-    /// assert!(!UInt::from(10u32).is_power_of_two());
+    /// # use js_int::uint;
+    /// assert!(uint!(16).is_power_of_two());
+    /// assert!(!uint!(10).is_power_of_two());
     /// ```
     #[must_use]
     pub fn is_power_of_two(self) -> bool {
@@ -178,9 +178,9 @@ impl UInt {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::UInt;
-    /// assert_eq!(UInt::from(2u32).checked_next_power_of_two(), Some(UInt::from(2u32)));
-    /// assert_eq!(UInt::from(3u32).checked_next_power_of_two(), Some(UInt::from(4u32)));
+    /// # use js_int::{uint, UInt};
+    /// assert_eq!(uint!(2).checked_next_power_of_two(), Some(uint!(2)));
+    /// assert_eq!(uint!(3).checked_next_power_of_two(), Some(uint!(4)));
     /// assert_eq!(UInt::MAX.checked_next_power_of_two(), None);
     /// ```
     #[must_use]
@@ -207,8 +207,8 @@ impl UInt {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::UInt;
-    /// assert_eq!(UInt::from_str_radix("A", 16), Ok(UInt::from(10u32)));
+    /// # use js_int::{uint, UInt};
+    /// assert_eq!(UInt::from_str_radix("A", 16), Ok(uint!(10)));
     /// ```
     pub fn from_str_radix(src: &str, radix: u32) -> Result<Self, ParseIntError> {
         let val = u64::from_str_radix(src, radix)?;
@@ -224,12 +224,12 @@ impl UInt {
     /// Checked integer addition. Computes `self + rhs`, returning `None` if overflow occurred.
     ///
     /// ```
-    /// # use js_int::UInt;
+    /// # use js_int::{uint, UInt};
     /// assert_eq!(
-    ///     (UInt::MAX - UInt::from(2u32)).checked_add(UInt::from(1u32)),
-    ///     Some(UInt::MAX - UInt::from(1u32))
+    ///     (UInt::MAX - uint!(2)).checked_add(uint!(1)),
+    ///     Some(UInt::MAX - uint!(1))
     /// );
-    /// assert_eq!((UInt::MAX - UInt::from(2u32)).checked_add(UInt::from(3u32)), None);
+    /// assert_eq!((UInt::MAX - uint!(2)).checked_add(uint!(3)), None);
     /// ```
     #[must_use]
     pub fn checked_add(self, rhs: Self) -> Option<Self> {
@@ -243,9 +243,9 @@ impl UInt {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::UInt;
-    /// assert_eq!(UInt::from(1u32).checked_sub(UInt::from(1u32)), Some(UInt::from(0u32)));
-    /// assert_eq!(UInt::from(0u32).checked_sub(UInt::from(1u32)), None);
+    /// # use js_int::uint;
+    /// assert_eq!(uint!(1).checked_sub(uint!(1)), Some(uint!(0)));
+    /// assert_eq!(uint!(0).checked_sub(uint!(1)), None);
     /// ```
     #[must_use]
     pub fn checked_sub(self, rhs: Self) -> Option<Self> {
@@ -260,9 +260,9 @@ impl UInt {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::UInt;
-    /// assert_eq!(UInt::from(5u32).checked_mul(UInt::from(1u32)), Some(UInt::from(5u32)));
-    /// assert_eq!(UInt::MAX.checked_mul(UInt::from(2u32)), None);
+    /// # use js_int::{uint, UInt};
+    /// assert_eq!(uint!(5).checked_mul(uint!(1)), Some(uint!(5)));
+    /// assert_eq!(UInt::MAX.checked_mul(uint!(2)), None);
     /// ```
     #[must_use]
     pub fn checked_mul(self, rhs: Self) -> Option<Self> {
@@ -276,9 +276,9 @@ impl UInt {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::UInt;
-    /// assert_eq!(UInt::from(128u32).checked_div(UInt::from(2u32)), Some(UInt::from(64u32)));
-    /// assert_eq!(UInt::from(1u32).checked_div(UInt::from(0u32)), None);
+    /// # use js_int::uint;
+    /// assert_eq!(uint!(128).checked_div(uint!(2)), Some(uint!(64)));
+    /// assert_eq!(uint!(1).checked_div(uint!(0)), None);
     /// ```
     #[must_use]
     pub fn checked_div(self, rhs: Self) -> Option<Self> {
@@ -292,9 +292,9 @@ impl UInt {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::UInt;
-    /// assert_eq!(UInt::from(5u32).checked_rem(UInt::from(2u32)), Some(UInt::from(1u32)));
-    /// assert_eq!(UInt::from(5u32).checked_rem(UInt::from(0u32)), None);
+    /// # use js_int::uint;
+    /// assert_eq!(uint!(5).checked_rem(uint!(2)), Some(uint!(1)));
+    /// assert_eq!(uint!(5).checked_rem(uint!(0)), None);
     /// ```
     #[must_use]
     pub fn checked_rem(self, rhs: Self) -> Option<Self> {
@@ -310,9 +310,9 @@ impl UInt {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::UInt;
-    /// assert_eq!(UInt::from(0u32).checked_neg(), Some(UInt::from(0u32)));
-    /// assert_eq!(UInt::from(1u32).checked_neg(), None);
+    /// # use js_int::uint;
+    /// assert_eq!(uint!(0).checked_neg(), Some(uint!(0)));
+    /// assert_eq!(uint!(1).checked_neg(), None);
     /// ```
     #[must_use]
     pub fn checked_neg(self) -> Option<Self> {
@@ -327,10 +327,10 @@ impl UInt {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::UInt;
-    /// assert_eq!(UInt::from(0u32).checked_pow(2), Some(UInt::from(0u32)));
-    /// assert_eq!(UInt::from(8u32).checked_pow(2), Some(UInt::from(64u32)));
-    /// assert_eq!(UInt::from(1_000_000_000u32).checked_pow(2), None);
+    /// # use js_int::{uint, UInt};
+    /// assert_eq!(uint!(0).checked_pow(2), Some(uint!(0)));
+    /// assert_eq!(uint!(8).checked_pow(2), Some(uint!(64)));
+    /// assert_eq!(uint!(1_000_000_000u32).checked_pow(2), None);
     /// assert_eq!(UInt::MAX.checked_pow(2), None);
     /// ```
     #[must_use]
@@ -346,9 +346,9 @@ impl UInt {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::UInt;
-    /// assert_eq!(UInt::from(100u32).saturating_add(UInt::from(1u32)), UInt::from(101u32));
-    /// assert_eq!(UInt::MAX.saturating_add(UInt::from(1u32)), UInt::MAX);
+    /// # use js_int::{uint, UInt};
+    /// assert_eq!(uint!(100).saturating_add(uint!(1)), uint!(101));
+    /// assert_eq!(UInt::MAX.saturating_add(uint!(1)), UInt::MAX);
     /// ```
     #[must_use]
     pub fn saturating_add(self, rhs: Self) -> Self {
@@ -363,9 +363,9 @@ impl UInt {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::UInt;
-    /// assert_eq!(UInt::from(100u32).saturating_sub(UInt::from(1u32)), UInt::from(99u32));
-    /// assert_eq!(UInt::from(1u32).saturating_sub(UInt::from(2u32)), UInt::from(0u32));
+    /// # use js_int::uint;
+    /// assert_eq!(uint!(100).saturating_sub(uint!(1)), uint!(99));
+    /// assert_eq!(uint!(1).saturating_sub(uint!(2)), uint!(0));
     /// ```
     #[must_use]
     pub fn saturating_sub(self, rhs: Self) -> Self {
@@ -380,9 +380,9 @@ impl UInt {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::UInt;
-    /// assert_eq!(UInt::from(100u32).saturating_mul(UInt::from(2u32)), UInt::from(200u32));
-    /// assert_eq!(UInt::MAX.saturating_mul(UInt::from(2u32)), UInt::MAX);
+    /// # use js_int::{uint, UInt};
+    /// assert_eq!(uint!(100).saturating_mul(uint!(2)), uint!(200));
+    /// assert_eq!(UInt::MAX.saturating_mul(uint!(2)), UInt::MAX);
     /// assert_eq!(UInt::MAX.saturating_mul(UInt::MAX), UInt::MAX);
     /// ```
     #[must_use]
@@ -398,8 +398,8 @@ impl UInt {
     /// Basic usage:
     ///
     /// ```
-    /// # use js_int::UInt;
-    /// assert_eq!(UInt::from(5u32).saturating_pow(2), UInt::from(25u32));
+    /// # use js_int::{uint, UInt};
+    /// assert_eq!(uint!(5).saturating_pow(2), uint!(25));
     /// assert_eq!(UInt::MAX.saturating_pow(2), UInt::MAX);
     /// ```
     #[must_use]
@@ -570,62 +570,62 @@ mod tests {
 
     #[test]
     fn uint_ops() {
-        assert_eq!(UInt::from(5u32) + UInt::from(3u32), UInt::from(8u32));
-        assert_eq!(UInt::from(2u32) - UInt::from(1u32), UInt::from(1u32));
-        assert_eq!(UInt::from(4u32) * UInt::from(2u32), UInt::from(8u32));
-        assert_eq!(UInt::from(5u32) / UInt::from(2u32), UInt::from(2u32));
-        assert_eq!(UInt::from(11u32) % UInt::from(4u32), UInt::from(3u32));
+        assert_eq!(uint!(5) + uint!(3), uint!(8));
+        assert_eq!(uint!(2) - uint!(1), uint!(1));
+        assert_eq!(uint!(4) * uint!(2), uint!(8));
+        assert_eq!(uint!(5) / uint!(2), uint!(2));
+        assert_eq!(uint!(11) % uint!(4), uint!(3));
     }
 
     #[test]
     fn uint_assign_ops() {
-        let mut uint = UInt::from(1u32);
+        let mut uint = uint!(1);
 
-        uint += UInt::from(3u32);
-        assert_eq!(uint, UInt::from(4u32));
+        uint += uint!(3);
+        assert_eq!(uint, uint!(4));
 
-        uint -= UInt::from(1u32);
-        assert_eq!(uint, UInt::from(3u32));
+        uint -= uint!(1);
+        assert_eq!(uint, uint!(3));
 
-        uint *= UInt::from(3u32);
-        assert_eq!(uint, UInt::from(9u32));
+        uint *= uint!(3);
+        assert_eq!(uint, uint!(9));
 
-        uint /= UInt::from(3u32);
-        assert_eq!(uint, UInt::from(3u32));
+        uint /= uint!(3);
+        assert_eq!(uint, uint!(3));
 
-        uint %= UInt::from(2u32);
-        assert_eq!(uint, UInt::from(1u32));
+        uint %= uint!(2);
+        assert_eq!(uint, uint!(1));
     }
 
     #[test]
     fn uint_wrapping_new() {
-        assert_eq!(UInt::new_wrapping(MAX_SAFE_UINT + 1), UInt::from(0u32));
+        assert_eq!(UInt::new_wrapping(MAX_SAFE_UINT + 1), uint!(0));
     }
 
     #[test]
     #[cfg_attr(debug_assertions, ignore)]
     fn uint_underflow_wrap() {
-        assert_eq!(UInt::from(0u32) - UInt::from(1u32), UInt::MAX);
+        assert_eq!(uint!(0) - uint!(1), UInt::MAX);
     }
 
     #[test]
     #[cfg_attr(debug_assertions, ignore)]
     fn uint_overflow_wrap() {
-        assert_eq!(UInt::MAX + UInt::from(1u32), UInt::from(0u32));
-        assert_eq!(UInt::MAX + UInt::from(5u32), UInt::from(4u32));
+        assert_eq!(UInt::MAX + uint!(1), uint!(0));
+        assert_eq!(UInt::MAX + uint!(5), uint!(4));
     }
 
     #[test]
     #[should_panic]
     #[cfg_attr(not(debug_assertions), ignore)]
     fn uint_underflow_panic() {
-        let _ = UInt::from(0u32) - UInt::from(1u32);
+        let _ = uint!(0) - uint!(1);
     }
 
     #[test]
     #[should_panic]
     #[cfg_attr(not(debug_assertions), ignore)]
     fn uint_overflow_panic() {
-        let _ = UInt::MAX + UInt::from(1u32);
+        let _ = UInt::MAX + uint!(1);
     }
 }
