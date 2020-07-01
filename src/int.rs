@@ -550,13 +550,31 @@ impl<'de> Deserialize<'de> for Int {
     where
         D: Deserializer<'de>,
     {
-        let val = i64::deserialize(deserializer)?;
-        Self::new(val).ok_or_else(|| {
-            D::Error::invalid_value(
-                Unexpected::Signed(val),
-                &"an integer between -2^53 + 1 and 2^53 - 1",
-            )
-        })
+        #[cfg(not(feature = "lax_deserialize"))]
+        {
+            let val = i64::deserialize(deserializer)?;
+
+            Self::new(val).ok_or_else(|| {
+                D::Error::invalid_value(
+                    Unexpected::Signed(val),
+                    &"an integer between -2^53 + 1 and 2^53 - 1",
+                )
+            })
+        }
+
+        #[cfg(feature = "lax_deserialize")]
+        {
+            let val = f64::deserialize(deserializer)?;
+
+            if val > MAX_SAFE_INT as f64 || val < MIN_SAFE_INT as f64 {
+                Err(D::Error::invalid_value(
+                    Unexpected::Float(val),
+                    &"a number between -2^53 + 1 and 2^53 - 1",
+                ))
+            } else {
+                Ok(Self(val as i64))
+            }
+        }
     }
 }
 

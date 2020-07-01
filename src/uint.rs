@@ -554,13 +554,31 @@ impl<'de> Deserialize<'de> for UInt {
     where
         D: Deserializer<'de>,
     {
-        let val = u64::deserialize(deserializer)?;
-        Self::new(val).ok_or_else(|| {
-            D::Error::invalid_value(
-                Unexpected::Unsigned(val),
-                &"an integer between 0 and 2^53 - 1",
-            )
-        })
+        #[cfg(not(feature = "lax_deserialize"))]
+        {
+            let val = u64::deserialize(deserializer)?;
+
+            Self::new(val).ok_or_else(|| {
+                D::Error::invalid_value(
+                    Unexpected::Unsigned(val),
+                    &"an integer between 0 and 2^53 - 1",
+                )
+            })
+        }
+
+        #[cfg(feature = "lax_deserialize")]
+        {
+            let val = f64::deserialize(deserializer)?;
+
+            if val < 0.0 || val > MAX_SAFE_UINT as f64 {
+                Err(D::Error::invalid_value(
+                    Unexpected::Float(val),
+                    &"a number between 0 and 2^53 - 1",
+                ))
+            } else {
+                Ok(Self(val as u64))
+            }
+        }
     }
 }
 
