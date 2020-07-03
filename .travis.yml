@@ -8,13 +8,13 @@ before_script:
 matrix:
   include:
     - rust: 1.34.2
-      env: ALL_FEATURES='std,serde'
+      env: ALL_FEATURES='std,serde,lax_deserialize'
     - rust: stable
-      env: ALL_FEATURES='std,serde'
+      env: ALL_FEATURES='std,serde,lax_deserialize'
     - rust: beta
-      env: ALL_FEATURES='std,serde'
+      env: ALL_FEATURES='std,serde,lax_deserialize'
     - rust: nightly
-      env: ALL_FEATURES='std,serde,rocket_04'
+      env: ALL_FEATURES='std,serde,lax_deserialize,rocket_04'
   allow_failure:
     - rust: nightly
 

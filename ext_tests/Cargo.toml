@@ -11,3 +11,6 @@ serde_json = "1.0"
 [dependencies.js_int]
 path = "../"
 features = ["serde"]
+
+[features]
+lax_deserialize = ["serde_json/float_roundtrip"]

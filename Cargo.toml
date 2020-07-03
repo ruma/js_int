@@ -22,7 +22,7 @@ default-features = false
 features = ["derive"]
 
 [features]
-lax_deserialize = []
+lax_deserialize = ["serde"]
 default = ["std"]
 std = []
 
