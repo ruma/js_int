@@ -131,13 +131,9 @@ impl Int {
     pub fn from_str_radix(src: &str, radix: u32) -> Result<Self, ParseIntError> {
         let val = i64::from_str_radix(src, radix)?;
         if val < MIN_SAFE_INT {
-            Err(ParseIntError {
-                kind: ParseIntErrorKind::Underflow,
-            })
+            Err(ParseIntError { kind: ParseIntErrorKind::Underflow })
         } else if val > MAX_SAFE_INT {
-            Err(ParseIntError {
-                kind: ParseIntErrorKind::Overflow,
-            })
+            Err(ParseIntError { kind: ParseIntErrorKind::Overflow })
         } else {
             Ok(Self(val))
         }
@@ -531,13 +527,9 @@ impl FromStr for Int {
     fn from_str(src: &str) -> Result<Self, Self::Err> {
         let val = i64::from_str(src)?;
         if val < MIN_SAFE_INT {
-            Err(ParseIntError {
-                kind: ParseIntErrorKind::Underflow,
-            })
+            Err(ParseIntError { kind: ParseIntErrorKind::Underflow })
         } else if val > MAX_SAFE_INT {
-            Err(ParseIntError {
-                kind: ParseIntErrorKind::Overflow,
-            })
+            Err(ParseIntError { kind: ParseIntErrorKind::Overflow })
         } else {
             Ok(Self(val))
         }

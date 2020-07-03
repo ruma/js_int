@@ -213,9 +213,7 @@ impl UInt {
     pub fn from_str_radix(src: &str, radix: u32) -> Result<Self, ParseIntError> {
         let val = u64::from_str_radix(src, radix)?;
         if val > MAX_SAFE_UINT {
-            Err(ParseIntError {
-                kind: ParseIntErrorKind::Overflow,
-            })
+            Err(ParseIntError { kind: ParseIntErrorKind::Overflow })
         } else {
             Ok(Self(val))
         }
@@ -539,9 +537,7 @@ impl FromStr for UInt {
     fn from_str(src: &str) -> Result<Self, Self::Err> {
         let val = u64::from_str(src)?;
         if val > MAX_SAFE_UINT {
-            Err(ParseIntError {
-                kind: ParseIntErrorKind::Overflow,
-            })
+            Err(ParseIntError { kind: ParseIntErrorKind::Overflow })
         } else {
             Ok(Self(val))
         }

@@ -21,9 +21,7 @@ pub(crate) enum ParseIntErrorKind {
 
 impl From<StdParseIntError> for ParseIntError {
     fn from(e: StdParseIntError) -> Self {
-        ParseIntError {
-            kind: ParseIntErrorKind::Unknown(e),
-        }
+        ParseIntError { kind: ParseIntErrorKind::Unknown(e) }
     }
 }
 
