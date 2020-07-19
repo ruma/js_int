@@ -34,6 +34,12 @@ implementations of `std::error::Error` for `ParseIntError` and
 (De-)Serialization via `serde` is supported via the `serde` feature, even
 without the `std` feature.
 
+Deserialization can be routed through `f64` instead of `u64` with the
+`lax_deserialize` feature. If a deserialized number is fractional, the
+fractional part is discarded. Please be aware that `serde_json` doesn't
+losslessly parse large floats with a fractional part by default (even if the
+fractional part is `.0`). To fix that, enable its `float_roundtrip` feature.
+
 Deserialization of `Int` and `UInt` form values and path parameters for users
 of the Rocket web framework version 0.4 are supported via the `rocket_04`
 feature.
