@@ -26,12 +26,12 @@
 //! # Features
 //!
 //! * `rocket_04`: Deserialization support from form values (`impl FromFormValue`) and path segments
-//! (`impl FromParam`) for users of the Rocket web framework version 0.4. Disabled by default.
+//!   (`impl FromParam`) for users of the Rocket web framework version 0.4. Disabled by default.
 //! * `serde`: Serialization and deserialization support via [serde](https://serde.rs). Disabled by
-//! default. You can use `js_int` + `serde` in `#![no_std]` contexts if you use
-//! `default-features = false` for both.
+//!   default. You can use `js_int` + `serde` in `#![no_std]` contexts if you use
+//!   `default-features = false` for both.
 //! * `std`: Enable `std::error::Error` implementations for `ParseIntError`, `TryFromIntError`.
-//! Enabled by default.
+//!   Enabled by default.
 
 #![deny(missing_debug_implementations, missing_docs)]
 #![cfg_attr(not(feature = "std"), no_std)]
