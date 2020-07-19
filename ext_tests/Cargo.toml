@@ -13,4 +13,4 @@ path = "../"
 features = ["serde"]
 
 [features]
-lax_deserialize = ["serde_json/float_roundtrip"]
+lax_deserialize = ["js_int/lax_deserialize", "serde_json/float_roundtrip"]
