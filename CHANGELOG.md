@@ -1,5 +1,10 @@
 # [unreleased]
 
+# 0.1.9
+
+* Add a new Cargo feature: `lax_deserialize`
+  * See the crate documentation or [README.md](README.md) for what it does.
+
 # 0.1.8
 
 * Update the documentation to use the macros introduced in 0.1.6.
