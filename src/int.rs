@@ -13,7 +13,7 @@ use serde::{
 
 use crate::{
     error::{ParseIntError, ParseIntErrorKind, TryFromIntError},
-    MAX_SAFE_UINT,
+    UInt, MAX_SAFE_UINT,
 };
 
 /// The largest integer value that can be represented exactly by an f64.
@@ -425,6 +425,12 @@ impl From<u16> for Int {
 
 impl From<u32> for Int {
     fn from(val: u32) -> Self {
+        Self(i64::from(val))
+    }
+}
+
+impl From<UInt> for Int {
+    fn from(val: UInt) -> Self {
         Self(i64::from(val))
     }
 }
