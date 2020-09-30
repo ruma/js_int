@@ -471,6 +471,18 @@ impl TryFrom<i128> for UInt {
     }
 }
 
+impl From<UInt> for i64 {
+    fn from(val: UInt) -> Self {
+        val.0 as i64
+    }
+}
+
+impl From<UInt> for i128 {
+    fn from(val: UInt) -> Self {
+        val.0 as i128
+    }
+}
+
 macro_rules! uint_op_impl {
     ($trait:ident, $method:ident, $assign_trait:ident, $assign_method:ident) => {
         impl $trait for UInt {
