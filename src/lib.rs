@@ -38,6 +38,7 @@
 //!   Enabled by default.
 
 #![deny(missing_debug_implementations, missing_docs)]
+#![allow(clippy::cast_lossless)] // Not useful in this crate
 #![cfg_attr(not(feature = "std"), no_std)]
 
 #[macro_use]
