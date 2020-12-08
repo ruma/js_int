@@ -10,11 +10,6 @@ repository = "https://git.sr.ht/~jplatte/js_int"
 keywords = ["integer", "no_std"]
 categories = ["no-std"]
 
-[dependencies.rocket_04]
-package = "rocket"
-version = "0.4"
-optional = true
-
 [dependencies.serde]
 version = "1.0"
 optional = true

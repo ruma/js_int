@@ -40,10 +40,6 @@ fractional part is discarded. Please be aware that `serde_json` doesn't
 losslessly parse large floats with a fractional part by default (even if the
 fractional part is `.0`). To fix that, enable its `float_roundtrip` feature.
 
-Deserialization of `Int` and `UInt` form values and path parameters for users
-of the Rocket web framework version 0.4 are supported via the `rocket_04`
-feature.
-
 [travis]: https://travis-ci.org/jplatte/js_int
 [crates-io]: https://crates.io/crates/js_int
 [docs-rs]: https://docs.rs/js_int
