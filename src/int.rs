@@ -70,7 +70,7 @@ impl Int {
     /// ```
     #[must_use]
     pub fn new(val: i64) -> Option<Self> {
-        if val >= MIN_SAFE_INT && val <= MAX_SAFE_INT {
+        if (MIN_SAFE_INT..=MAX_SAFE_INT).contains(&val) {
             Some(Self(val))
         } else {
             None
