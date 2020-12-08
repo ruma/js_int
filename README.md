@@ -24,7 +24,7 @@ obsolete in any way though, since there will still be lots of JS code using
 `Number`, and code in other languages that assumes its use.
 </small>
 
-This crate requires rustc >= 1.34.2.
+This crate requires rustc >= 1.35.
 
 This crate is `no_std`-compatible with `default-features = false`. This will
 disable the `std` feature, which at the time of writing will only omit the

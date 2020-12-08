@@ -1,4 +1,6 @@
-# [unreleased]
+# 0.2.0 (unreleased)
+
+* Bump MSRV to 1.35
 
 # 0.1.9
 
