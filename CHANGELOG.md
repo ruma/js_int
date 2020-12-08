@@ -1,4 +1,4 @@
-# 0.2.0 (unreleased)
+# 0.2.0
 
 * Bump MSRV to 1.35
 * Drop support for the `rocket_04` Cargo feature (Rocket 0.4 `FromFormValue` / `FromParam`
