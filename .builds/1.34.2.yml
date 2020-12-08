@@ -1,0 +1,25 @@
+image: archlinux
+packages:
+  - rustup
+tasks:
+  - rustup: |
+      # We specify --profile minimal because we'd otherwise download docs
+      rustup toolchain install 1.34.2 --profile minimal
+      rustup default 1.34.2
+  - test: |
+      cd js_int
+
+      # We don't want the build to stop on individual failure of independent
+      # tools, so capture tool exit codes and set the task exit code manually
+      set +e
+
+      # Only make sure it builds on 1.34.2
+      # (1) Without the default features
+      cargo check --no-default-features --quiet
+      no_feat_exit=$?
+
+      # (2)
+      cargo check --features std,serde,lax_deserialize --quiet
+      all_feat_exit=$?
+
+      exit $(( $no_feat_exit || $all_feat_exit ))
