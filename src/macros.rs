@@ -31,7 +31,7 @@ macro_rules! fmt_impls {
 }
 
 macro_rules! convert_impls {
-    ($type:ident, $t8:ident, $t16:ident, $t32:ident, $t64:ident, $t128:ident) => {
+    ($type:ident, $t8:ident, $t16:ident, $t32:ident, $t64:ident, $t128:ident, $ot8:ident, $ot16:ident, $ot32:ident) => {
         impl ::core::convert::From<$t8> for $type {
             fn from(val: $t8) -> Self {
                 Self($t64::from(val))
@@ -75,6 +75,14 @@ macro_rules! convert_impls {
                 Self::try_from(val.0)
             }
         }
+        
+        impl ::core::convert::TryFrom<$type> for $ot8 {
+            type Error = ::core::num::TryFromIntError;
+
+            fn try_from(val: $type) -> Result<Self, ::core::num::TryFromIntError> {
+                Self::try_from(val.0)
+            }
+        }
 
         impl ::core::convert::TryFrom<$type> for $t16 {
             type Error = ::core::num::TryFromIntError;
@@ -83,8 +91,24 @@ macro_rules! convert_impls {
                 Self::try_from(val.0)
             }
         }
+        
+        impl ::core::convert::TryFrom<$type> for $ot16 {
+            type Error = ::core::num::TryFromIntError;
+
+            fn try_from(val: $type) -> Result<Self, ::core::num::TryFromIntError> {
+                Self::try_from(val.0)
+            }
+        }
 
         impl ::core::convert::TryFrom<$type> for $t32 {
+            type Error = ::core::num::TryFromIntError;
+
+            fn try_from(val: $type) -> Result<Self, ::core::num::TryFromIntError> {
+                Self::try_from(val.0)
+            }
+        }
+        
+        impl ::core::convert::TryFrom<$type> for $ot32 {
             type Error = ::core::num::TryFromIntError;
 
             fn try_from(val: $type) -> Result<Self, ::core::num::TryFromIntError> {

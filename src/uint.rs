@@ -409,7 +409,7 @@ impl UInt {
 }
 
 fmt_impls!(UInt);
-convert_impls!(UInt, u8, u16, u32, u64, u128);
+convert_impls!(UInt, u8, u16, u32, u64, u128, i8, i16, i32);
 
 impl TryFrom<i8> for UInt {
     type Error = TryFromIntError;
@@ -653,5 +653,30 @@ mod tests {
     #[cfg_attr(not(debug_assertions), ignore)]
     fn uint_overflow_panic() {
         let _ = UInt::MAX + uint!(1);
+    }
+    
+    #[test]
+    fn try_from_uint_for_i_n() {
+        use std::convert::TryFrom;
+        let i8_max = i8::MAX as u64;
+        let i16_max = i16::MAX as u64;
+        let i32_max = i32::MAX as u64;
+        
+        assert_eq!(i8::try_from(UInt(0)), Ok(0));
+        assert_eq!(i8::try_from(UInt(10)), Ok(10));
+        assert_eq!(i8::try_from(UInt(i8_max)), Ok(i8::MAX));
+        assert!(i8::try_from(UInt(i8_max+1)).is_err());
+        
+        assert_eq!(i16::try_from(UInt(0)), Ok(0));
+        assert_eq!(i16::try_from(UInt(10)), Ok(10));
+        assert_eq!(i16::try_from(UInt(i8_max+1)), Ok((i8::MAX as i16)+1));
+        assert_eq!(i16::try_from(UInt(i16_max)), Ok(i16::MAX));
+        assert!(i16::try_from(UInt(i16_max+1)).is_err());
+        
+        assert_eq!(i32::try_from(UInt(0)), Ok(0));
+        assert_eq!(i32::try_from(UInt(10)), Ok(10));
+        assert_eq!(i32::try_from(UInt(i16_max+1)), Ok((i16::MAX as i32)+1));
+        assert_eq!(i32::try_from(UInt(i32_max)), Ok(i32::MAX));
+        assert!(i32::try_from(UInt(i32_max+1)).is_err());
     }
 }
