@@ -1,6 +1,6 @@
 # js_int
 
-[![Build Status](https://travis-ci.org/jplatte/js_int.svg?branch=master)][travis]
+[![Build Status](https://travis-ci.org/jplatte/js_int.svg?branch=main)][travis]
 [![Latest Version](https://img.shields.io/crates/v/js_int.svg)][crates-io]
 [![Docs](https://docs.rs/js_int/badge.svg)][docs-rs]
 
