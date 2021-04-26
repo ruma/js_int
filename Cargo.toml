@@ -6,7 +6,7 @@ authors = ["Jonas Platte <jplatte+git@posteo.de>"]
 edition = "2018"
 license = "MIT"
 readme = "README.md"
-repository = "https://git.sr.ht/~jplatte/js_int"
+repository = "https://github.com/ruma/js_int"
 keywords = ["integer", "no_std"]
 categories = ["no-std"]
 
