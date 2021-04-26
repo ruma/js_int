@@ -21,9 +21,5 @@ lax_deserialize = ["serde"]
 default = ["std"]
 std = []
 
-[badges.travis-ci]
-repository = "jplatte/js_int"
-branch = "master"
-
 [workspace]
 members = ["ext_tests"]
