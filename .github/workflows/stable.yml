@@ -1,4 +1,4 @@
-name: Rust 1.35
+name: Rust Stable
 
 on:
   push:
