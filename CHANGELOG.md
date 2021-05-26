@@ -1,3 +1,7 @@
+# 0.2.1
+
+* Update crate metadata
+
 # 0.2.0
 
 * Bump MSRV to 1.35

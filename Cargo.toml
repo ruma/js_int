@@ -1,7 +1,7 @@
 [package]
 name = "js_int"
 description = "JavaScript-interoperable integer types"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Jonas Platte <jplatte+git@posteo.de>"]
 edition = "2018"
 license = "MIT"
