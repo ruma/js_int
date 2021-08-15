@@ -344,10 +344,11 @@ impl Int {
     /// # use js_int::{int, Int};
     /// assert_eq!(int!(100).saturating_add(int!(1)), int!(101));
     /// assert_eq!(Int::MAX.saturating_add(int!(1)), Int::MAX);
+    /// assert_eq!(Int::MIN.saturating_add(int!(-1)), Int::MIN);
     /// ```
     #[must_use]
     pub fn saturating_add(self, rhs: Self) -> Self {
-        self.checked_add(rhs).unwrap_or(Self::MAX)
+        self.checked_add(rhs).unwrap_or_else(|| if self > int!(0) { Self::MAX } else { Self::MIN })
     }
 
     /// Saturating integer subtraction. Computes `self - rhs`, saturating at the numeric
@@ -361,10 +362,11 @@ impl Int {
     /// # use js_int::{int, Int};
     /// assert_eq!(int!(100).saturating_sub(int!(1)), int!(99));
     /// assert_eq!(Int::MIN.saturating_sub(int!(1)), Int::MIN);
+    /// assert_eq!(Int::MAX.saturating_sub(int!(-1)), Int::MAX);
     /// ```
     #[must_use]
     pub fn saturating_sub(self, rhs: Self) -> Self {
-        self.checked_sub(rhs).unwrap_or(Self::MIN)
+        self.checked_sub(rhs).unwrap_or_else(|| if self > int!(0) { Self::MAX } else { Self::MIN })
     }
 
     /// Saturating integer multiplication. Computes `self * rhs`, saturating at the numeric
