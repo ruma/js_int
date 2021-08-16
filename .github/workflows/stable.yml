@@ -1,0 +1,41 @@
+name: Rust Stable
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        profile: minimal
+        override: true
+    - name: Run tests (no default features)
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --no-default-features
+    - name: Run tests (default features)
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --features std,serde,lax_deserialize
+    - name: Run external tests
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: -p js_int_ext_tests --all-features
+    - name: Run tests (release build)
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --release
+
+

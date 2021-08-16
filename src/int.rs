@@ -77,9 +77,25 @@ impl Int {
         }
     }
 
-    // TODO: make public if name is deemed sensible, rename and make public otherwise.
+    /// Creates an `Int` from the given `i64` clamped to the safe interval.
+    ///
+    /// The given value gets clamped into the closed interval between
+    /// `MIN_SAFE_INT` and `MAX_SAFE_INT`.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::{int, Int};
+    /// assert_eq!(Int::new_saturating(0), int!(0));
+    /// assert_eq!(Int::new_saturating(js_int::MAX_SAFE_INT), Int::MAX);
+    /// assert_eq!(Int::new_saturating(js_int::MAX_SAFE_INT + 1), Int::MAX);
+    /// assert_eq!(Int::new_saturating(js_int::MIN_SAFE_INT), Int::MIN);
+    /// assert_eq!(Int::new_saturating(js_int::MIN_SAFE_INT - 1), Int::MIN);
+    /// ```
     #[must_use]
-    fn new_saturating(val: i64) -> Self {
+    pub fn new_saturating(val: i64) -> Self {
         if val < MIN_SAFE_INT {
             Self::MIN
         } else if val > MAX_SAFE_INT {
@@ -344,10 +360,11 @@ impl Int {
     /// # use js_int::{int, Int};
     /// assert_eq!(int!(100).saturating_add(int!(1)), int!(101));
     /// assert_eq!(Int::MAX.saturating_add(int!(1)), Int::MAX);
+    /// assert_eq!(Int::MIN.saturating_add(int!(-1)), Int::MIN);
     /// ```
     #[must_use]
     pub fn saturating_add(self, rhs: Self) -> Self {
-        self.checked_add(rhs).unwrap_or(Self::MAX)
+        self.checked_add(rhs).unwrap_or_else(|| if self > int!(0) { Self::MAX } else { Self::MIN })
     }
 
     /// Saturating integer subtraction. Computes `self - rhs`, saturating at the numeric
@@ -361,10 +378,11 @@ impl Int {
     /// # use js_int::{int, Int};
     /// assert_eq!(int!(100).saturating_sub(int!(1)), int!(99));
     /// assert_eq!(Int::MIN.saturating_sub(int!(1)), Int::MIN);
+    /// assert_eq!(Int::MAX.saturating_sub(int!(-1)), Int::MAX);
     /// ```
     #[must_use]
     pub fn saturating_sub(self, rhs: Self) -> Self {
-        self.checked_sub(rhs).unwrap_or(Self::MIN)
+        self.checked_sub(rhs).unwrap_or_else(|| if self > int!(0) { Self::MAX } else { Self::MIN })
     }
 
     /// Saturating integer multiplication. Computes `self * rhs`, saturating at the numeric

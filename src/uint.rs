@@ -90,9 +90,20 @@ impl UInt {
         Self(val & MAX_SAFE_UINT)
     }
 
-    // TODO: make public if name is deemed sensible, rename and make public otherwise.
+    /// Creates an `UInt` from the given `u64` capped at `MAX_SAFE_UINT`.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::{uint, UInt};
+    /// assert_eq!(UInt::new_saturating(0), uint!(0));
+    /// assert_eq!(UInt::new_saturating(js_int::MAX_SAFE_UINT), UInt::MAX);
+    /// assert_eq!(UInt::new_saturating(js_int::MAX_SAFE_UINT + 1), UInt::MAX);
+    /// ```
     #[must_use]
-    fn new_saturating(val: u64) -> Self {
+    pub fn new_saturating(val: u64) -> Self {
         if val <= MAX_SAFE_UINT {
             Self(val)
         } else {
