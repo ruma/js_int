@@ -77,9 +77,25 @@ impl Int {
         }
     }
 
-    // TODO: make public if name is deemed sensible, rename and make public otherwise.
+    /// Creates an `Int` from the given `i64` clamped to the safe interval.
+    ///
+    /// The given value gets clamped into the closed interval between
+    /// `MIN_SAFE_INT` and `MAX_SAFE_INT`.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage:
+    ///
+    /// ```
+    /// # use js_int::{int, Int};
+    /// assert_eq!(Int::new_saturating(0), int!(0));
+    /// assert_eq!(Int::new_saturating(js_int::MAX_SAFE_INT), Int::MAX);
+    /// assert_eq!(Int::new_saturating(js_int::MAX_SAFE_INT + 1), Int::MAX);
+    /// assert_eq!(Int::new_saturating(js_int::MIN_SAFE_INT), Int::MIN);
+    /// assert_eq!(Int::new_saturating(js_int::MIN_SAFE_INT - 1), Int::MIN);
+    /// ```
     #[must_use]
-    fn new_saturating(val: i64) -> Self {
+    pub fn new_saturating(val: i64) -> Self {
         if val < MIN_SAFE_INT {
             Self::MIN
         } else if val > MAX_SAFE_INT {
