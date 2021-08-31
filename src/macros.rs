@@ -75,7 +75,7 @@ macro_rules! convert_impls {
                 Self::try_from(val.0)
             }
         }
-        
+
         impl ::core::convert::TryFrom<$type> for $ot8 {
             type Error = ::core::num::TryFromIntError;
 
@@ -91,7 +91,7 @@ macro_rules! convert_impls {
                 Self::try_from(val.0)
             }
         }
-        
+
         impl ::core::convert::TryFrom<$type> for $ot16 {
             type Error = ::core::num::TryFromIntError;
 
@@ -107,7 +107,7 @@ macro_rules! convert_impls {
                 Self::try_from(val.0)
             }
         }
-        
+
         impl ::core::convert::TryFrom<$type> for $ot32 {
             type Error = ::core::num::TryFromIntError;
 

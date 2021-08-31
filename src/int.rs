@@ -638,34 +638,34 @@ mod tests {
     fn int_overflow_panic() {
         let _ = Int::MAX + int!(1);
     }
-    
+
     #[test]
     fn try_from_int_for_u_n() {
         use std::convert::TryFrom;
         let u8_max = u8::MAX as i64;
         let u16_max = u16::MAX as i64;
         let u32_max = u32::MAX as i64;
-        
+
         assert_eq!(u8::try_from(Int(0)), Ok(0));
         assert_eq!(u8::try_from(Int(10)), Ok(10));
         assert_eq!(u8::try_from(Int(u8_max)), Ok(u8::MAX));
-        assert!(u8::try_from(Int(u8_max+1)).is_err());
+        assert!(u8::try_from(Int(u8_max + 1)).is_err());
         assert!(u8::try_from(Int(-1)).is_err());
         assert!(u8::try_from(Int(-10)).is_err());
-        
+
         assert_eq!(u16::try_from(Int(0)), Ok(0));
         assert_eq!(u16::try_from(Int(1000)), Ok(1000));
-        assert_eq!(u16::try_from(Int(u8_max+1)), Ok((u8_max+1) as u16));
+        assert_eq!(u16::try_from(Int(u8_max + 1)), Ok((u8_max + 1) as u16));
         assert_eq!(u16::try_from(Int(u16_max)), Ok(u16::MAX));
-        assert!(u16::try_from(Int(u16_max+1)).is_err());
+        assert!(u16::try_from(Int(u16_max + 1)).is_err());
         assert!(u16::try_from(Int(-1)).is_err());
         assert!(u16::try_from(Int(-10)).is_err());
-        
+
         assert_eq!(u32::try_from(Int(0)), Ok(0));
         assert_eq!(u32::try_from(Int(1000)), Ok(1000));
-        assert_eq!(u32::try_from(Int(u16_max+1)), Ok((u16_max+1) as u32));
+        assert_eq!(u32::try_from(Int(u16_max + 1)), Ok((u16_max + 1) as u32));
         assert_eq!(u32::try_from(Int(u32_max)), Ok(u32::MAX));
-        assert!(u32::try_from(Int(u32_max+1)).is_err());
+        assert!(u32::try_from(Int(u32_max + 1)).is_err());
         assert!(u32::try_from(Int(-1)).is_err());
         assert!(u32::try_from(Int(-10)).is_err());
     }
