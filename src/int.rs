@@ -641,7 +641,7 @@ mod tests {
 
     #[test]
     fn try_from_int_for_u_n() {
-        use std::convert::TryFrom;
+        use core::convert::TryFrom;
         let u8_max = u8::MAX as i64;
         let u16_max = u16::MAX as i64;
         let u32_max = u32::MAX as i64;
