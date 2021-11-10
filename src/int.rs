@@ -582,7 +582,7 @@ impl<'de> Deserialize<'de> for Int {
         {
             let val = f64::deserialize(deserializer)?;
 
-            if val > MAX_SAFE_INT as f64 || val < MIN_SAFE_INT as f64 {
+            if val > MAX_SAFE_INT as f64 || val < MIN_SAFE_INT as f64 || val.is_nan() {
                 Err(D::Error::invalid_value(
                     Unexpected::Float(val),
                     &"a number between -2^53 + 1 and 2^53 - 1",
