@@ -589,7 +589,7 @@ impl<'de> Deserialize<'de> for UInt {
         {
             let val = f64::deserialize(deserializer)?;
 
-            if val < 0.0 || val > MAX_SAFE_UINT as f64 {
+            if val < 0.0 || val > MAX_SAFE_UINT as f64 || !val.is_finite() {
                 Err(D::Error::invalid_value(
                     Unexpected::Float(val),
                     &"a number between 0 and 2^53 - 1",

@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod tests {
+    use serde::{de::IntoDeserializer, Deserialize};
     use serde_json::{from_str as from_json_str, to_string as to_json_string};
 
     use js_int::{int, uint, Int, UInt};
@@ -68,6 +69,10 @@ mod tests {
         assert_eq!(from_json_str::<Int>("9007199254740991.0").unwrap(), Int::MAX);
         assert_eq!(from_json_str::<Int>("9007199254740991.49").unwrap(), Int::MAX);
         assert!(from_json_str::<Int>("9007199254740992.0").is_err());
+
+        assert!(deserialize_int_from(f64::NAN).is_err());
+        assert!(deserialize_int_from(f64::INFINITY).is_err());
+        assert!(deserialize_int_from(f64::NEG_INFINITY).is_err());
     }
 
     #[test]
@@ -78,5 +83,21 @@ mod tests {
         assert_eq!(from_json_str::<UInt>("9007199254740991.0").unwrap(), UInt::MAX);
         assert_eq!(from_json_str::<UInt>("9007199254740991.49").unwrap(), UInt::MAX);
         assert!(from_json_str::<UInt>("9007199254740992.0").is_err());
+
+        assert!(deserialize_uint_from(f64::NAN).is_err());
+        assert!(deserialize_uint_from(f64::INFINITY).is_err());
+        assert!(deserialize_uint_from(f64::NEG_INFINITY).is_err());
+    }
+
+    fn deserialize_int_from<'de, Value: IntoDeserializer<'de>>(
+        value: Value,
+    ) -> Result<Int, serde::de::value::Error> {
+        Int::deserialize(value.into_deserializer())
+    }
+
+    fn deserialize_uint_from<'de, Value: IntoDeserializer<'de>>(
+        value: Value,
+    ) -> Result<UInt, serde::de::value::Error> {
+        UInt::deserialize(value.into_deserializer())
     }
 }
