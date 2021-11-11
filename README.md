@@ -34,10 +34,12 @@ implementations of `std::error::Error` for `ParseIntError` and
 without the `std` feature.
 
 Deserialization can be routed through `f64` instead of `u64` with the
-`lax_deserialize` feature. If a deserialized number is fractional, the
-fractional part is discarded. Please be aware that `serde_json` doesn't
-losslessly parse large floats with a fractional part by default (even if the
-fractional part is `.0`). To fix that, enable its `float_roundtrip` feature.
+`float_deserialize` feature. This will still not deserialize numbers with a
+fractional component. Enabling the `lax_deserialize` feature will discard the
+fractional part instead of declining to deserialize. Please be aware that
+`serde_json` doesn't losslessly parse large floats with a fractional part by
+default (even if the fractional part is `.0`). To fix that, enable its 
+`float_roundtrip` feature.
 
 [travis]: https://travis-ci.org/jplatte/js_int
 [crates-io]: https://crates.io/crates/js_int

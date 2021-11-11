@@ -28,10 +28,13 @@
 //! * `serde`: Serialization and deserialization support via [serde](https://serde.rs). Disabled by
 //!   default. You can use `js_int` + `serde` in `#![no_std]` contexts if you use
 //!   `default-features = false` for both.
-//! * `lax_deserialize`: Deserialize via `f64`, not via `u64`. If the input has a fraction, it is
-//!   discarded. Please be aware that `serde_json` doesn't losslessly parse large floats with a
-//!   fractional part by default (even if the fractional part is `.0`). To fix that, enable its
-//!   `float_roundtrip` feature.
+//! * `float_deserialize`: Deserialize via `f64`, not via `u64`. If the input has a fraction,
+//!   deserialization will fail.
+//! * `lax_deserialize`: Like `float_deserialize`, but if the input has a fraction, it is
+//!   deserialized with the fractional part discarded.
+//!   Please be aware that `serde_json` doesn't losslessly parse large floats with a fractional part
+//!   by default (even if the fractional part is `.0`). To fix that, enable its `float_roundtrip`
+//!   feature.
 //! * `std`: Enable `std::error::Error` implementations for `ParseIntError`, `TryFromIntError`.
 //!   Enabled by default.
 
