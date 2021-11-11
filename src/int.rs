@@ -588,26 +588,16 @@ impl<'de> Deserialize<'de> for Int {
 
             let val = f64::deserialize(deserializer)?;
 
-            if val > MAX_SAFE_INT as f64 || val < MIN_SAFE_INT as f64 || !is_acceptable_float(val) {
+            if val > MAX_SAFE_INT as f64
+                || val < MIN_SAFE_INT as f64
+                || !super::is_acceptable_float(val)
+            {
                 Err(D::Error::invalid_value(Unexpected::Float(val), &EXPECTING))
             } else {
                 Ok(Self(val as i64))
             }
         }
     }
-}
-
-#[cfg(feature = "float_deserialize")]
-#[inline(always)]
-pub(crate) fn is_acceptable_float(float: f64) -> bool {
-    #[cfg(not(feature = "lax_deserialize"))]
-    {
-        if float.fract() != 0.0 {
-            return false;
-        }
-    }
-
-    !float.is_nan()
 }
 
 #[cfg(test)]

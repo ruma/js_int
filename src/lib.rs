@@ -53,3 +53,16 @@ pub use self::{
     int::{Int, MAX_SAFE_INT, MIN_SAFE_INT},
     uint::{UInt, MAX_SAFE_UINT},
 };
+
+#[cfg(feature = "float_deserialize")]
+#[inline(always)]
+pub(crate) fn is_acceptable_float(float: f64) -> bool {
+    #[cfg(not(feature = "lax_deserialize"))]
+    {
+        if float.fract() != 0.0 {
+            return false;
+        }
+    }
+
+    !float.is_nan()
+}

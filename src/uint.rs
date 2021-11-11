@@ -11,8 +11,6 @@ use serde::{
     Deserialize, Deserializer, Serialize,
 };
 
-#[cfg(feature = "float_deserialize")]
-use crate::int::is_acceptable_float;
 use crate::{
     error::{ParseIntError, ParseIntErrorKind, TryFromIntError},
     MAX_SAFE_INT,
@@ -596,7 +594,7 @@ impl<'de> Deserialize<'de> for UInt {
 
             let val = f64::deserialize(deserializer)?;
 
-            if val < 0.0 || val > MAX_SAFE_UINT as f64 || !is_acceptable_float(val) {
+            if val < 0.0 || val > MAX_SAFE_UINT as f64 || !super::is_acceptable_float(val) {
                 Err(D::Error::invalid_value(Unexpected::Float(val), &EXPECTING))
             } else {
                 Ok(Self(val as u64))
