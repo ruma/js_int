@@ -20,6 +20,3 @@ features = ["derive"]
 lax_deserialize = ["serde"]
 default = ["std"]
 std = []
-
-[workspace]
-members = ["ext_tests"]

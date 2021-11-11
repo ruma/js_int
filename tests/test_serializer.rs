@@ -1,5 +1,8 @@
+#![cfg(feature = "serde")]
 use serde::{ser::Impossible, Serialize, Serializer};
+use std::fmt::Display;
 
+/// serde Serializer for testing that the `Serialize` implementation of `Int` and `UInt` work correctly.
 pub struct TestSerializer;
 
 #[derive(Debug, PartialEq)]
@@ -176,6 +179,13 @@ impl Serializer for TestSerializer {
         _: &'static str,
         _: usize,
     ) -> Result<Self::SerializeStructVariant, Self::Error> {
+        unimplemented!()
+    }
+
+    fn collect_str<T: ?Sized>(self, _: &T) -> Result<Self::Ok, Self::Error>
+    where
+        T: Display,
+    {
         unimplemented!()
     }
 }
