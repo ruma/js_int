@@ -17,13 +17,27 @@ jobs:
         toolchain: '1.35'
         profile: minimal
         override: true
-    - name: Check (no features)
+    - name: Check (no default features)
       uses: actions-rs/cargo@v1
       with:
         command: check
         args: --no-default-features
+    - name: Check (default features)
+      uses: actions-rs/cargo@v1
+      with:
+        command: check
+    - name: Check (serde)
+      uses: actions-rs/cargo@v1
+      with:
+        command: check
+        args: --features serde
+    - name: Check (float_deserialize)
+      uses: actions-rs/cargo@v1
+      with:
+        command: check
+        args: --features float_deserialize
     - name: Check (all features)
       uses: actions-rs/cargo@v1
       with:
         command: check
-        args: --features std,serde,lax_deserialize
+        args: --all-features

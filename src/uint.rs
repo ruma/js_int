@@ -462,7 +462,7 @@ impl TryFrom<i64> for UInt {
     type Error = TryFromIntError;
 
     fn try_from(val: i64) -> Result<Self, TryFromIntError> {
-        if (0..MAX_SAFE_INT).contains(&val) {
+        if (0..=MAX_SAFE_INT).contains(&val) {
             Ok(Self(val as u64))
         } else {
             Err(TryFromIntError::new())
@@ -573,7 +573,7 @@ impl<'de> Deserialize<'de> for UInt {
     where
         D: Deserializer<'de>,
     {
-        #[cfg(not(feature = "lax_deserialize"))]
+        #[cfg(not(feature = "float_deserialize"))]
         {
             let val = u64::deserialize(deserializer)?;
 
@@ -585,15 +585,17 @@ impl<'de> Deserialize<'de> for UInt {
             })
         }
 
-        #[cfg(feature = "lax_deserialize")]
+        #[cfg(feature = "float_deserialize")]
         {
+            #[cfg(not(feature = "lax_deserialize"))]
+            const EXPECTING: &str = "a number between 0 and 2^53 - 1 without fractional component";
+            #[cfg(feature = "lax_deserialize")]
+            const EXPECTING: &str = "a number between 0 and 2^53 - 1";
+
             let val = f64::deserialize(deserializer)?;
 
-            if val < 0.0 || val > MAX_SAFE_UINT as f64 || val.is_nan() {
-                Err(D::Error::invalid_value(
-                    Unexpected::Float(val),
-                    &"a number between 0 and 2^53 - 1",
-                ))
+            if val < 0.0 || val > MAX_SAFE_UINT as f64 || !super::is_acceptable_float(val) {
+                Err(D::Error::invalid_value(Unexpected::Float(val), &EXPECTING))
             } else {
                 Ok(Self(val as u64))
             }
