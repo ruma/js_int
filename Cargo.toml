@@ -20,3 +20,6 @@ features = ["derive"]
 lax_deserialize = ["serde"]
 default = ["std"]
 std = []
+
+[dev-dependencies]
+serde_test = "1.0"
