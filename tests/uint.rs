@@ -1,15 +1,20 @@
 #![cfg(feature = "serde")]
-mod test_serializer;
 
 use js_int::{uint, UInt};
-use serde::{de::IntoDeserializer, Deserialize, Serialize};
-
-use crate::test_serializer::{Serialized, TestSerializer};
+use serde::{de::IntoDeserializer, Deserialize};
+use serde_test::{assert_ser_tokens, Token};
 
 #[test]
 fn serialize_uint() {
-    assert_eq!(uint!(100).serialize(TestSerializer).unwrap(), Serialized::Unsigned(100));
-    assert_eq!(uint!(0).serialize(TestSerializer).unwrap(), Serialized::Unsigned(0));
+    assert_serialize(100);
+    assert_serialize(0);
+}
+
+fn assert_serialize(number: u32) {
+    assert_ser_tokens(
+        &UInt::from(number),
+        &[Token::NewtypeStruct { name: "UInt" }, Token::U64(number as _)],
+    )
 }
 
 #[test]

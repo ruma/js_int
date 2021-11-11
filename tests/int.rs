@@ -1,16 +1,21 @@
 #![cfg(feature = "serde")]
-mod test_serializer;
 
 use js_int::{int, Int};
-use serde::{de::IntoDeserializer, Deserialize, Serialize};
-
-use crate::test_serializer::{Serialized, TestSerializer};
+use serde::{de::IntoDeserializer, Deserialize};
+use serde_test::{assert_ser_tokens, Token};
 
 #[test]
 fn serialize_int() {
-    assert_eq!(int!(100).serialize(TestSerializer).unwrap(), Serialized::Signed(100));
-    assert_eq!(int!(0).serialize(TestSerializer).unwrap(), Serialized::Signed(0));
-    assert_eq!(int!(-100).serialize(TestSerializer).unwrap(), Serialized::Signed(-100));
+    assert_serialize(100);
+    assert_serialize(0);
+    assert_serialize(-100);
+}
+
+fn assert_serialize(number: i32) {
+    assert_ser_tokens(
+        &Int::from(number),
+        &[Token::NewtypeStruct { name: "Int" }, Token::I64(number as _)],
+    )
 }
 
 #[test]
