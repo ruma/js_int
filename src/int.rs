@@ -566,7 +566,7 @@ impl<'de> Deserialize<'de> for Int {
     where
         D: Deserializer<'de>,
     {
-        #[cfg(not(feature = "lax_deserialize"))]
+        #[cfg(not(feature = "float_deserialize"))]
         {
             let val = i64::deserialize(deserializer)?;
 
@@ -578,20 +578,36 @@ impl<'de> Deserialize<'de> for Int {
             })
         }
 
-        #[cfg(feature = "lax_deserialize")]
+        #[cfg(feature = "float_deserialize")]
         {
+            #[cfg(not(feature = "lax_deserialize"))]
+            const EXPECTING: &str = "a number between -2^53 + 1 and 2^53 - 1 without fractional component";
+            #[cfg(feature = "lax_deserialize")]
+            const EXPECTING: &str = "a number between -2^53 + 1 and 2^53 - 1";
+
             let val = f64::deserialize(deserializer)?;
 
-            if val > MAX_SAFE_INT as f64 || val < MIN_SAFE_INT as f64 || val.is_nan() {
+            if val > MAX_SAFE_INT as f64 || val < MIN_SAFE_INT as f64 || !is_acceptable_float(val) {
                 Err(D::Error::invalid_value(
                     Unexpected::Float(val),
-                    &"a number between -2^53 + 1 and 2^53 - 1",
+                    &EXPECTING,
                 ))
             } else {
                 Ok(Self(val as i64))
             }
         }
     }
+}
+
+#[cfg(feature = "float_deserialize")]
+#[inline(always)]
+pub(crate) fn is_acceptable_float(float: f64) -> bool {
+    #[cfg(not(feature = "lax_deserialize"))]
+    if float.fract() != 0.0 {
+        return false;
+    }
+
+    !float.is_nan()
 }
 
 #[cfg(test)]
