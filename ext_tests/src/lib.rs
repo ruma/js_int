@@ -1,15 +1,17 @@
+mod test_serializer;
+
 #[cfg(test)]
 mod tests {
-    use serde::{de::IntoDeserializer, Deserialize};
-    use serde_json::{from_str as from_json_str, to_string as to_json_string};
-
     use js_int::{int, uint, Int, UInt};
+    use serde::{de::IntoDeserializer, Deserialize, Serialize};
+
+    use crate::test_serializer::{Serialized, TestSerializer};
 
     #[test]
     fn serialize_int() {
-        assert_eq!(to_json_string(&int!(100)).unwrap(), "100");
-        assert_eq!(to_json_string(&int!(0)).unwrap(), "0");
-        assert_eq!(to_json_string(&int!(-100)).unwrap(), "-100");
+        assert_eq!(int!(100).serialize(TestSerializer).unwrap(), Serialized::Signed(100));
+        assert_eq!(int!(0).serialize(TestSerializer).unwrap(), Serialized::Signed(0));
+        assert_eq!(int!(-100).serialize(TestSerializer).unwrap(), Serialized::Signed(-100));
     }
 
     #[test]
@@ -25,8 +27,8 @@ mod tests {
 
     #[test]
     fn serialize_uint() {
-        assert_eq!(to_json_string(&uint!(100)).unwrap(), "100");
-        assert_eq!(to_json_string(&uint!(0)).unwrap(), "0");
+        assert_eq!(uint!(100).serialize(TestSerializer).unwrap(), Serialized::Unsigned(100));
+        assert_eq!(uint!(0).serialize(TestSerializer).unwrap(), Serialized::Unsigned(0));
     }
 
     #[test]
