@@ -26,12 +26,16 @@ jobs:
       uses: actions-rs/cargo@v1
       with:
         command: test
-        args: --features std,serde,lax_deserialize
-    - name: Run external tests
+    - name: Run tests (serde)
       uses: actions-rs/cargo@v1
       with:
         command: test
-        args: -p js_int_ext_tests --all-features
+        args: --features serde
+    - name: Run tests (all features)
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --all-features
     - name: Run tests (release build)
       uses: actions-rs/cargo@v1
       with:
