@@ -488,9 +488,37 @@ macro_rules! int_op_impl {
             }
         }
 
+        impl $trait<i64> for Int {
+            type Output = Self;
+
+            fn $method(self, rhs: i64) -> Self {
+                Self::new_(<i64 as $trait>::$method(self.0, rhs))
+            }
+        }
+
+        impl $trait<Int> for i64 {
+            type Output = Self;
+
+            fn $method(self, rhs: Int) -> Self {
+                <i64 as $trait>::$method(self, rhs.0)
+            }
+        }
+
         impl $assign_trait for Int {
             fn $assign_method(&mut self, other: Self) {
                 self.assign_(<i64 as $trait>::$method(self.0, other.0));
+            }
+        }
+
+        impl $assign_trait<i64> for Int {
+            fn $assign_method(&mut self, other: i64) {
+                self.assign_(<i64 as $trait>::$method(self.0, other));
+            }
+        }
+
+        impl $assign_trait<Int> for i64 {
+            fn $assign_method(&mut self, other: Int) {
+                *self = <i64 as $trait>::$method(*self, other.0);
             }
         }
     };
@@ -710,5 +738,54 @@ mod tests {
         // ordering
         assert!(1 > int!(0));
         assert!(int!(1) > 0);
+    }
+
+    #[test]
+    fn operations_between_int_and_i64() {
+        assert_eq!(int!(1) + 2, int!(3));
+        assert_eq!(1 + int!(2), int!(3));
+
+        assert_eq!(int!(2) - 1, int!(1));
+        assert_eq!(2 - int!(1), int!(1));
+
+        assert_eq!(int!(3) * 2, int!(6));
+        assert_eq!(3 * int!(2), int!(6));
+
+        assert_eq!(int!(6) / 2, int!(3));
+        assert_eq!(6 / int!(2), int!(3));
+
+        assert_eq!(int!(5) % 2, int!(1));
+        assert_eq!(5 % int!(2), int!(1));
+    }
+
+    #[test]
+    fn assignment_operations_between_int_and_i64() {
+        let mut int = int!(1);
+        let mut primitive_int = 1;
+
+        int += 1;
+        primitive_int += int!(1);
+        assert_eq!(int, 2);
+        assert_eq!(int, primitive_int);
+
+        int -= -1;
+        primitive_int -= int!(-1);
+        assert_eq!(int, 3);
+        assert_eq!(int, primitive_int);
+
+        int *= 3;
+        primitive_int *= int!(3);
+        assert_eq!(int, 9);
+        assert_eq!(int, primitive_int);
+
+        int /= 3;
+        primitive_int /= int!(3);
+        assert_eq!(int, 3);
+        assert_eq!(int, primitive_int);
+
+        int %= 2;
+        primitive_int %= int!(2);
+        assert_eq!(int, 1);
+        assert_eq!(int, primitive_int);
     }
 }
