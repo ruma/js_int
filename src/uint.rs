@@ -3,8 +3,8 @@ use core::{
     iter,
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Rem, RemAssign, Sub, SubAssign},
     str::FromStr,
+    cmp::Ordering,
 };
-use std::cmp::Ordering;
 
 #[cfg(feature = "serde")]
 use serde::{
