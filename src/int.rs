@@ -501,6 +501,18 @@ int_op_impl!(Mul, mul, MulAssign, mul_assign);
 int_op_impl!(Div, div, DivAssign, div_assign);
 int_op_impl!(Rem, rem, RemAssign, rem_assign);
 
+impl PartialEq<i64> for Int {
+    fn eq(&self, other: &i64) -> bool {
+        self.0 == *other
+    }
+}
+
+impl PartialEq<Int> for i64 {
+    fn eq(&self, other: &Int) -> bool {
+        *self == other.0
+    }
+}
+
 impl Neg for Int {
     type Output = Self;
 
@@ -674,5 +686,11 @@ mod tests {
         assert!(u32::try_from(Int(u32_max + 1)).is_err());
         assert!(u32::try_from(Int(-1)).is_err());
         assert!(u32::try_from(Int(-10)).is_err());
+    }
+
+    #[test]
+    fn comparing_int_to_i64() {
+        assert_eq!(int!(42), 42);
+        assert_eq!(42, int!(42));
     }
 }

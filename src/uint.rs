@@ -518,6 +518,18 @@ uint_op_impl!(Mul, mul, MulAssign, mul_assign);
 uint_op_impl!(Div, div, DivAssign, div_assign);
 uint_op_impl!(Rem, rem, RemAssign, rem_assign);
 
+impl PartialEq<u64> for UInt {
+    fn eq(&self, other: &u64) -> bool {
+        self.0 == *other
+    }
+}
+
+impl PartialEq<UInt> for u64 {
+    fn eq(&self, other: &UInt) -> bool {
+        *self == other.0
+    }
+}
+
 impl iter::Sum for UInt {
     fn sum<I>(iter: I) -> Self
     where
@@ -691,5 +703,11 @@ mod tests {
         assert_eq!(i32::try_from(UInt(i16_max + 1)), Ok((i16::MAX as i32) + 1));
         assert_eq!(i32::try_from(UInt(i32_max)), Ok(i32::MAX));
         assert!(i32::try_from(UInt(i32_max + 1)).is_err());
+    }
+
+    #[test]
+    fn comparing_uint_to_u64() {
+        assert_eq!(uint!(42), 42);
+        assert_eq!(42, uint!(42));
     }
 }
