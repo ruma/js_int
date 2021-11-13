@@ -4,6 +4,7 @@ use core::{
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign},
     str::FromStr,
 };
+use std::cmp::Ordering;
 
 #[cfg(feature = "serde")]
 use serde::{
@@ -513,6 +514,18 @@ impl PartialEq<Int> for i64 {
     }
 }
 
+impl PartialOrd<i64> for Int {
+    fn partial_cmp(&self, other: &i64) -> Option<Ordering> {
+        self.0.partial_cmp(other)
+    }
+}
+
+impl PartialOrd<Int> for i64 {
+    fn partial_cmp(&self, other: &Int) -> Option<Ordering> {
+        self.partial_cmp(&other.0)
+    }
+}
+
 impl Neg for Int {
     type Output = Self;
 
@@ -690,7 +703,12 @@ mod tests {
 
     #[test]
     fn comparing_int_to_i64() {
+        // equality
         assert_eq!(int!(42), 42);
         assert_eq!(42, int!(42));
+
+        // ordering
+        assert!(1 > int!(0));
+        assert!(int!(1) > 0);
     }
 }

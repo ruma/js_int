@@ -4,6 +4,7 @@ use core::{
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Rem, RemAssign, Sub, SubAssign},
     str::FromStr,
 };
+use std::cmp::Ordering;
 
 #[cfg(feature = "serde")]
 use serde::{
@@ -530,6 +531,18 @@ impl PartialEq<UInt> for u64 {
     }
 }
 
+impl PartialOrd<u64> for UInt {
+    fn partial_cmp(&self, other: &u64) -> Option<Ordering> {
+        self.0.partial_cmp(other)
+    }
+}
+
+impl PartialOrd<UInt> for u64 {
+    fn partial_cmp(&self, other: &UInt) -> Option<Ordering> {
+        self.partial_cmp(&other.0)
+    }
+}
+
 impl iter::Sum for UInt {
     fn sum<I>(iter: I) -> Self
     where
@@ -707,7 +720,12 @@ mod tests {
 
     #[test]
     fn comparing_uint_to_u64() {
+        // equality
         assert_eq!(uint!(42), 42);
         assert_eq!(42, uint!(42));
+
+        // ordering
+        assert!(1 > int!(0));
+        assert!(int!(1) > 0);
     }
 }
