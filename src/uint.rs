@@ -1,9 +1,9 @@
 use core::{
+    cmp::Ordering,
     convert::TryFrom,
     iter,
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Rem, RemAssign, Sub, SubAssign},
     str::FromStr,
-    cmp::Ordering,
 };
 
 #[cfg(feature = "serde")]
