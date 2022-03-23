@@ -427,7 +427,7 @@ impl Int {
 }
 
 fmt_impls!(Int);
-convert_impls!(Int, i8, i16, i32, i64, i128, u8, u16, u32);
+convert_impls!(Int, i8, i16, i32, i64, i128, isize, u8, u16, u32, usize);
 
 impl From<u8> for Int {
     fn from(val: u8) -> Self {

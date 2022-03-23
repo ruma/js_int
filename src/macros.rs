@@ -31,7 +31,19 @@ macro_rules! fmt_impls {
 }
 
 macro_rules! convert_impls {
-    ($type:ident, $t8:ident, $t16:ident, $t32:ident, $t64:ident, $t128:ident, $ot8:ident, $ot16:ident, $ot32:ident) => {
+    (
+        $type:ident,
+        $t8:ident,
+        $t16:ident,
+        $t32:ident,
+        $t64:ident,
+        $t128:ident,
+        $tsize:ident,
+        $ot8:ident,
+        $ot16:ident,
+        $ot32:ident,
+        $otsize:ident
+    ) => {
         impl ::core::convert::From<$t8> for $type {
             fn from(val: $t8) -> Self {
                 Self($t64::from(val))
@@ -62,6 +74,26 @@ macro_rules! convert_impls {
             type Error = crate::error::TryFromIntError;
 
             fn try_from(val: $t128) -> Result<Self, crate::error::TryFromIntError> {
+                $t64::try_from(val)
+                    .map_err(|_| crate::error::TryFromIntError::new())
+                    .and_then($type::try_from)
+            }
+        }
+
+        impl ::core::convert::TryFrom<$tsize> for $type {
+            type Error = crate::error::TryFromIntError;
+
+            fn try_from(val: $tsize) -> Result<Self, crate::error::TryFromIntError> {
+                $t64::try_from(val)
+                    .map_err(|_| crate::error::TryFromIntError::new())
+                    .and_then($type::try_from)
+            }
+        }
+
+        impl ::core::convert::TryFrom<$otsize> for $type {
+            type Error = crate::error::TryFromIntError;
+
+            fn try_from(val: $otsize) -> Result<Self, crate::error::TryFromIntError> {
                 $t64::try_from(val)
                     .map_err(|_| crate::error::TryFromIntError::new())
                     .and_then($type::try_from)
@@ -125,6 +157,22 @@ macro_rules! convert_impls {
         impl ::core::convert::From<$type> for $t128 {
             fn from(val: $type) -> Self {
                 $t128::from(val.0)
+            }
+        }
+
+        impl ::core::convert::TryFrom<$type> for $tsize {
+            type Error = ::core::num::TryFromIntError;
+
+            fn try_from(val: $type) -> Result<Self, ::core::num::TryFromIntError> {
+                Self::try_from(val.0)
+            }
+        }
+
+        impl ::core::convert::TryFrom<$type> for $otsize {
+            type Error = ::core::num::TryFromIntError;
+
+            fn try_from(val: $type) -> Result<Self, ::core::num::TryFromIntError> {
+                Self::try_from(val.0)
             }
         }
 

@@ -420,7 +420,7 @@ impl UInt {
 }
 
 fmt_impls!(UInt);
-convert_impls!(UInt, u8, u16, u32, u64, u128, i8, i16, i32);
+convert_impls!(UInt, u8, u16, u32, u64, u128, usize, i8, i16, i32, isize);
 
 impl TryFrom<i8> for UInt {
     type Error = TryFromIntError;
