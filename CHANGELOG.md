@@ -1,3 +1,12 @@
+# 0.2.2
+
+* Consider negative values in saturating add / sub
+* `impl TryFrom<UInt> for iN` for N = [8, 16, 32]
+* `impl TryFrom<Int> for uN` for N = [8, 16, 32]
+* Fix lax_deserialize accepting NaN
+* Support deserializing floats without fractional component
+* Add `usize` and `isize` `TryFrom` implementations
+
 # 0.2.1
 
 * Update crate metadata
