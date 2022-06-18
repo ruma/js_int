@@ -2,7 +2,6 @@
 name = "js_int"
 description = "JavaScript-interoperable integer types"
 version = "0.2.2"
-authors = ["Jonas Platte <jplatte+git@posteo.de>"]
 edition = "2018"
 license = "MIT"
 readme = "README.md"
