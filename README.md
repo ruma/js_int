@@ -45,3 +45,7 @@ default (even if the fractional part is `.0`). To fix that, enable its
 [crates-io]: https://crates.io/crates/js_int
 [docs-rs]: https://docs.rs/js_int
 [mdn]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt
+
+## License
+
+[MIT](https://opensource.org/licenses/MIT)
