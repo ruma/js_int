@@ -1,3 +1,10 @@
+# Unreleased
+
+* Breaking: Allow values larger than 32 bit for `int!` and `uint!` macros.
+  This means that explicit `_i32` and `_u32` literals are no longer valid and it also raises the MSRV to 1.79.
+* The `int!` and `uint!` macros now support arbitrary const expressions, not just literals.
+* `Int::new` and `UInt::new` are now const.
+
 # 0.2.2
 
 * Consider negative values in saturating add / sub
