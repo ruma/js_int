@@ -339,7 +339,7 @@ impl UInt {
     /// # use js_int::{uint, UInt};
     /// assert_eq!(uint!(0).checked_pow(2), Some(uint!(0)));
     /// assert_eq!(uint!(8).checked_pow(2), Some(uint!(64)));
-    /// assert_eq!(uint!(1_000_000_000u32).checked_pow(2), None);
+    /// assert_eq!(uint!(1_000_000_000).checked_pow(2), None);
     /// assert_eq!(UInt::MAX.checked_pow(2), None);
     /// ```
     #[must_use]
