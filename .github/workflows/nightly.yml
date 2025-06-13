@@ -12,19 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: actions-rs/toolchain@v1
+    - uses: dtolnay/rust-toolchain@nightly
       with:
-        toolchain: nightly
-        profile: minimal
-        override: true
         components: rustfmt, clippy
     - name: Check formatting
-      uses: actions-rs/cargo@v1
-      with:
-        command: fmt
-        args: -- --check
+      run: cargo fmt -- --check
     - name: Catch common mistakes
-      uses: actions-rs/cargo@v1
-      with:
-        command: clippy
-        args: --all-features --all-targets -- -D warnings
+      run: cargo clippy --all-features --all-targets -- -D warnings

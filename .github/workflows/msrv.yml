@@ -1,4 +1,4 @@
-name: Rust 1.35
+name: Rust 1.79
 
 on:
   push:
@@ -12,32 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: actions-rs/toolchain@v1
-      with:
-        toolchain: '1.35'
-        profile: minimal
-        override: true
+    - uses: dtolnay/rust-toolchain@1.79
     - name: Check (no default features)
-      uses: actions-rs/cargo@v1
-      with:
-        command: check
-        args: --no-default-features
+      run: cargo check --no-default-features
     - name: Check (default features)
-      uses: actions-rs/cargo@v1
-      with:
-        command: check
+      run: cargo check
     - name: Check (serde)
-      uses: actions-rs/cargo@v1
-      with:
-        command: check
-        args: --features serde
+      run: cargo check --features serde
     - name: Check (float_deserialize)
-      uses: actions-rs/cargo@v1
-      with:
-        command: check
-        args: --features float_deserialize
+      run: cargo check --features float_deserialize
     - name: Check (all features)
-      uses: actions-rs/cargo@v1
-      with:
-        command: check
-        args: --all-features
+      run: cargo check --all-features
