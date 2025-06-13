@@ -69,8 +69,8 @@ impl Int {
     /// assert_eq!(Int::new(js_int::MAX_SAFE_INT + 1), None);
     /// ```
     #[must_use]
-    pub fn new(val: i64) -> Option<Self> {
-        if (MIN_SAFE_INT..=MAX_SAFE_INT).contains(&val) {
+    pub const fn new(val: i64) -> Option<Self> {
+        if val >= MIN_SAFE_INT && val <= MAX_SAFE_INT {
             Some(Self(val))
         } else {
             None
