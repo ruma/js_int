@@ -1,16 +1,28 @@
-/// Creates an `Int` from a numeric literal.
+/// Creates an `Int` from a constant expression.
+/// Checks at compile time that the expression is in a valid range.
 #[macro_export]
 macro_rules! int {
-    ($n:literal) => {
-        <$crate::Int as ::core::convert::From<i32>>::from($n)
+    ($n:expr) => {
+        const {
+            match $crate::Int::new($n) {
+                Some(int) => int,
+                None => panic!("Number is outside the range of an Int"),
+            }
+        }
     };
 }
 
-/// Creates a `UInt` from a numeric literal.
+/// Creates a `UInt` from a constant expression.
+/// Checks at compile time that the expression is in a valid range.
 #[macro_export]
 macro_rules! uint {
-    ($n:literal) => {
-        <$crate::UInt as ::core::convert::From<u32>>::from($n)
+    ($n:expr) => {
+        const {
+            match $crate::UInt::new($n) {
+                Some(int) => int,
+                None => panic!("Number is outside the range of a UInt"),
+            }
+        }
     };
 }
 
