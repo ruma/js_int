@@ -66,7 +66,7 @@ impl UInt {
     /// assert_eq!(UInt::new(js_int::MAX_SAFE_UINT + 1), None);
     /// ```
     #[must_use]
-    pub fn new(val: u64) -> Option<Self> {
+    pub const fn new(val: u64) -> Option<Self> {
         if val <= MAX_SAFE_UINT {
             Some(Self(val))
         } else {
