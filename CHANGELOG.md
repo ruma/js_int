@@ -1,9 +1,10 @@
 # Unreleased
 
-* Breaking: Allow values larger than 32 bit for `int!` and `uint!` macros.
-  This means that explicit `_i32` and `_u32` literals are no longer valid and it also raises the MSRV to 1.79.
-* The `int!` and `uint!` macros now support arbitrary const expressions, not just literals.
-* `Int::new` and `UInt::new` are now const.
+* Breaking: Allow values larger than 32 bit for `int!` and `uint!` macros
+  This means that `i32`-suffixed and `u32`-suffixed literals are no longer accepcted
+* The minimum supported rust version is raised to 1.79, which introduced inline const expressions
+* The `int!` and `uint!` macros now support arbitrary const expressions, not just literals
+* `Int::new` and `UInt::new` are now const
 
 # 0.2.2
 
