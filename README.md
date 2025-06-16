@@ -23,7 +23,8 @@ obsolete in any way though, since there will still be lots of JS code using
 `Number`, and code in other languages that assumes its use.
 </small>
 
-This crate requires rustc >= 1.79.
+This crate requires rustc >= 1.46 if you don't use the `int!` and `uint!` macros or
+rustc >=1.79 if you do.
 
 This crate is `no_std`-compatible with `default-features = false`. This will
 disable the `std` feature, which at the time of writing will only omit the
