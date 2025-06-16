@@ -5,15 +5,14 @@ use core::{
     str::FromStr,
 };
 
-#[cfg(feature = "serde")]
-use serde::{
-    de::{Error as _, Unexpected},
-    Deserialize, Deserializer, Serialize,
-};
-
 use crate::{
     error::{ParseIntError, ParseIntErrorKind, TryFromIntError},
     MAX_SAFE_INT,
+};
+#[cfg(feature = "serde")]
+use serde::{
+    de::{Error as _, Unexpected},
+    Deserialize, Deserializer, Serialize, Serializer,
 };
 
 /// The same as `MAX_SAFE_INT`, but with `u64` as the type.
@@ -22,7 +21,6 @@ pub const MAX_SAFE_UINT: u64 = 0x001F_FFFF_FFFF_FFFF;
 /// An integer limited to the range of non-negative integers that can be represented exactly by an
 /// f64.
 #[derive(Clone, Copy, Default, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[cfg_attr(feature = "serde", derive(Serialize))]
 pub struct UInt(u64);
 
 impl UInt {
@@ -600,6 +598,16 @@ impl<'de> Deserialize<'de> for UInt {
                 Ok(Self(val as u64))
             }
         }
+    }
+}
+
+#[cfg(feature = "serde")]
+impl Serialize for UInt {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_newtype_struct("UInt", &self.0)
     }
 }
 

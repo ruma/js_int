@@ -5,15 +5,14 @@ use core::{
     str::FromStr,
 };
 
-#[cfg(feature = "serde")]
-use serde::{
-    de::{Error as _, Unexpected},
-    Deserialize, Deserializer, Serialize,
-};
-
 use crate::{
     error::{ParseIntError, ParseIntErrorKind, TryFromIntError},
     UInt, MAX_SAFE_UINT,
+};
+#[cfg(feature = "serde")]
+use serde::{
+    de::{Error as _, Unexpected},
+    Deserialize, Deserializer, Serialize, Serializer,
 };
 
 /// The largest integer value that can be represented exactly by an f64.
@@ -23,7 +22,6 @@ pub const MIN_SAFE_INT: i64 = -MAX_SAFE_INT;
 
 /// An integer limited to the range of integers that can be represented exactly by an f64.
 #[derive(Clone, Copy, Default, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[cfg_attr(feature = "serde", derive(Serialize))]
 pub struct Int(i64);
 
 impl Int {
@@ -609,6 +607,16 @@ impl<'de> Deserialize<'de> for Int {
                 Ok(Self(val as i64))
             }
         }
+    }
+}
+
+#[cfg(feature = "serde")]
+impl Serialize for Int {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_newtype_struct("Int", &self.0)
     }
 }
 
