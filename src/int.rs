@@ -364,7 +364,13 @@ impl Int {
     /// ```
     #[must_use]
     pub fn saturating_add(self, rhs: Self) -> Self {
-        self.checked_add(rhs).unwrap_or_else(|| if self > int!(0) { Self::MAX } else { Self::MIN })
+        self.checked_add(rhs).unwrap_or_else(|| {
+            if self > 0_i32.into() {
+                Self::MAX
+            } else {
+                Self::MIN
+            }
+        })
     }
 
     /// Saturating integer subtraction. Computes `self - rhs`, saturating at the numeric
@@ -382,7 +388,13 @@ impl Int {
     /// ```
     #[must_use]
     pub fn saturating_sub(self, rhs: Self) -> Self {
-        self.checked_sub(rhs).unwrap_or_else(|| if self > int!(0) { Self::MAX } else { Self::MIN })
+        self.checked_sub(rhs).unwrap_or_else(|| {
+            if self > 0_i32.into() {
+                Self::MAX
+            } else {
+                Self::MIN
+            }
+        })
     }
 
     /// Saturating integer multiplication. Computes `self * rhs`, saturating at the numeric

@@ -1,4 +1,4 @@
-name: Rust 1.79
+name: Rust 1.46
 
 on:
   push:
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: dtolnay/rust-toolchain@1.79
+    - uses: dtolnay/rust-toolchain@1.46
     - name: Check (no default features)
       run: cargo check --no-default-features
     - name: Check (default features)

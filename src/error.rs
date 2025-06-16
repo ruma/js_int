@@ -26,11 +26,12 @@ impl From<StdParseIntError> for ParseIntError {
 }
 
 impl Display for ParseIntError {
+    #[allow(clippy::uninlined_format_args)] // Not supported in Rust 1.46
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match &self.kind {
             ParseIntErrorKind::Overflow => f.write_str("number too large to fit in target type"),
             ParseIntErrorKind::Underflow => f.write_str("number too small to fit in target type"),
-            ParseIntErrorKind::Unknown(e) => write!(f, "{e}"),
+            ParseIntErrorKind::Unknown(e) => write!(f, "{}", e),
         }
     }
 }
