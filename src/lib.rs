@@ -57,12 +57,5 @@ pub use self::{
 #[cfg(feature = "float_deserialize")]
 #[inline(always)]
 pub(crate) fn is_acceptable_float(float: f64) -> bool {
-    #[cfg(not(feature = "lax_deserialize"))]
-    {
-        if float.fract() != 0.0 {
-            return false;
-        }
-    }
-
-    !float.is_nan()
+    !float.is_nan() && float.fract() == 0.0
 }

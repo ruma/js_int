@@ -16,7 +16,6 @@ default-features = false
 
 [features]
 float_deserialize = ["serde"]
-lax_deserialize = ["float_deserialize"]
 default = ["std"]
 std = []
 

@@ -41,7 +41,6 @@ fn dont_deserialize_integral_float() {
 }
 
 #[test]
-#[cfg_attr(feature = "lax_deserialize", ignore)]
 fn dont_deserialize_fractional_float() {
     assert!(deserialize_from(0.5).is_err());
     assert!(deserialize_from(42.1337).is_err());
@@ -65,14 +64,6 @@ fn deserialize_integral_float() {
     assert!(deserialize_from(f64::NAN).is_err());
     assert!(deserialize_from(f64::INFINITY).is_err());
     assert!(deserialize_from(f64::NEG_INFINITY).is_err());
-}
-
-#[test]
-#[cfg_attr(not(feature = "lax_deserialize"), ignore)]
-fn deserialize_fractional_float() {
-    assert_eq!(deserialize_from(0.5).unwrap(), int!(0));
-    assert_eq!(deserialize_from(42.1337).unwrap(), int!(42));
-    assert_eq!(deserialize_from(-42.1337).unwrap(), int!(-42));
 }
 
 fn deserialize_from<'de, Value: IntoDeserializer<'de>>(

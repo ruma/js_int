@@ -585,10 +585,7 @@ impl<'de> Deserialize<'de> for UInt {
 
         #[cfg(feature = "float_deserialize")]
         {
-            #[cfg(not(feature = "lax_deserialize"))]
             const EXPECTING: &str = "a number between 0 and 2^53 - 1 without fractional component";
-            #[cfg(feature = "lax_deserialize")]
-            const EXPECTING: &str = "a number between 0 and 2^53 - 1";
 
             let val = f64::deserialize(deserializer)?;
 
