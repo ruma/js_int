@@ -19,8 +19,6 @@ jobs:
       run: cargo test
     - name: Run tests (serde)
       run: cargo test --features serde
-    - name: Run tests (float_deserialize)
-      run: cargo test --features float_deserialize
     - name: Run tests (all features)
       run: cargo test --all-features
     - name: Run tests (release build)

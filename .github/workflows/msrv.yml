@@ -19,7 +19,5 @@ jobs:
       run: cargo check
     - name: Check (serde)
       run: cargo check --features serde
-    - name: Check (float_deserialize)
-      run: cargo check --features float_deserialize
     - name: Check (all features)
       run: cargo check --all-features
