@@ -2,8 +2,8 @@
 
 * Breaking: Allow values larger than 32 bit for `int!` and `uint!` macros
   This means that `i32`-suffixed and `u32`-suffixed literals are no longer accepcted
-* The minimum supported rust version is raised to 1.46, if you don't use the `int!` and `uint!` macros, or 1.79 if you do
   * The old macros can be replaced like follows: `int!(42)` -> `Int::from(42_i32)` etc.
+* The minimum supported rust version is raised to 1.46.
 * The `int!` and `uint!` macros now support arbitrary const expressions, not just literals
 * `Int::new` and `UInt::new` are now const
 * Breaking: Serialization of `Int` and `UInt` now call the serialization of `i64` and `u64` directly instead of
