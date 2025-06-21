@@ -12,10 +12,7 @@ fn serialize() {
 }
 
 fn assert_serialize(number: u32) {
-    assert_ser_tokens(
-        &UInt::from(number),
-        &[Token::NewtypeStruct { name: "UInt" }, Token::U64(number as _)],
-    )
+    assert_ser_tokens(&UInt::from(number), &[Token::U64(number as _)])
 }
 
 #[test]

@@ -613,7 +613,7 @@ impl Serialize for Int {
     where
         S: Serializer,
     {
-        serializer.serialize_newtype_struct("Int", &self.0)
+        self.0.serialize(serializer)
     }
 }
 
