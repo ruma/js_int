@@ -6,6 +6,9 @@
   * The old macros can be replaced like follows: `int!(42)` -> `Int::from(42_i32)` etc.
 * The `int!` and `uint!` macros now support arbitrary const expressions, not just literals
 * `Int::new` and `UInt::new` are now const
+* Breaking: Serialization of `Int` and `UInt` now call the serialization of `i64` and `u64` directly instead of
+  serializing them as newtype structs, emulating `#[serde(transparent)]`.
+  This doesn't make a difference for `serde_json` for example, but it could make a difference for other serializers
 
 # 0.2.2
 
