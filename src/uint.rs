@@ -604,7 +604,7 @@ impl Serialize for UInt {
     where
         S: Serializer,
     {
-        serializer.serialize_newtype_struct("UInt", &self.0)
+        self.0.serialize(serializer)
     }
 }
 
