@@ -2,28 +2,26 @@
 /// Checks at compile time that the expression is in a valid range.
 #[macro_export]
 macro_rules! int {
-    ($n:expr) => {
-        const {
-            match $crate::Int::new($n) {
-                Some(int) => int,
-                None => panic!("Number is outside the range of an Int"),
-            }
-        }
-    };
+    ($n:expr) => {{
+        const VALUE: $crate::Int = match $crate::Int::new($n) {
+            Some(int) => int,
+            None => panic!("Number is outside the range of an Int"),
+        };
+        VALUE
+    }};
 }
 
 /// Creates a `UInt` from a constant expression.
 /// Checks at compile time that the expression is in a valid range.
 #[macro_export]
 macro_rules! uint {
-    ($n:expr) => {
-        const {
-            match $crate::UInt::new($n) {
-                Some(int) => int,
-                None => panic!("Number is outside the range of a UInt"),
-            }
-        }
-    };
+    ($n:expr) => {{
+        const VALUE: $crate::UInt = match $crate::UInt::new($n) {
+            Some(int) => int,
+            None => panic!("Number is outside the range of an Int"),
+        };
+        VALUE
+    }};
 }
 
 macro_rules! fmt_impls {
