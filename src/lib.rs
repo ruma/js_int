@@ -38,9 +38,12 @@
 //! * `std`: Enable `std::error::Error` implementations for `ParseIntError`, `TryFromIntError`.
 //!   Enabled by default.
 
+#![no_std]
 #![deny(missing_debug_implementations, missing_docs)]
 #![allow(clippy::cast_lossless)] // Not useful in this crate
-#![cfg_attr(not(feature = "std"), no_std)]
+
+#[cfg(feature = "std")]
+extern crate std;
 
 #[macro_use]
 mod macros;
