@@ -16,11 +16,11 @@ respectively. These types add bounds checking to ensure the contained value is
 within the range representable by a JavaScript `Number`. They provide useful
 trait implementations to easily convert from Rust's primitive integer types.
 
-<small>* In the upcoming ECMAScript 2020, JavaScript will probably gain support
-for integers. There is a proposal for a [`BigInt`][mdn] type type that is not
-far from becoming part of the JavaScript specification. It won't make this crate
-obsolete in any way though, since there will still be lots of JS code using
-`Number`, and code in other languages that assumes its use.
+<small>* Since the creation of this crate, JavaScript has gained support for
+larger integers in the form of the [`BigInt`][mdn] type.
+It doesn't make this crate obsolete in any way though, since there is still
+lots of code that operates on JS `Number`s or puts the same bounds on integers
+as the types from this crate do.
 </small>
 
 This crate requires rustc >= 1.46.
