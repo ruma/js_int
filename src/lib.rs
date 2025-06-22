@@ -37,6 +37,8 @@
 //!   feature.
 //! * `std`: Enable `std::error::Error` implementations for `ParseIntError`, `TryFromIntError`.
 //!   Enabled by default.
+//! * `rust_1.81`: Enable `core::error::Error` implementations for `ParseIntError`,
+//!   `TryFromIntError`. Does nothing if the `std` feature is enabled.
 
 #![no_std]
 #![deny(missing_debug_implementations, missing_docs)]
