@@ -3,6 +3,11 @@ use core::{
     num::ParseIntError as StdParseIntError,
 };
 
+#[cfg(all(feature = "rust_1.81", not(feature = "std")))]
+use core::error::Error;
+#[cfg(feature = "std")]
+use std::error::Error;
+
 /// The error type returned when when parsing an integer fails.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ParseIntError {
@@ -36,8 +41,8 @@ impl Display for ParseIntError {
     }
 }
 
-#[cfg(feature = "std")]
-impl std::error::Error for ParseIntError {}
+#[cfg(any(feature = "rust_1.81", feature = "std"))]
+impl Error for ParseIntError {}
 
 /// The error type returned when a checked integral type conversion fails.
 #[derive(Clone)]
@@ -63,5 +68,5 @@ impl Debug for TryFromIntError {
     }
 }
 
-#[cfg(feature = "std")]
-impl std::error::Error for TryFromIntError {}
+#[cfg(any(feature = "rust_1.81", feature = "std"))]
+impl Error for TryFromIntError {}
