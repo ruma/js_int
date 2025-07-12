@@ -34,7 +34,7 @@ implementations of `std::error::Error` for `ParseIntError` and
 without the `std` feature.
 
 Deserialization can be routed through `f64` instead of `u64` with the
-`float_deserialize` feature. This will still not deserialize numbers with a
+`(U)Int::deserialize_via_float` methods. This will still not deserialize numbers with a
 non-zero fractional component. Please be aware that
 `serde_json` doesn't losslessly parse large floats with a fractional part by
 default (even if the fractional part is `.0`). To fix that, enable its 
