@@ -433,6 +433,44 @@ impl Int {
         Self::new_saturating(self.0.saturating_pow(exp))
     }
 
+    /// Deserialization function for use with `#[serde(deserialize_with = ...)]` that performs
+    /// deserialization through `f64` instead of `i64`.
+    /// This allows deserializing from numbers with a fractional component like `.0`.
+    ///
+    /// Note, however, that this will not accept non-zero fractional components like `.1`.
+    ///
+    /// # Example
+    /// ```rs
+    /// use serde::Deserialize;
+    /// use js_int::Int;
+    ///
+    /// #[derive(Deserialize)]
+    /// struct Point {
+    ///     #[serde(deserialize_with = "Int::deserialize_via_float")]
+    ///     x: Int;
+    ///     #[serde(deserialize_with = "Int::deserialize_via_float")]
+    ///     y: Int;
+    /// }
+    #[cfg(feature = "serde")]
+    pub fn deserialize_via_float<'de, D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        const EXPECTING: &str =
+            "a number between -2^53 + 1 and 2^53 - 1 without fractional component";
+
+        let val = f64::deserialize(deserializer)?;
+
+        if val > MAX_SAFE_INT as f64
+            || val < MIN_SAFE_INT as f64
+            || !super::is_acceptable_float(val)
+        {
+            Err(D::Error::invalid_value(Unexpected::Float(val), &EXPECTING))
+        } else {
+            Ok(Self(val as i64))
+        }
+    }
+
     // TODO: wrapping_* methods, overflowing_* methods
 }
 
@@ -576,34 +614,14 @@ impl<'de> Deserialize<'de> for Int {
     where
         D: Deserializer<'de>,
     {
-        #[cfg(not(feature = "float_deserialize"))]
-        {
-            let val = i64::deserialize(deserializer)?;
+        let val = i64::deserialize(deserializer)?;
 
-            Self::new(val).ok_or_else(|| {
-                D::Error::invalid_value(
-                    Unexpected::Signed(val),
-                    &"an integer between -2^53 + 1 and 2^53 - 1",
-                )
-            })
-        }
-
-        #[cfg(feature = "float_deserialize")]
-        {
-            const EXPECTING: &str =
-                "a number between -2^53 + 1 and 2^53 - 1 without fractional component";
-
-            let val = f64::deserialize(deserializer)?;
-
-            if val > MAX_SAFE_INT as f64
-                || val < MIN_SAFE_INT as f64
-                || !super::is_acceptable_float(val)
-            {
-                Err(D::Error::invalid_value(Unexpected::Float(val), &EXPECTING))
-            } else {
-                Ok(Self(val as i64))
-            }
-        }
+        Self::new(val).ok_or_else(|| {
+            D::Error::invalid_value(
+                Unexpected::Signed(val),
+                &"an integer between -2^53 + 1 and 2^53 - 1",
+            )
+        })
     }
 }
 

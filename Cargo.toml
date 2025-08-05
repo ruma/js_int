@@ -16,7 +16,6 @@ optional = true
 default-features = false
 
 [features]
-float_deserialize = ["serde"]
 default = ["std"]
 "rust_1.81" = []
 std = []
