@@ -29,7 +29,6 @@ fn deserialize() {
 }
 
 #[test]
-#[cfg_attr(feature = "float_deserialize", ignore)]
 fn dont_deserialize_integral_float() {
     assert!(deserialize_from(1.0).is_err());
     assert!(deserialize_from(9007199254740991.0).is_err());
@@ -43,20 +42,25 @@ fn dont_deserialize_fractional_float() {
 }
 
 #[test]
-#[cfg_attr(not(feature = "float_deserialize"), ignore)]
 fn deserialize_integral_float() {
-    assert_eq!(deserialize_from(1.0).unwrap(), uint!(1));
-    assert_eq!(deserialize_from(9007199254740991.0).unwrap(), UInt::MAX);
-    assert!(deserialize_from(9007199254740992.0).is_err());
+    assert_eq!(deserialize_via_float(1.0).unwrap(), uint!(1));
+    assert_eq!(deserialize_via_float(9007199254740991.0).unwrap(), UInt::MAX);
+    assert!(deserialize_via_float(9007199254740992.0).is_err());
     // NOTE: This still ends up as integral because the .49 exceeds the representable range of f64
     assert_eq!(
-        deserialize_from(9007199254740991.49).unwrap(),
+        deserialize_via_float(9007199254740991.49).unwrap(),
         UInt::try_from(9007199254740991i64).unwrap()
     );
 
-    assert!(deserialize_from(f64::NAN).is_err());
-    assert!(deserialize_from(f64::INFINITY).is_err());
-    assert!(deserialize_from(f64::NEG_INFINITY).is_err());
+    assert!(deserialize_via_float(f64::NAN).is_err());
+    assert!(deserialize_via_float(f64::INFINITY).is_err());
+    assert!(deserialize_via_float(f64::NEG_INFINITY).is_err());
+
+    fn deserialize_via_float<'de, Value: IntoDeserializer<'de>>(
+        value: Value,
+    ) -> Result<UInt, serde::de::value::Error> {
+        UInt::deserialize_via_float(value.into_deserializer())
+    }
 }
 
 fn deserialize_from<'de, Value: IntoDeserializer<'de>>(
