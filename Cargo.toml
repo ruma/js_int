@@ -8,6 +8,7 @@ readme = "README.md"
 repository = "https://github.com/ruma/js_int"
 keywords = ["integer", "no_std"]
 categories = ["no-std"]
+rust-version = "1.46.0"
 
 [dependencies.serde]
 version = "1.0"
