@@ -5,7 +5,21 @@ macro_rules! int {
     ($n:expr) => {{
         const VALUE: $crate::Int = match $crate::Int::new($n) {
             Some(int) => int,
-            None => panic!("Number is outside the range of an Int"),
+            None => {
+                // Hack to emulate a panic in this case.
+                // Inspired by the [`static_assertions`](https://github.com/nvzqz/static-assertions) package.
+                // Improvements to be made with higher MSRVs:
+                // * 1.48: Replace the number comparison with `Option::is_none`
+                // * 1.57: Use `panic!()` directly.
+                // * 1.83: Replace manual `panic!()` with `Option::expect`
+                const _: [(); 0 - !{
+                    const ASSERT: bool = $n >= $crate::MIN_SAFE_INT && $n <= $crate::MAX_SAFE_INT;
+                    ASSERT
+                } as usize] = [];
+                // This loop should not run, but it produces a never type that keeps the match
+                // arms having the same type (since never conforms to any type)
+                loop {}
+            }
         };
         VALUE
     }};
@@ -18,7 +32,22 @@ macro_rules! uint {
     ($n:expr) => {{
         const VALUE: $crate::UInt = match $crate::UInt::new($n) {
             Some(int) => int,
-            None => panic!("Number is outside the range of an Int"),
+            None => {
+                // Hack to emulate a panic in this case.
+                // Inspired by the [`static_assertions`](https://github.com/nvzqz/static-assertions) package.
+                // Improvements to be made with higher MSRVs:
+                // * 1.48: Replace the number comparison with `Option::is_none`
+                // * 1.57: Use `panic!()` directly.
+                // * 1.83: Replace manual `panic!()` with `Option::expect`
+                #[allow(unknown_lints, unused_comparisons)]
+                const _: [(); 0 - !{
+                    const ASSERT: bool = $n <= $crate::MAX_SAFE_UINT;
+                    ASSERT
+                } as usize] = [];
+                // This loop should not run, but it produces a never type that keeps the match
+                // arms having the same type (since never conforms to any type)
+                loop {}
+            }
         };
         VALUE
     }};
