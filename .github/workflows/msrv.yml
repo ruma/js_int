@@ -8,16 +8,18 @@ on:
 
 jobs:
   check:
-    name: Check
+    name: Test
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: dtolnay/rust-toolchain@1.46
-    - name: Check (no default features)
-      run: cargo check --no-default-features
-    - name: Check (default features)
-      run: cargo check
-    - name: Check (serde)
-      run: cargo check --features serde
-    - name: Check (all features)
-      run: cargo check --all-features
+    - name: Run tests (no default features)
+      run: cargo test --no-default-features
+    - name: Run tests (default features)
+      run: cargo test
+    - name: Run tests (serde)
+      run: cargo test --features serde
+    - name: Run tests (all features)
+      run: cargo test --all-features
+    - name: Run tests (release build)
+      run: cargo test --release
