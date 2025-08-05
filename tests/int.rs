@@ -1,9 +1,11 @@
 #![cfg(feature = "serde")]
 
+use crate::test_serializer::{Number, TestSerializer};
 use core::convert::TryFrom;
 use js_int::{int, Int};
-use serde::{de::IntoDeserializer, Deserialize};
-use serde_test::{assert_ser_tokens, Token};
+use serde::{de::IntoDeserializer, Deserialize, Serialize};
+
+mod test_serializer;
 
 #[test]
 fn serialize() {
@@ -13,7 +15,9 @@ fn serialize() {
 }
 
 fn assert_serialize(number: i32) {
-    assert_ser_tokens(&Int::from(number), &[Token::I64(number as _)])
+    let serialized = Int::from(number).serialize(TestSerializer).expect("Failed to serialize UInt");
+
+    assert_eq!(Number::I64(number.into()), serialized);
 }
 
 #[test]

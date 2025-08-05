@@ -19,6 +19,3 @@ float_deserialize = ["serde"]
 default = ["std"]
 "rust_1.81" = []
 std = []
-
-[dev-dependencies]
-serde_test = "1.0"
