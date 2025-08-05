@@ -2,13 +2,15 @@
 
 * Breaking: Allow values larger than 32 bit for `int!` and `uint!` macros
   This means that `i32`-suffixed and `u32`-suffixed literals are no longer accepcted
-  * The old macros can be replaced like follows: `int!(42)` -> `Int::from(42_i32)` etc.
+    * The old macros can be replaced like follows: `int!(42)` -> `Int::from(42_i32)` etc.
 * The minimum supported rust version is raised to 1.46.
 * The `int!` and `uint!` macros now support arbitrary const expressions, not just literals
 * `Int::new` and `UInt::new` are now const
 * Breaking: Serialization of `Int` and `UInt` now call the serialization of `i64` and `u64` directly instead of
   serializing them as newtype structs, emulating `#[serde(transparent)]`.
   This doesn't make a difference for `serde_json` for example, but it could make a difference for other serializers
+* Breaking: Remove the `float_deserialize` feature and replace it with the `(U)Int::deserialize_via_float` methods that
+  can be used with serde's `deserialize_with` attribute.
 
 # 0.2.2
 
@@ -32,7 +34,7 @@
 # 0.1.9
 
 * Add a new Cargo feature: `lax_deserialize`
-  * See the crate documentation or [README.md](README.md) for what it does.
+    * See the crate documentation or [README.md](README.md) for what it does.
 
 # 0.1.8
 

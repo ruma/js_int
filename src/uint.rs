@@ -414,6 +414,41 @@ impl UInt {
         Self::new_saturating(self.0.saturating_pow(exp))
     }
 
+    /// Deserialization function for use with `#[serde(deserialize_with = ...)]` that performs
+    /// deserialization through `f64` instead of `u64`.
+    /// This allows deserializing from numbers with a fractional component like `.0`.
+    ///
+    /// Note, however, that this will not accept non-zero fractional components like `.1`.
+    ///
+    /// # Example
+    /// ```rs
+    /// use serde::Deserialize;
+    /// use js_int::UInt;
+    ///
+    /// #[derive(Deserialize)]
+    /// struct Point {
+    ///     #[serde(deserialize_with = "UInt::deserialize_via_float")]
+    ///     x: UInt;
+    ///     #[serde(deserialize_with = "UInt::deserialize_via_float")]
+    ///     y: UInt;
+    /// }
+    /// ```
+    #[cfg(feature = "serde")]
+    pub fn deserialize_via_float<'de, D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        const EXPECTING: &str = "a number between 0 and 2^53 - 1 without fractional component";
+
+        let val = f64::deserialize(deserializer)?;
+
+        if val < 0.0 || val > MAX_SAFE_UINT as f64 || !super::is_acceptable_float(val) {
+            Err(D::Error::invalid_value(Unexpected::Float(val), &EXPECTING))
+        } else {
+            Ok(Self(val as u64))
+        }
+    }
+
     // TODO: wrapping_* methods, overflowing_* methods
 }
 
@@ -571,30 +606,11 @@ impl<'de> Deserialize<'de> for UInt {
     where
         D: Deserializer<'de>,
     {
-        #[cfg(not(feature = "float_deserialize"))]
-        {
-            let val = u64::deserialize(deserializer)?;
+        let val = u64::deserialize(deserializer)?;
 
-            Self::new(val).ok_or_else(|| {
-                D::Error::invalid_value(
-                    Unexpected::Unsigned(val),
-                    &"an integer between 0 and 2^53 - 1",
-                )
-            })
-        }
-
-        #[cfg(feature = "float_deserialize")]
-        {
-            const EXPECTING: &str = "a number between 0 and 2^53 - 1 without fractional component";
-
-            let val = f64::deserialize(deserializer)?;
-
-            if val < 0.0 || val > MAX_SAFE_UINT as f64 || !super::is_acceptable_float(val) {
-                Err(D::Error::invalid_value(Unexpected::Float(val), &EXPECTING))
-            } else {
-                Ok(Self(val as u64))
-            }
-        }
+        Self::new(val).ok_or_else(|| {
+            D::Error::invalid_value(Unexpected::Unsigned(val), &"an integer between 0 and 2^53 - 1")
+        })
     }
 }
 
