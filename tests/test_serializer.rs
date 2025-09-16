@@ -1,5 +1,5 @@
 #![cfg(feature = "serde")]
-use serde::{
+use serde_core::{
     ser::{
         SerializeMap, SerializeSeq, SerializeStruct, SerializeStructVariant, SerializeTuple,
         SerializeTupleStruct, SerializeTupleVariant,
@@ -33,7 +33,7 @@ impl From<&'static str> for Error {
     }
 }
 
-impl serde::ser::Error for Error {
+impl serde_core::ser::Error for Error {
     fn custom<T>(message: T) -> Self
     where
         T: Display,
