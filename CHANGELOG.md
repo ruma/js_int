@@ -10,7 +10,7 @@
   can be used with serde's `deserialize_with` attribute.
 * The `int!` and `uint!` macros now support arbitrary const expressions, not just literals
 * `Int::new` and `UInt::new` are now const
-* The minimum supported rust version is raised to 1.57.
+* The minimum supported rust version is raised to 1.60.
 
 # 0.2.2
 

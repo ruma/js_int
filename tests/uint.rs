@@ -3,7 +3,7 @@
 use crate::test_serializer::{Number, TestSerializer};
 use core::convert::TryFrom;
 use js_int::{uint, UInt};
-use serde::{de::IntoDeserializer, Deserialize, Serialize};
+use serde_core::{de::IntoDeserializer, Deserialize, Serialize};
 
 mod test_serializer;
 
@@ -58,13 +58,13 @@ fn deserialize_integral_float() {
 
     fn deserialize_via_float<'de, Value: IntoDeserializer<'de>>(
         value: Value,
-    ) -> Result<UInt, serde::de::value::Error> {
+    ) -> Result<UInt, serde_core::de::value::Error> {
         UInt::deserialize_via_float(value.into_deserializer())
     }
 }
 
 fn deserialize_from<'de, Value: IntoDeserializer<'de>>(
     value: Value,
-) -> Result<UInt, serde::de::value::Error> {
+) -> Result<UInt, serde_core::de::value::Error> {
     UInt::deserialize(value.into_deserializer())
 }

@@ -10,7 +10,7 @@ use crate::{
     UInt, MAX_SAFE_UINT,
 };
 #[cfg(feature = "serde")]
-use serde::{
+use serde_core::{
     de::{Error as _, Unexpected},
     Deserialize, Deserializer, Serialize, Serializer,
 };
