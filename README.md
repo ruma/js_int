@@ -23,7 +23,7 @@ lots of code that operates on JS `Number`s or puts the same bounds on integers
 as the types from this crate do.
 </small>
 
-This crate requires rustc >= 1.46.
+This crate requires rustc >= 1.60.
 
 This crate is `no_std`-compatible with `default-features = false`. This will
 disable the `std` feature, which at the time of writing will only omit the
