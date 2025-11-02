@@ -49,6 +49,7 @@ extern crate std;
 
 #[macro_use]
 mod macros;
+mod atomic;
 mod error;
 mod int;
 mod uint;

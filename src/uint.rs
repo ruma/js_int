@@ -7,7 +7,7 @@ use core::{
 
 use crate::{
     error::{ParseIntError, ParseIntErrorKind, TryFromIntError},
-    MAX_SAFE_INT,
+    MAX_SAFE_INT, MIN_SAFE_INT,
 };
 #[cfg(feature = "serde")]
 use serde::{
@@ -47,6 +47,15 @@ impl UInt {
     /// assert_eq!(UInt::MAX, UInt::try_from(9_007_199_254_740_991u64).unwrap());
     /// ```
     pub const MAX: Self = Self(MAX_SAFE_UINT);
+
+    /// Create a new [`UInt`] without checking that the number is in range.
+    ///
+    /// # Safety
+    /// The number needs to be in the inclusive range from
+    /// 0 to [`MAX_SAFE_UINT`].
+    pub const unsafe fn new_unchecked(val: u64) -> Self {
+        Self(val)
+    }
 
     /// Try to create a `UInt` from the provided `u64`, returning `None` if it is larger than
     /// `MAX_SAFE_UINT`.

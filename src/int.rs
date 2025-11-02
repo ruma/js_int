@@ -49,6 +49,15 @@ impl Int {
     /// ```
     pub const MAX: Self = Self(MAX_SAFE_INT);
 
+    /// Create a new [`Int`] without checking that the number is in range.
+    ///
+    /// # Safety
+    /// The number needs to be in the inclusive range from
+    /// [`MIN_SAFE_INT`] to [`MAX_SAFE_INT`].
+    pub const unsafe fn new_unchecked(val: i64) -> Self {
+        Self(val)
+    }
+
     /// Try to create an `Int` from the provided `i64`, returning `None` if it is smaller than
     /// `MIN_SAFE_INT` or larger than `MAX_SAFE_INT`.
     ///
