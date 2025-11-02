@@ -11,6 +11,7 @@
 * The `int!` and `uint!` macros now support arbitrary const expressions, not just literals
 * `Int::new` and `UInt::new` are now const
 * The minimum supported rust version is raised to 1.60.
+* Update to edition 2021
 
 # 0.2.2
 
