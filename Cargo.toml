@@ -2,7 +2,7 @@
 name = "js_int"
 description = "JavaScript-interoperable integer types"
 version = "0.2.2"
-edition = "2018"
+edition = "2021"
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/ruma/js_int"
